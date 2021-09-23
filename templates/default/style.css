@@ -1,0 +1,21 @@
+.billing-address {
+    border: 1px solid #0000ff;
+    width: 50%;
+
+    float: left;
+}
+
+.shipping-address {
+    border: 1px solid #0000ff;
+text-align: right;
+    width: 50%;
+    float: left;
+}
+
+.order-info {
+    clear: both;
+}
+
+ul {
+    list-style: none;
+}

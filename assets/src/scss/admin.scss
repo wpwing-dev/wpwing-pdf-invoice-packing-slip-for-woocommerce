@@ -1,0 +1,61 @@
+table.shop_table tr.order td.order-actions a.print-invoice {
+    background-image: url('../images/invoice_view.png');
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    text-indent: 15px;
+}
+
+#wpwing-pdf-invoice-box div.invoice-information a {
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    text-indent: 20px;
+}
+
+#wpwing-pdf-invoice-box div.invoice-information a.wpwing_wcpi_create_invoice {
+    background-image: url('../images/invoice_add.png');
+}
+
+#wpwing-pdf-invoice-box div.invoice-information a.wpwing_wcpi_view_invoice {
+    background-image: url('../images/invoice_view.png');
+}
+
+#wpwing-pdf-invoice-box div.invoice-information a.wpwing_wcpi_cancel_invoice {
+    background-image: url('../images/invoice_cancel.png');
+}
+
+
+.widefat .column-order_actions a.button.wpwing_wcpi_create_invoice,
+.widefat .column-order_actions a.button.wpwing_wcpi_view_invoice,
+.widefat .column-wc_actions a.button.wpwing_wcpi_create_invoice,
+.widefat .column-wc_actions a.button.wpwing_wcpi_view_invoice{
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.widefat .column-order_actions a.button.wpwing_wcpi_create_invoice,
+.widefat .column-wc_actions a.button.wpwing_wcpi_create_invoice{
+    background-image: url('../images/invoice_add.png');
+}
+
+.widefat .column-order_actions a.button.wpwing_wcpi_view_invoice,
+.widefat .column-wc_actions a.button.wpwing_wcpi_view_invoice{
+    background-image: url('../images/invoice_view.png');
+}
+
+
+.widefat .column-order_actions a.button.wpwing_wcpi_buttons,
+.widefat .column-wc_actions a.button.wpwing_wcpi_buttons{
+    display: inline-block;
+    text-indent: -9999px;
+    position: relative;
+    padding: 0 !important;
+    height: 2em !important;
+    width: 2em;
+    position: relative;
+}
+
+.widefat .column-order_actions a.button.wpwing_wcpi_buttons:after,
+.widefat .column-wc_actions a.button.wpwing_wcpi_buttons:after{
+    display: none;
+}
+
