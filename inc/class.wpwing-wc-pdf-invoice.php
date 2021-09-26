@@ -54,17 +54,17 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		public function init_plugin_actions() {
 
 			if ( isset( $_GET['wpwing-create-invoice'] ) ) {
-				$this->create_document( $_GET['wpwing-create-invoice'], 'invoice' );
+				$this->create_document( intval( $_GET['wpwing-create-invoice'] ), 'invoice' );
 			} elseif ( isset( $_GET[ 'wpwing-view-invoice' ] ) ) {
-				$this->view_document( $_GET[ 'wpwing-view-invoice' ], 'invoice' );
+				$this->view_document( intval( $_GET[ 'wpwing-view-invoice' ] ), 'invoice' );
 			} elseif ( isset( $_GET[ 'wpwing-reset-invoice' ] ) ) {
-				$this->reset_document( $_GET[ 'wpwing-reset-invoice' ], 'invoice' );
+				$this->reset_document( intval( $_GET[ 'wpwing-reset-invoice' ] ), 'invoice' );
 			} elseif ( isset( $_GET['wpwing-create-packing'] ) ) {
-				$this->create_document( $_GET['wpwing-create-packing'], 'packing' );
+				$this->create_document( intval( $_GET['wpwing-create-packing'] ), 'packing' );
 			} elseif ( isset( $_GET[ 'wpwing-view-packing' ] ) ) {
-				$this->view_document( $_GET[ 'wpwing-view-packing' ], 'packing' );
+				$this->view_document( intval( $_GET[ 'wpwing-view-packing' ] ), 'packing' );
 			} elseif ( isset( $_GET[ 'wpwing-reset-packing' ] ) ) {
-				$this->reset_document( $_GET[ 'wpwing-reset-packing' ], 'packing' );
+				$this->reset_document( intval( $_GET[ 'wpwing-reset-packing' ] ), 'packing' );
 			} else {
 				return;
 			}
