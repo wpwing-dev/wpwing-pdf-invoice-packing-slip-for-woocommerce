@@ -15,7 +15,7 @@
 		?>
 
 		<tr>
-			<td class="column-product"><?php echo $item['name']; ?></td>
+			<td class="column-product"><?php echo esc_html( $item['name'] ); ?></td>
 			<td class="column-quantity"><?php echo ( isset( $item['qty'] ) ) ? esc_html( $item['qty'] ) : ''; ?></td>
 		</tr>
 

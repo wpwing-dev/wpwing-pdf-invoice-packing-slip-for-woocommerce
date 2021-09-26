@@ -25,7 +25,7 @@
 		?>
 
 		<tr>
-			<td class="column-product"><?php echo $item['name']; ?></td>
+			<td class="column-product"><?php echo esc_html( $item['name'] ); ?></td>
 			<td class="column-quantity"><?php echo ( isset( $item['qty'] ) ) ? esc_html( $item['qty'] ) : ''; ?></td>
 			<td class="column-price"><?php echo wc_price( $price_per_unit ); ?></td>
 			<td class="column-total"><?php echo wc_price( $item["line_subtotal"] ); ?></td>
@@ -138,8 +138,8 @@
 				<?php if ( 'yes' == get_option( 'woocommerce_calc_taxes' ) ) : ?>
 					<?php foreach ( $wpwing_wcpi_document->order->get_tax_totals() as $code => $tax ) : ?>
 						<tr class="invoice-details-vat">
-							<td class="column-product"><?php echo $tax->label; ?>:</td>
-							<td class="column-total"><?php echo $tax->formatted_amount; ?></td>
+							<td class="column-product"><?php echo esc_html( $tax->label ); ?>:</td>
+							<td class="column-total"><?php echo esc_html( $tax->formatted_amount ); ?></td>
 						</tr>
 					<?php endforeach; ?>
 				<?php endif; ?>

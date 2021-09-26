@@ -207,10 +207,10 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 
 			echo '<span class="invoice-from-to">' . __( "Invoice From", 'wpwing-wc-pdf-invoice' ) . ' </span>';
 			if ( isset( $company_name ) ) {
-				echo '<span class="company-name">' . $company_name . '</span>';
+				echo '<span class="company-name">' . esc_html( $company_name ) . '</span>';
 			}
 			if ( isset( $company_details ) ) {
-				echo '<span class="company-details" > ' . $company_details . '</span > ';
+				echo '<span class="company-details" > ' . esc_html( $company_details ) . '</span > ';
 			}
 
 		}
@@ -230,7 +230,7 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 
 			if ( isset( $company_logo ) ) {
 				echo '<div class="company-logo">
-					<img src="' . apply_filters( 'wpwing_wcpi_company_image_path', $company_logo ) . '">
+					<img src="' . apply_filters( 'wpwing_wcpi_company_image_path', esc_url( $company_logo ) ) . '">
 				</div>';
 			}
 
@@ -271,17 +271,17 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 			<table>
 				<tr class="invoice-number">
 					<td><?php _e( "Invoice", 'wpwing-wc-pdf-invoice' ); ?></td>
-					<td class="right"><?php echo $wpwing_wcpi_document->get_formatted_invoice_number(); ?></td>
+					<td class="right"><?php echo esc_html( $wpwing_wcpi_document->get_formatted_invoice_number() ); ?></td>
 				</tr>
 
 				<tr class="invoice-order-number">
 					<td><?php _e( "Order", 'wpwing-wc-pdf-invoice' ); ?></td>
-					<td class="right"><?php echo $wpwing_wcpi_document->order->get_order_number(); ?></td>
+					<td class="right"><?php echo esc_html( $wpwing_wcpi_document->order->get_order_number() ); ?></td>
 				</tr>
 
 				<tr class="invoice-date">
 					<td><?php _e( "Invoice date", 'wpwing-wc-pdf-invoice' ); ?></td>
-					<td class="right"><?php echo $wpwing_wcpi_document->get_formatted_date(); ?></td>
+					<td class="right"><?php echo esc_html( $wpwing_wcpi_document->get_formatted_date() ); ?></td>
 				</tr>
 
 				<tr class="invoice-amount">

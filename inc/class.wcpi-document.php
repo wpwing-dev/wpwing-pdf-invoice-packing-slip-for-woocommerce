@@ -165,9 +165,9 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
                 ob_end_clean();
 
                 if ( $content ) {
-                    echo '<style type="text/css">';
-                    echo $content;
-                    echo '</style>';
+                    echo esc_html( '<style type="text/css">' );
+                    echo esc_html( $content );
+                    echo esc_html( '</style>' );
                 }
 			}
 
