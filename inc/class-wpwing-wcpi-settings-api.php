@@ -95,27 +95,14 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		public function before_update( $value, $old_value, $option ) {
 
-			//if ( $this->settings_name === $option ) {
-			// Here We will do magic :D
-			// delete_transient( $this->transient_setting_name );
-
-			//}
-
 			$this->save_reserved( $value );
 			do_action( sprintf( 'before_update_%s_settings', $this->settings_name ), $this );
-
 
 			return $value;
 
 		}
 
 		public function after_update( $old_value, $value, $option ) {
-
-			//if ( $this->settings_name === $option ) {
-			// Here We will do magic :D
-			// delete_transient( $this->transient_setting_name );
-
-			//}
 
 			return $value;
 
@@ -253,7 +240,6 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			do_action( sprintf( 'delete_%s_settings', $this->settings_name ), $this );
 
-
 			// license_key should not updated
 
 			return delete_option( $this->settings_name );
@@ -342,13 +328,9 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 				$tab = apply_filters( 'wpwing_wcpi_settings_tab', $tab );
 
-				// print_r( $tab); die;
-
 				foreach ( $tab['sections'] as $section_key => $section ) {
 
 					$section = apply_filters( 'wpwing_wcpi_settings_section', $section, $tab );
-
-					//print_r( $section); die;
 
 					$section['id'] = ! isset( $section['id'] ) ? $tab['id'] . '-section-' . $section_key : $section['id'];
 
@@ -533,6 +515,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$size = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
 			$html = sprintf( '<select class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]">%3$s</select>', $size, $args['id'], implode( '', $options ), $this->settings_name );
 			$html .= $this->get_field_description( $args );
+
 			echo $html;
 
 		}
@@ -641,7 +624,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			?>
 			<div id="<?php echo $this->slug ?>-wrap" class="wrap settings-wrap">
 
-				<h1><?php echo get_admin_page_title() ?></h1>
+				<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
 				<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ) ?>" enctype="multipart/form-data">
 					<?php
@@ -676,7 +659,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 					?>
 					<p class="submit wpwing-wcpi-button-wrapper">
 						<input type="submit" id="submit" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'wpwing-wc-pdf-invoice' ) ?>">
-						<a onclick="return confirm('<?php esc_attr_e( 'Are you sure to reset current settings?', 'wpwing-wc-pdf-invoice' ) ?>')" class="reset" href="<?php echo $this->reset_url() ?>"><?php esc_html_e( 'Reset all', 'wpwing-wc-pdf-invoice' ) ?></a>
+						<a onclick="return confirm('<?php esc_attr_e( 'Are you sure to reset current settings?', 'wpwing-wc-pdf-invoice' ) ?>')" class="reset" href="<?php echo esc_url( $this->reset_url() ); ?>"><?php esc_html_e( 'Reset all', 'wpwing-wc-pdf-invoice' ) ?></a>
 					</p>
 
 				</form>
@@ -708,7 +691,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			?>
 			<h2 class="nav-tab-wrapper wp-clearfix">
 				<?php foreach ( $this->fields as $tabs ): ?>
-					<a data-target="<?php echo $tabs['id'] ?>" <?php echo $this->get_options_tab_pro_attr( $tabs ) ?> class="wpwing-wcpi-setting-nav-tab nav-tab <?php echo $this->get_options_tab_css_classes( $tabs ) ?> " href="#<?php echo $tabs['id'] ?>"><?php echo $tabs['title'] ?></a>
+					<a data-target="<?php echo esc_attr( $tabs['id'] ); ?>" <?php echo esc_attr( $this->get_options_tab_pro_attr( $tabs ) ); ?> class="wpwing-wcpi-setting-nav-tab nav-tab <?php echo esc_attr( $this->get_options_tab_css_classes( $tabs ) ); ?> " href="#<?php echo esc_attr( $tabs['id'] ); ?>"><?php echo esc_html( $tabs['title'] ); ?></a>
 				<?php endforeach; ?>
 			</h2>
 			<?php
@@ -742,7 +725,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$last_tab        = $last_option_tab;
 
 			if ( isset( $_GET['tab'] ) && ! empty( $_GET['tab'] ) ) {
-				$last_tab = trim( $_GET['tab'] );
+				$last_tab = trim( esc_html( $_GET['tab'] ) );
 			}
 
 			if ( $last_option_tab ) {
@@ -771,7 +754,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			foreach ( (array) $wp_settings_sections[ $page ] as $section ) {
 				if ( $section['title'] ) {
-					echo "<h2>{$section['title']}</h2>\n";
+					echo '<h2>' . esc_html( $section['title'] ) . '</h2>';
 				}
 
 				if ( $section['callback'] ) {
