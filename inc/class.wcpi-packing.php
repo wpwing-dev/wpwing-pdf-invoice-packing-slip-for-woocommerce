@@ -163,10 +163,10 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 
 			echo '<span class="invoice-from-to">' . __( "Packing From", 'wpwing-wc-pdf-invoice' ) . ' </span>';
 			if ( isset( $company_name ) ) {
-				echo '<span class="company-name">' . esc_html( $company_name ) . '</span>';
+				echo '<div class="company-name">' . wp_kses_post( $company_name ) . '</div>';
 			}
 			if ( isset( $company_details ) ) {
-				echo '<span class="company-details" > ' . esc_html( $company_details ) . '</span > ';
+				echo '<div class="company-details" > ' . wp_kses_post( $company_details ) . '</div > ';
 			}
 
 		}
@@ -204,7 +204,8 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 			echo '<div class="invoice-to-section" > ';
 
 			if ( $wpwing_wcpi_document->order->get_formatted_billing_address() ) {
-				echo '<span class="invoice-from-to" > ' . __( "Customer", 'wpwing-wc-pdf-invoice' ) . '</span > ' . wp_kses( $wpwing_wcpi_document->order->get_formatted_billing_address(), array( "br" => array() ) );
+				echo '<span class="invoice-from-to" > ' . __( "Customer", 'wpwing-wc-pdf-invoice' ) . '</span > ';
+				echo '<div class="customer-details">' . wp_kses( $wpwing_wcpi_document->order->get_formatted_billing_address(), array( "br" => array() ) ) . '</div>';
 			}
 
 			echo '</div > ';
