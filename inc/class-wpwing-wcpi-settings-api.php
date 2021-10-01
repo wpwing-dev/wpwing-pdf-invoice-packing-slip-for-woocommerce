@@ -19,26 +19,60 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		private $theme_feature_name = 'wpwing-wc-pdf-invoice';
 		private $slug;
 		// private $plugin_class;
-		private $defaults = array();
+		private $defaults = [];
 		private $reserved_key = '';
-		private $reserved_fields = array();
+		private $reserved_fields = [];
 
-		private $fields = array();
+		private $fields = [];
+		private $allowed_html = [
+			'fieldset' => [],
+			'label' => [],
+			'input' => [
+				'type' => [],
+				'id' => [],
+				'class' => [],
+				'name' => [],
+				'value' => [],
+				'checked' => [],
+				'placeholder' => [],
+				'readonly' => [],
+
+			],
+			'select' => [
+				'id' => [],
+				'class' => [],
+				'name' => [],
+				'value' => [],
+			],
+			'option' => [
+				'value' => [],
+				'selected' => [],
+			],
+			'textarea' => [
+				'id' => [],
+				'class' => [],
+				'name' => [],
+				'value' => [],
+				'placeholder' => [],
+			],
+			'a'	=> [
+				'href' => [],
+				'title' => [],
+			],
+			'br' => [],
+			'strong' => [],
+		];
 
 		public function __construct() {
 
-			// $this->plugin_class = pb_wc();
-			// global $WPWing_WCPI_Instance;
-			// $this->plugin_class = $WPWing_WCPI_Instance;
-
-			$this->settings_name      = apply_filters( 'wpwing_wcpi_settings_name', $this->setting_name );
+			$this->settings_name = apply_filters( 'wpwing_wcpi_settings_name', $this->setting_name );
 			$this->setting_reset_name = apply_filters( 'wpwing_wcpi_settings_reset_name', $this->setting_reset_name );
 
 			$this->slug = sprintf( '%s-settings', sanitize_key( WPWING_WCPI_DIR_NAME ) );
 			// license_key
-			$this->fields          = apply_filters( 'wpwing_wcpi_settings', $this->fields );
-			$this->reserved_key    = sprintf( '%s_reserved', $this->settings_name );
-			$this->reserved_fields = apply_filters( 'wpwing_wcpi_reserved_fields', array() );
+			$this->fields = apply_filters( 'wpwing_wcpi_settings', $this->fields );
+			$this->reserved_key = sprintf( '%s_reserved', $this->settings_name );
+			$this->reserved_fields = apply_filters( 'wpwing_wcpi_reserved_fields', [] );
 
 			add_action( 'admin_menu', array( $this, 'add_menu' ) );
 
@@ -78,7 +112,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		public function save_reserved( $value ) {
 
-			$reserved_data = array();
+			$reserved_data = [];
 			foreach ( (array) $this->reserved_fields as $fieldKey ) {
 				if ( ! empty( $value[ $fieldKey ] ) ) {
 					$reserved_data[ $fieldKey ] = $value[ $fieldKey ];
@@ -108,24 +142,34 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		}
 
+		/**
+		 * Admin inline js for settings tabs
+		 *
+		 * @since 1.0.0
+		 */
 		public function admin_inline_js() {
 
 			?>
 			<script type="text/javascript">
-              jQuery(function ($) {
-                $('#<?php echo $this->slug ?>-wrap').on('click', '.nav-tab', function (event) {
-                  event.preventDefault()
-                  var target = $(this).data('target')
-                  $(this).addClass('nav-tab-active').siblings().removeClass('nav-tab-active')
-                  $('#' + target).show().siblings().hide()
-                  $('#_last_active_tab').val(target)
-                })
-              })
+				jQuery(function ($) {
+					$( '#<?php echo $this->slug ?>-wrap' ).on( 'click', '.nav-tab', function (event) {
+						event.preventDefault()
+						var target = $(this).data( 'target' );
+						$( this ).addClass( 'nav-tab-active' ).siblings().removeClass( 'nav-tab-active' );
+						$( '#' + target ).show().siblings().hide();
+						$( '#_last_active_tab' ).val( target );
+					})
+				})
 			</script>
 			<?php
 
 		}
 
+		/**
+		 * Create dashboard menu for settings
+		 *
+		 * @since 1.0.0
+		 */
 		public function add_menu() {
 
 			if ( empty( $this->fields ) ) {
@@ -376,7 +420,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		public function make_implode_html_attributes( $attributes, $except = array( 'type', 'id', 'name', 'value' ) ) {
 
-			$attrs = array();
+			$attrs = [];
 			foreach ( $attributes as $name => $value ) {
 				if ( in_array( $name, $except, true ) ) {
 					continue;
@@ -411,10 +455,6 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 					$this->color_field_callback( $field );
 					break;
 
-				case 'post_select':
-					$this->post_select_field_callback( $field );
-					break;
-
 				case 'pro':
 					$this->pro_field_callback( $field );
 					break;
@@ -436,64 +476,81 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		}
 
+		/**
+		 * Checkbox field
+		 *
+		 * @since 1.0.0
+		 */
 		public function checkbox_field_callback( $args ) {
 
 			$value = wc_string_to_bool( $this->get_option( $args['id'] ) );
-			// $size  = isset( $args[ 'size' ] ) && ! is_null( $args[ 'size' ] ) ? $args[ 'size' ] : 'regular';
 
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
-			$html = sprintf( '<fieldset><label><input %1$s type="checkbox" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label> %7$s</fieldset>', $attrs, $args['id'], true, $this->settings_name, checked( $value, true, false ), esc_attr( $args['desc'] ), $this->get_field_description( $args ) );
+			$html = sprintf( '<fieldset><label><input %1$s type="checkbox" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label> %7$s</fieldset>', esc_attr( $attrs ), esc_attr( $args['id'] ), true, esc_html( $this->settings_name ), checked( $value, true, false ), esc_attr( $args['desc'] ), $this->get_field_description( $args ) );
 
-			echo $html;
+			echo wp_kses( $html, $this->allowed_html );
 
 		}
 
+		/**
+		 * Radio field
+		 *
+		 * @since 1.0.0
+		 */
 		public function radio_field_callback( $args ) {
 
-			// $size    = isset( $args[ 'size' ] ) && ! is_null( $args[ 'size' ] ) ? $args[ 'size' ] : 'regular';
 			$options = apply_filters( "wpwing_wcpi_settings_{$args[ 'id' ]}_radio_options", $args['options'] );
 			$value   = esc_attr( $this->get_option( $args['id'] ) );
 
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
-
 			$html = '<fieldset>';
 			$html .= implode( '<br />', array_map( function ( $key, $option ) use ( $attrs, $args, $value ) {
-				return sprintf( '<label><input %1$s type="radio"  name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label>', $attrs, $args['id'], $key, $this->settings_name, checked( $value, $key, false ), $option );
+				return sprintf( '<label><input %1$s type="radio"  name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label>', esc_attr( $attrs ), esc_attr( $args['id'] ), esc_html( $key ), esc_html( $this->settings_name ), checked( $value, $key, false ), esc_html( $option ) );
 			}, array_keys( $options ), $options ) );
 			$html .= $this->get_field_description( $args );
 			$html .= '</fieldset>';
 
-			echo $html;
+			echo wp_kses( $html, $this->allowed_html );
 
 		}
 
+		/**
+		 * Select field
+		 *
+		 * @since 1.0.0
+		 */
 		public function select_field_callback( $args ) {
 
 			$options = apply_filters( "wpwing_wcpi_settings_{$args[ 'id' ]}_select_options", $args['options'] );
-			$value   = esc_attr( $this->get_option( $args['id'] ) );
+			$value = esc_attr( $this->get_option( $args['id'] ) );
 			$options = array_map( function ( $key, $option ) use ( $value ) {
 				return "<option value='{$key}'" . selected( $key, $value, false ) . ">{$option}</option>";
 			}, array_keys( $options ), $options );
-			$size    = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
+			$size = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
 
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
-			$html = sprintf( '<select %5$s class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]">%3$s</select>', $size, $args['id'], implode( '', $options ), $this->settings_name, $attrs );
+			$html = sprintf( '<select %5$s class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]">%3$s</select>', esc_html( $size ), esc_attr( $args['id'] ), implode( '', $options ), esc_html( $this->settings_name ), esc_attr( $attrs ) );
 			$html .= $this->get_field_description( $args );
 
-			echo $html;
+			echo wp_kses( $html, $this->allowed_html );
 
 		}
 
+		/**
+		 * Show description after field
+		 *
+		 * @since 1.0.0
+		 */
 		public function get_field_description( $args ) {
 
 			$desc = '';
 			$desc .= $this->show_pro_label_tag_content();
 
 			if ( ! empty( $args['desc'] ) ) {
-				$desc .= sprintf( '<p class="description">%s</p>', $args['desc'] );
+				$desc .= sprintf( '<p class="description">%s</p>', esc_html( $args['desc'] ) );
 			} else {
 				$desc .= '';
 			}
@@ -502,24 +559,11 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		}
 
-		public function post_select_field_callback( $args ) {
-
-			$options = apply_filters( "wpwing_wcpi_settings_{$args[ 'id' ]}_post_select_options", $args['options'] );
-
-			$value = esc_attr( $this->get_option( $args['id'] ) );
-
-			$options = array_map( function ( $option ) use ( $value ) {
-				return "<option value='{$option->ID}'" . selected( $option->ID, $value, false ) . ">$option->post_title</option>";
-			}, $options );
-
-			$size = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
-			$html = sprintf( '<select class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]">%3$s</select>', $size, $args['id'], implode( '', $options ), $this->settings_name );
-			$html .= $this->get_field_description( $args );
-
-			echo $html;
-
-		}
-
+		/**
+		 * Textarea field
+		 *
+		 * @since 1.0.0
+		 */
 		public function textarea_field_callback( $args ) {
 
 			$value = esc_attr( $this->get_option( $args['id'] ) );
@@ -527,13 +571,18 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
-			$html = sprintf( '<textarea %5$s class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s">%3$s</textarea>', $size, $args['id'], $value, $this->settings_name, $attrs, $args['placeholder'] );
+			$html = sprintf( '<textarea %5$s class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s">%3$s</textarea>', esc_html( $size ), esc_attr( $args['id'] ), esc_html( $value ), esc_html( $this->settings_name ), esc_attr( $attrs ), esc_html( $args['placeholder'] ) );
 			$html .= $this->get_field_description( $args );
 
-			echo $html;
+			echo wp_kses( $html, $this->allowed_html );
 
 		}
 
+		/**
+		 * Text field
+		 *
+		 * @since 1.0.0
+		 */
 		public function text_field_callback( $args ) {
 
 			$value = esc_attr( $this->get_option( $args['id'] ) );
@@ -541,13 +590,18 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
-			$html = sprintf( '<input %5$s type="text" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s" value="%3$s"/>', $size, $args['id'], $value, $this->settings_name, $attrs, $args['placeholder'] );
+			$html = sprintf( '<input %5$s type="text" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s" value="%3$s"/>', esc_html( $size ), esc_attr( $args['id'] ), esc_html( $value ), esc_html( $this->settings_name ), esc_attr( $attrs ), esc_html( $args['placeholder'] ) );
 			$html .= $this->get_field_description( $args );
 
-			echo $html;
+			echo wp_kses( $html, $this->allowed_html );
 
 		}
 
+		/**
+		 * Upload field
+		 *
+		 * @since 1.0.0
+		 */
 		public function upload_field_callback( $args ) {
 
 			$value = esc_attr( $this->get_option( $args['id'] ) );
@@ -559,70 +613,22 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$html .= '&nbsp;&nbsp;<a href="#" class="wcpi_upload_image">Upload Logo</a>';
 			$html .= $this->get_field_description( $args );
 
-			echo $html;
+			echo wp_kses( $html, $this->allowed_html );
 
 		}
 
-		public function pro_field_callback( $args ) {
-
-			$is_html = isset( $args['html'] );
-
-			if ( $is_html ) {
-				$html = $args['html'];
-			} else {
-				$image = esc_url( $args['screen_shot'] );
-				$link  = esc_url( $args['product_link'] );
-
-
-				$width = isset( $args['width'] ) ? $args['width'] : '70%';
-
-				$html = sprintf( '<a target="_blank" href="%s"><img style="width: %s" src="%s" /></a>', $link, $width, $image );
-				$html .= $this->get_field_description( $args );
-			}
-
-			echo $html;
-
-		}
-
-		public function color_field_callback( $args ) {
-
-			$value = esc_attr( $this->get_option( $args['id'] ) );
-			// $size  = isset( $args[ 'size' ] ) && ! is_null( $args[ 'size' ] ) ? $args[ 'size' ] : 'regular';
-			$alpha = isset( $args['alpha'] ) && $args['alpha'] === true ? ' data-alpha="true"' : '';
-			$html  = sprintf( '<input type="text" %1$s class="wpwing-wcpi-color-picker" id="%2$s-field" name="%4$s[%2$s]" value="%3$s"  data-default-color="%3$s" />', $alpha, $args['id'], $value, $this->settings_name );
-			$html  .= $this->get_field_description( $args );
-
-			echo $html;
-
-		}
-
-		public function number_field_callback( $args ) {
-
-			$value = esc_attr( $this->get_option( $args['id'] ) );
-			$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'small';
-
-			$min    = isset( $args['min'] ) && ! is_null( $args['min'] ) ? 'min="' . $args['min'] . '"' : '';
-			$max    = isset( $args['max'] ) && ! is_null( $args['max'] ) ? 'max="' . $args['max'] . '"' : '';
-			$step   = isset( $args['step'] ) && ! is_null( $args['step'] ) ? 'step="' . $args['step'] . '"' : '';
-			$suffix = isset( $args['suffix'] ) && ! is_null( $args['suffix'] ) ? ' <span>' . $args['suffix'] . '</span>' : '';
-
-			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
-
-
-			$html = sprintf( '<input %9$s type="number" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s %6$s %7$s /> %8$s', $size, $args['id'], $value, $this->settings_name, $min, $max, $step, $suffix, $attrs );
-			$html .= $this->get_field_description( $args );
-
-			echo $html;
-
-		}
-
+		/**
+		 * Create settings forms
+		 *
+		 * @since 1.0.0
+		 */
 		public function settings_form() {
 
 			if ( ! current_user_can( 'manage_options' ) ) {
 				wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 			}
 			?>
-			<div id="<?php echo $this->slug ?>-wrap" class="wrap settings-wrap">
+			<div id="<?php echo esc_attr( $this->slug ); ?>-wrap" class="wrap settings-wrap">
 
 				<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
@@ -644,8 +650,8 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 							?>
 
 							<div id="<?php echo $tab['id'] ?>"
-								 class="settings-tab wpwing-wcpi-setting-tab"
-								 style="<?php echo ! $is_active ? 'display: none' : '' ?>">
+								class="settings-tab wpwing-wcpi-setting-tab"
+								style="<?php echo ! $is_active ? 'display: none' : '' ?>">
 								<?php foreach ( $tab['sections'] as $section ):
 									$this->do_settings_sections( $tab['id'] . $section['id'] );
 								endforeach; ?>
@@ -668,6 +674,11 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		}
 
+		/**
+		 * Create settings reset url
+		 *
+		 * @since 1.0.0
+		 */
 		public function reset_url() {
 
 			return add_query_arg( array( 'page' => $this->slug, 'reset' => '' ), admin_url( 'admin.php' ) );
@@ -686,6 +697,11 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		}
 
+		/**
+		 * Setting menu tabs
+		 *
+		 * @since 1.0.0
+		 */
 		public function options_tabs() {
 
 			?>
@@ -719,6 +735,11 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		}
 
+		/**
+		 * Get last settings active tab
+		 *
+		 * @since 1.0.0
+		 */
 		private function get_last_active_tab() {
 
 			$last_option_tab = trim( $this->get_option( '_last_active_tab' ) );
