@@ -93,27 +93,7 @@ if ( ! function_exists( 'wpwing_wcpi_protect_folder' ) ) {
 }
 
 /**
- * Load the plugin
- *
- * @since 1.0.0
- */
-function wpwing_wcpi_install() {
-
-	if ( ! function_exists( 'WC' ) ) {
-		add_action( 'admin_notices', 'wpwing_wcpi_wc_error_admin_notice' );
-	} else {
-		do_action( 'wpwing_wcpi_init' );
-	}
-
-    if ( ! get_option( 'wpwing_wcpi_check_folder_already_protected' ) ) {
-        wpwing_wcpi_protect_folder();
-    }
-
-}
-add_action( 'plugins_loaded', 'wpwing_wcpi_install', 11 );
-
-/**
- * Kick-start the plugin
+ * Load all the resources and init PDF Invoice class
  *
  * @since 1.0.0
  */
@@ -132,6 +112,26 @@ function wpwing_wcpi_init() {
 
 }
 add_action( 'wpwing_wcpi_init', 'wpwing_wcpi_init' );
+
+/**
+ * Kick-start the plugin
+ *
+ * @since 1.0.0
+ */
+function wpwing_wcpi_install() {
+
+	if ( ! function_exists( 'WC' ) ) {
+		add_action( 'admin_notices', 'wpwing_wcpi_wc_error_admin_notice' );
+	} else {
+		do_action( 'wpwing_wcpi_init' );
+	}
+
+    if ( ! get_option( 'wpwing_wcpi_check_folder_already_protected' ) ) {
+        wpwing_wcpi_protect_folder();
+    }
+
+}
+add_action( 'plugins_loaded', 'wpwing_wcpi_install', 11 );
 
 /**
  * For test and debug, log function to view any data in wp-content/debug.log
