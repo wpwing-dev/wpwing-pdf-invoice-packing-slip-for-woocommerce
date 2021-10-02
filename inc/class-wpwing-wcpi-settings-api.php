@@ -868,11 +868,6 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			}
 
 			foreach ( (array) $wp_settings_fields[ $page ][ $section ] as $field ) {
-				/*$class = '';
-
-				if ( ! empty( $field[ 'args' ][ 'class' ] ) ) {
-					$class = ' class="' . esc_attr( $field[ 'args' ][ 'class' ] ) . '"';
-				}*/
 
 				$custom_attributes = $this->array2html_attr( isset( $field['args']['attributes'] ) ? $field['args']['attributes'] : array() );
 
@@ -883,6 +878,14 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 				$new_html = $is_new ? '<span class="wpwing-wcpi-new-feature-tick">' . esc_html__( 'NEW', 'wpwing-wc-pdf-invoice' ) . '</span>' : '';
 
 				printf( '<tr id="%s" %s %s>', $wrapper_id, $custom_attributes, $dependency );
+
+				echo '<th scope="row" class="pb-wc-settings-label">';
+				if ( ! empty( $field['args']['label_for'] ) ) {
+					echo '<label for="' . esc_attr( $field['args']['label_for'] ) . '">' . esc_html( $field['title'] ) . $new_html . '</label>';
+				} else {
+					echo esc_html( $field['title'] ) . $new_html;
+				}
+				echo '</th>';
 
 				echo '<td class="wpwing-wcpi-settings-field-content">';
 				call_user_func( $field['callback'], $field['args'] );
