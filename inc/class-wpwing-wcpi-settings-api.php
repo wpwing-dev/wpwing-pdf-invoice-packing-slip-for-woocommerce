@@ -614,7 +614,6 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		public function get_field_description( $args ) {
 
 			$desc = '';
-			$desc .= $this->show_pro_label_tag_content();
 
 			if ( ! empty( $args['desc'] ) ) {
 				$desc .= sprintf( '<p class="description">%s</p>', $args['desc'] );
@@ -622,7 +621,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 				$desc .= '';
 			}
 
-			return ( ( $args['type'] === 'checkbox' ) ) ? $this->show_pro_label_tag_content() : wp_kses( $desc, $this->allowed_html );
+			return wp_kses( $desc, $this->allowed_html );
 
 		}
 
