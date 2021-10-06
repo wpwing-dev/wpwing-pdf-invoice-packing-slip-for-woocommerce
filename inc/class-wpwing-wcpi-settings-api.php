@@ -156,10 +156,10 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			?>
 			<script type="text/javascript">
-				jQuery(function ($) {
-					$( '#<?php echo $this->slug ?>-wrap' ).on( 'click', '.nav-tab', function (event) {
+				jQuery( function ( $ ) {
+					$( '#<?php echo esc_html( $this->slug ); ?>-wrap' ).on( 'click', '.nav-tab', function ( event ) {
 						event.preventDefault()
-						var target = $(this).data( 'target' );
+						var target = $( this ).data( 'target' );
 						$( this ).addClass( 'nav-tab-active' ).siblings().removeClass( 'nav-tab-active' );
 						$( '#' + target ).show().siblings().hide();
 						$( '#_last_active_tab' ).val( target );
@@ -398,7 +398,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 					add_settings_section( $tab['id'] . $section['id'], $section['title'], function () use ( $section ) {
 						if ( isset( $section['desc'] ) && ! empty( $section['desc'] ) ) {
-							echo '<div class="inside">' . $section['desc'] . '</div>';
+							echo '<div class="inside">' . esc_html( $section['desc'] ) . '</div>';
 						}
 					}, $tab['id'] . $section['id'] );
 
@@ -760,16 +760,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		 */
 		private function get_last_active_tab() {
 
-			$last_option_tab = trim( $this->get_option( '_last_active_tab' ) );
-			$last_tab        = $last_option_tab;
-
-			if ( isset( $_GET['tab'] ) && ! empty( $_GET['tab'] ) ) {
-				$last_tab = trim( esc_html( $_GET['tab'] ) );
-			}
-
-			if ( $last_option_tab ) {
-				$last_tab = $last_option_tab;
-			}
+			$last_tab = trim( $this->get_option( '_last_active_tab' ) );
 
 			$default_tab = '';
 			foreach ( $this->fields as $tabs ) {

@@ -127,12 +127,12 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				<?php if ( ( null != $invoice ) && $invoice->exists ) : ?>
 					<div style="overflow: hidden; padding: 5px 0">
                         <span style="float:left"><?php _e( 'Invoiced on: ', 'wpwing-wc-pdf-invoice' ); ?></span>
-						<strong><span style="float:right"><?php echo $invoice->get_formatted_date(); ?></span></strong>
+						<strong><span style="float:right"><?php echo esc_html( $invoice->get_formatted_date() ); ?></span></strong>
 					</div>
 
 					<div style="overflow: hidden; padding: 5px 0">
                         <span style="float:left"><?php _e( 'Invoice number: ', 'wpwing-wc-pdf-invoice' ); ?></span>
-						<strong><span style="float:right"><?php echo $invoice->get_formatted_invoice_number(); ?></span></strong>
+						<strong><span style="float:right"><?php echo esc_html( $invoice->get_formatted_invoice_number() ); ?></span></strong>
 					</div>
 
 					<div style="clear: both; margin-top: 15px">
