@@ -76,7 +76,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$this->slug = sprintf( '%s-settings', sanitize_key( WPWING_WCPI_DIR_NAME ) );
 			// license_key
 			$this->fields = apply_filters( 'wpwing_wcpi_settings', $this->fields );
-			$this->reserved_key = sprintf( '%s_reserved', $this->settings_name );
+			$this->reserved_key = sprintf( '%s_reserved', esc_html( $this->settings_name ) );
 			$this->reserved_fields = apply_filters( 'wpwing_wcpi_reserved_fields', [] );
 
 			add_action( 'admin_menu', array( $this, 'add_menu' ) );
@@ -135,7 +135,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		public function before_update( $value, $old_value, $option ) {
 
 			$this->save_reserved( $value );
-			do_action( sprintf( 'before_update_%s_settings', $this->settings_name ), $this );
+			do_action( sprintf( 'before_update_%s_settings', esc_html( $this->settings_name ) ), $this );
 
 			return $value;
 
@@ -195,7 +195,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			global $wp_admin_bar;
 
-			$url        = admin_url( sprintf( 'admin.php?page=%s', $this->slug ) );
+			$url        = admin_url( sprintf( 'admin.php?page=%s', esc_html( $this->slug ) ) );
 			$menu_title = esc_html__( 'Invoice Settings', 'wpwing-wc-pdf-invoice' );
 
 			$args = array(
@@ -203,7 +203,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 				'title' => $menu_title,
 				'href'  => $url,
 				'meta'  => array(
-					'class' => sprintf( '%s-admin-toolbar', $this->slug )
+					'class' => sprintf( '%s-admin-toolbar', esc_html( $this->slug ) )
 				)
 			);
 			$wp_admin_bar->add_menu( $args );
@@ -220,7 +220,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 					), add_query_arg( 'wpwing_wcpi_clear_transient', '' ) ) ),
 					'parent' => $this->settings_name,
 					'meta'   => array(
-						'class' => sprintf( '%s-admin-toolbar-cache', $this->slug )
+						'class' => sprintf( '%s-admin-toolbar-cache', esc_html( $this->slug ) )
 					)
 				) );
 			}
@@ -235,7 +235,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 				return $links;
 			}
 
-			$url          = admin_url( sprintf( 'admin.php?page=%s', $this->slug ) );
+			$url          = admin_url( sprintf( 'admin.php?page=%s', esc_html( $this->slug ) ) );
 			$plugin_links = array( sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Settings', 'wpwing-wc-pdf-invoice' ) ) );
 
 			return array_merge( $plugin_links, $links );
@@ -292,7 +292,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		 */
 		public function delete_settings() {
 
-			do_action( sprintf( 'delete_%s_settings', $this->settings_name ), $this );
+			do_action( sprintf( 'delete_%s_settings', esc_html( $this->settings_name ) ), $this );
 
 			// license_key should not updated
 
@@ -500,7 +500,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$html .= implode( '<br />', array_map( function ( $key, $option ) use ( $attrs, $args, $value ) {
 				return sprintf( '<label><input %1$s type="radio"  name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label>', esc_attr( $attrs ), esc_attr( $args['id'] ), esc_html( $key ), esc_html( $this->settings_name ), checked( $value, $key, false ), esc_html( $option ) );
 			}, array_keys( $options ), $options ) );
-			$html .= $this->get_field_description( $args );
+			$html .= esc_html( $this->get_field_description( $args ) );
 			$html .= '</fieldset>';
 
 			echo wp_kses( $html, $this->allowed_html );
@@ -518,7 +518,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
-			$html = sprintf( '<fieldset><label><input %1$s type="checkbox" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label> %7$s</fieldset>', esc_attr( $attrs ), esc_attr( $args['id'] ), true, esc_html( $this->settings_name ), checked( $value, true, false ), esc_attr( $args['desc'] ), $this->get_field_description( $args ) );
+			$html = sprintf( '<fieldset><label><input %1$s type="checkbox" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label> %7$s</fieldset>', esc_attr( $attrs ), esc_attr( $args['id'] ), true, esc_html( $this->settings_name ), checked( $value, true, false ), esc_attr( $args['desc'] ), esc_html( $this->get_field_description( $args ) ) );
 
 			echo wp_kses( $html, $this->allowed_html );
 
@@ -541,7 +541,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
 			$html = sprintf( '<select %5$s class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]">%3$s</select>', esc_html( $size ), esc_attr( $args['id'] ), implode( '', $options ), esc_html( $this->settings_name ), esc_attr( $attrs ) );
-			$html .= $this->get_field_description( $args );
+			$html .= esc_html( $this->get_field_description( $args ) );
 
 			echo wp_kses( $html, $this->allowed_html );
 
@@ -561,7 +561,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			$html = sprintf( '<input %5$s type="text" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s" value="%3$s" readonly />', esc_html( $size ), esc_attr( $args['id'] ), esc_html( $value ), esc_html( $this->settings_name ), esc_attr( $attrs ), esc_html( $args['placeholder'] ) );
 			$html .= '&nbsp;&nbsp;<a href="#" class="wcpi_upload_image">Upload Logo</a>';
-			$html .= $this->get_field_description( $args );
+			$html .= esc_html( $this->get_field_description( $args ) );
 
 			echo wp_kses( $html, $this->allowed_html );
 
@@ -580,7 +580,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
 			$html = sprintf( '<textarea %5$s class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s">%3$s</textarea>', esc_html( $size ), esc_attr( $args['id'] ), esc_html( $value ), esc_html( $this->settings_name ), esc_attr( $attrs ), esc_html( $args['placeholder'] ) );
-			$html .= $this->get_field_description( $args );
+			$html .= esc_html( $this->get_field_description( $args ) );
 
 			echo wp_kses( $html, $this->allowed_html );
 
@@ -599,7 +599,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
 			$html = sprintf( '<input %5$s type="text" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s" value="%3$s"/>', esc_html( $size ), esc_attr( $args['id'] ), esc_attr( $value ), esc_html( $this->settings_name ), esc_attr( $attrs ), esc_html( $args['placeholder'] ) );
-			$html .= $this->get_field_description( $args );
+			$html .= esc_html( $this->get_field_description( $args ) );
 
 			echo wp_kses( $html, $this->allowed_html );
 
@@ -616,7 +616,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$desc = '';
 
 			if ( ! empty( $args['desc'] ) ) {
-				$desc .= sprintf( '<p class="description">%s</p>', $args['desc'] );
+				$desc .= sprintf( '<p class="description">%s</p>', esc_html( $args['desc'] ) );
 			} else {
 				$desc .= '';
 			}
@@ -711,7 +711,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		 */
 		private function last_tab_input() {
 
-			printf( '<input type="hidden" id="_last_active_tab" name="%s[_last_active_tab]" value="%s">', esc_html( $this->settings_name ), $this->get_last_active_tab() );
+			printf( '<input type="hidden" id="_last_active_tab" name="%s[_last_active_tab]" value="%s">', esc_html( $this->settings_name ), esc_html( $this->get_last_active_tab() ) );
 
 		}
 
@@ -868,13 +868,13 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 				$is_new   = ( isset( $field['args']['is_new'] ) && $field['args']['is_new'] );
 				$new_html = $is_new ? '<span class="wpwing-wcpi-new-feature-tick">' . esc_html__( 'NEW', 'wpwing-wc-pdf-invoice' ) . '</span>' : '';
 
-				printf( '<tr id="%s" %s %s>', $wrapper_id, $custom_attributes, $dependency );
+				printf( '<tr id="%s" %s %s>', esc_attr( $wrapper_id ), esc_attr( $custom_attributes ), esc_attr( $dependency ) );
 
 				echo '<th scope="row" class="pb-wc-settings-label">';
 				if ( ! empty( $field['args']['label_for'] ) ) {
-					echo '<label for="' . esc_attr( $field['args']['label_for'] ) . '">' . esc_html( $field['title'] ) . $new_html . '</label>';
+					echo '<label for="' . esc_attr( $field['args']['label_for'] ) . '">' . esc_html( $field['title'] ) . esc_html( $new_html ) . '</label>';
 				} else {
-					echo esc_html( $field['title'] ) . $new_html;
+					echo esc_html( $field['title'] ) . esc_html( $new_html );
 				}
 				echo '</th>';
 
