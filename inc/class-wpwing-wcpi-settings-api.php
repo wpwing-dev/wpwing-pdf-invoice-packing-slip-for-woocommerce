@@ -500,7 +500,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$html .= implode( '<br />', array_map( function ( $key, $option ) use ( $attrs, $args, $value ) {
 				return sprintf( '<label><input %1$s type="radio"  name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label>', esc_attr( $attrs ), esc_attr( $args['id'] ), esc_html( $key ), esc_html( $this->settings_name ), checked( $value, $key, false ), esc_html( $option ) );
 			}, array_keys( $options ), $options ) );
-			$html .= esc_html( $this->get_field_description( $args ) );
+			$html .= $this->get_field_description( $args );
 			$html .= '</fieldset>';
 
 			echo wp_kses( $html, $this->allowed_html );
@@ -518,7 +518,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
-			$html = sprintf( '<fieldset><label><input %1$s type="checkbox" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label> %7$s</fieldset>', esc_attr( $attrs ), esc_attr( $args['id'] ), true, esc_html( $this->settings_name ), checked( $value, true, false ), esc_attr( $args['desc'] ), esc_html( $this->get_field_description( $args ) ) );
+			$html = sprintf( '<fieldset><label><input %1$s type="checkbox" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label> %7$s</fieldset>', esc_attr( $attrs ), esc_attr( $args['id'] ), true, esc_html( $this->settings_name ), checked( $value, true, false ), esc_attr( $args['desc'] ), $this->get_field_description( $args ) );
 
 			echo wp_kses( $html, $this->allowed_html );
 
@@ -541,7 +541,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
 			$html = sprintf( '<select %5$s class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]">%3$s</select>', esc_html( $size ), esc_attr( $args['id'] ), implode( '', $options ), esc_html( $this->settings_name ), esc_attr( $attrs ) );
-			$html .= esc_html( $this->get_field_description( $args ) );
+			$html .= $this->get_field_description( $args );
 
 			echo wp_kses( $html, $this->allowed_html );
 
@@ -561,7 +561,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			$html = sprintf( '<input %5$s type="text" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s" value="%3$s" readonly />', esc_html( $size ), esc_attr( $args['id'] ), esc_html( $value ), esc_html( $this->settings_name ), esc_attr( $attrs ), esc_html( $args['placeholder'] ) );
 			$html .= '&nbsp;&nbsp;<a href="#" class="wcpi_upload_image">Upload Logo</a>';
-			$html .= esc_html( $this->get_field_description( $args ) );
+			$html .= $this->get_field_description( $args );
 
 			echo wp_kses( $html, $this->allowed_html );
 
@@ -580,7 +580,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
 			$html = sprintf( '<textarea %5$s class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s">%3$s</textarea>', esc_html( $size ), esc_attr( $args['id'] ), esc_html( $value ), esc_html( $this->settings_name ), esc_attr( $attrs ), esc_html( $args['placeholder'] ) );
-			$html .= esc_html( $this->get_field_description( $args ) );
+			$html .= $this->get_field_description( $args );
 
 			echo wp_kses( $html, $this->allowed_html );
 
@@ -599,7 +599,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
 			$html = sprintf( '<input %5$s type="text" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s" value="%3$s"/>', esc_html( $size ), esc_attr( $args['id'] ), esc_attr( $value ), esc_html( $this->settings_name ), esc_attr( $attrs ), esc_html( $args['placeholder'] ) );
-			$html .= esc_html( $this->get_field_description( $args ) );
+			$html .= $this->get_field_description( $args );
 
 			echo wp_kses( $html, $this->allowed_html );
 
@@ -616,7 +616,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$desc = '';
 
 			if ( ! empty( $args['desc'] ) ) {
-				$desc .= sprintf( '<p class="description">%s</p>', esc_html( $args['desc'] ) );
+				$desc .= sprintf( '<p class="description">%s</p>', $args['desc'] );
 			} else {
 				$desc .= '';
 			}
