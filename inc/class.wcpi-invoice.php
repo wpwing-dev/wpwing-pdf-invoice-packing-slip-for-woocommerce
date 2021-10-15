@@ -84,6 +84,9 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 		public function get_formatted_invoice_number() {
 
 			$formatted_invoice_number = $this->settings->get_option( 'invoice_number_format' );
+			if ( ! $formatted_invoice_number ) {
+				$formatted_invoice_number = '[prefix]/[number]/[suffix]';
+			}
 
 			$formatted_invoice_number = str_replace(
 				array( '[prefix]', '[suffix]', '[number]' ),
