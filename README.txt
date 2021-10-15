@@ -6,7 +6,7 @@ Tags: PDF, Invoice, Packing Slip, Proforma Invoice, Delivery Notes, Shipping Lab
 Requires at least: 4.7
 Tested up to: 5.8.1
 Requires PHP: 7.0
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,11 @@ You’re more than welcome! This plugin hosted on [github](https://github.com/wp
 
 
 == Changelog ==
+
+= 1.0.1 - 15/10/2021 =
+
+* Update: Settings text.
+* Update: Set default invoice number if empty in settings section.
 
 = 1.0.0 - 14/10/2021 =
 
