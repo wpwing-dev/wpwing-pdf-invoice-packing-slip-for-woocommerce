@@ -3,14 +3,14 @@
  * Plugin Name: WPWing PDF Invoice and Packing Slip for WooCommerce
  * Plugin URI: https://wpwing.com/
  * Description: <code><strong>WPWing PDF Invoice and Packing Slip for WooCommerce</strong></code> is able to download your WooCommerce order invoice and packing slip as PDF format for print or email.
- * Version: 1.0.1
+ * Version: 1.1.0
  * Author: WPWing
  * Author URI: https://wpwing.com/
  * Requires PHP: 7.0
  * Requires at least: 4.8
- * Tested up to: 5.8.1
+ * Tested up to: 5.8.2
  * WC requires at least: 4.5
- * WC tested up to: 5.8.0
+ * WC tested up to: 6.0.0
  * Text Domain: wpwing-wc-pdf-invoice
  */
 

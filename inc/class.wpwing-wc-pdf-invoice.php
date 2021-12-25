@@ -126,12 +126,12 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			<div class="invoice-information">
 				<?php if ( ( null != $invoice ) && $invoice->exists ) : ?>
 					<div style="overflow: hidden; padding: 5px 0">
-                        <span style="float:left"><?php _e( 'Invoiced on: ', 'wpwing-wc-pdf-invoice' ); ?></span>
+            <span style="float:left"><?php _e( 'Invoiced on: ', 'wpwing-wc-pdf-invoice' ); ?></span>
 						<strong><span style="float:right"><?php echo esc_html( $invoice->get_formatted_date() ); ?></span></strong>
 					</div>
 
 					<div style="overflow: hidden; padding: 5px 0">
-                        <span style="float:left"><?php _e( 'Invoice number: ', 'wpwing-wc-pdf-invoice' ); ?></span>
+            <span style="float:left"><?php _e( 'Invoice number: ', 'wpwing-wc-pdf-invoice' ); ?></span>
 						<strong><span style="float:right"><?php echo esc_html( $invoice->get_formatted_invoice_number() ); ?></span></strong>
 					</div>
 
@@ -242,14 +242,13 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 
 			// Send invoice to billitng email address using wp_mail
 			$order = new WC_Order( $order_id );
-			// log_it( $order->get_billing_email() );
-			// log_it( WPWING_WCPI_DOCUMENT_SAVE_DIR . $order->get_meta('_wpwing_wcpi_invoice_path') );
 			$to = $order->get_billing_email();
 			$subject = __( 'Order Invoice (PDF)', 'wpwing-wc-pdf-invoice' );
 			$message = __( 'Dear Customer, Here is your order invoice. Please check the attachment.', 'wpwing-wc-pdf-invoice' );
 			$headers = array( 'Content-Type: text/html; charset=UTF-8' );
 			$attachment = WPWING_WCPI_DOCUMENT_SAVE_DIR . $order->get_meta( '_wpwing_wcpi_invoice_path' );
 			wc_mail( $to, $subject, $message, $headers, $attachment );
+
 		}
 
 		/**
@@ -259,31 +258,31 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @param string $document_type the document type to be generated
 		 *
 		 * @since 1.0.0
-         */
-        public function view_document( $order_id, $document_type ) {
+		 */
+		public function view_document( $order_id, $document_type ) {
 
-            $document = $this->get_document_by_type( $order_id, $document_type );
+			$document = $this->get_document_by_type( $order_id, $document_type );
 
-            if ( null != $document ) {
-                $full_path = WPWING_WCPI_DOCUMENT_SAVE_DIR . $document->save_path;
-                // Check if show pdf invoice on browser or asking to download it
+			if ( null != $document ) {
+				$full_path = WPWING_WCPI_DOCUMENT_SAVE_DIR . $document->save_path;
+				// Check if show pdf invoice on browser or asking to download it
 				$button_behavior = $this->settings->get_option( 'invoice_button_behavior' );
-                if ( 'open' == $button_behavior ) {
-                    header( 'Content-type: application/pdf' );
-                    header( 'Content-Disposition: inline; filename = "' . basename( $full_path ) . '"' );
-                    header( 'Content-Transfer-Encoding: binary' );
-                    header( 'Content-Length: ' . filesize( $full_path ) );
-                    header( 'Accept-Ranges: bytes' );
-                    @readfile( $full_path );
-                    exit();
-                } else {
-                    header( "Content-type: application/pdf" );
-                    header( 'Content-Disposition: attachment; filename = "' . basename( $full_path ) . '"' );
-                    @readfile( $full_path );
-                }
-            }
+				if ( 'open' == $button_behavior ) {
+					header( 'Content-type: application/pdf' );
+					header( 'Content-Disposition: inline; filename = "' . basename( $full_path ) . '"' );
+					header( 'Content-Transfer-Encoding: binary' );
+					header( 'Content-Length: ' . filesize( $full_path ) );
+					header( 'Accept-Ranges: bytes' );
+					@readfile( $full_path );
+					exit();
+				} else {
+					header( "Content-type: application/pdf" );
+					header( 'Content-Disposition: attachment; filename = "' . basename( $full_path ) . '"' );
+					@readfile( $full_path );
+				}
+			}
 
-        }
+		}
 
 		/**
          * Reset the PDF when you click on view invoice
@@ -292,7 +291,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @param string $document_type the document type to be generated
 		 *
 		 * @since 1.0.0
-         */
+     */
 		public function reset_document( $order_id, $document_type ) {
 
 			$document = $this->get_document_by_type( $order_id, $document_type );

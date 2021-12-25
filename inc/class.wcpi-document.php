@@ -107,7 +107,7 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 		 */
 		public function get_formatted_date() {
 
-            $format = apply_filters( 'wpwing_wcpi_invoice_date_format', $this->settings->get_option( 'invoice_date_format' ) );
+      $format = apply_filters( 'wpwing_wcpi_invoice_date_format', $this->settings->get_option( 'invoice_date_format' ) );
 			if ( ! $format) {
 				$format = 'd/m/Y';
 			}
@@ -157,18 +157,18 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 
 			$theme_dir = WPWING_WCPI_TEMPLATE_DIR . apply_filters( 'wpwing_wcpi_pdf_theme', 'default/' );
 			$template_filename = $this->document_type . '/style.css';
-            $template_path = $theme_dir . $template_filename;
+      $template_path = $theme_dir . $template_filename;
 			if ( file_exists( $template_path ) ) {
-                ob_start();
-                wc_get_template( $template_filename, null, $theme_dir, $theme_dir );
-                $content = ob_get_contents();
-                ob_end_clean();
+				ob_start();
+				wc_get_template( $template_filename, null, $theme_dir, $theme_dir );
+				$content = ob_get_contents();
+				ob_end_clean();
 
-                if ( $content ) {
-                    echo '<style type="text/css">';
-                    echo esc_html( $content );
-                    echo '</style>';
-                }
+				if ( $content ) {
+					echo '<style type="text/css">';
+					echo esc_html( $content );
+					echo '</style>';
+				}
 			}
 
 		}

@@ -3,10 +3,10 @@
 Contributors: wpwing, voboghure
 Donate link: https://wpwing.com/
 Tags: PDF, Invoice, Packing Slip, Proforma Invoice, Delivery Notes, Shipping Labels, WooCommerce, WPWing
-Requires at least: 4.7
-Tested up to: 5.8.1
+Requires at least: 4.8
+Tested up to: 5.8.2
 Requires PHP: 7.0
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,11 @@ You’re more than welcome! This plugin hosted on [github](https://github.com/wp
 
 
 == Changelog ==
+
+= 1.1.0 - 25/12/2021
+
+* Update: Send PDF Invoice attached with email when admin create invoice.
+* Few minor bug fixes and improvements.
 
 = 1.0.1 - 15/10/2021 =
 
