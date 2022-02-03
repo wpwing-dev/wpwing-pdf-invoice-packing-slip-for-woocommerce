@@ -96,6 +96,13 @@ if ( ! class_exists( 'WPWing_WCPI_Settings' ) ) {
 							),
 							'default' => 'download'
 						),
+						array(
+							'id'      	  => 'invoice_send_customer',
+							'type'    	  => 'checkbox',
+							'title'   	  => esc_html__( 'Send invoice to customer:', 'wpwing-wc-pdf-invoice' ),
+							'desc'        => 'Yes',
+							'default' 	  => false,
+						),
 					) )
 				)
 			) ), apply_filters( 'wpwing_wcpi_general_settings_default_active', true ) );
@@ -108,22 +115,22 @@ if ( ! class_exists( 'WPWing_WCPI_Settings' ) ) {
 						array(
 							'id'      	  => 'company_name_checkbox',
 							'type'    	  => 'checkbox',
-							'title'   	  => esc_html__( 'Show company name:', 'wpwing-wc-pdf-invoice' ),
-							'desc'        => 'Set company name to be shown on invoices.',
+							'title'   	  => esc_html__( 'Show company name on invoice:', 'wpwing-wc-pdf-invoice' ),
+							'desc'        => 'Yes',
 							'default' 	  => false,
 						),
 						array(
 							'id'          => 'company_name_text',
 							'type'        => 'text',
 							'title'       => esc_html__( 'Company name:', 'wpwing-wc-pdf-invoice' ),
-							'desc'        => 'Write your company name.',
+							'desc'        => '',
 							'placeholder' => 'Your company name',
 						),
 						array(
 							'id'      	  => 'company_logo_checkbox',
 							'type'    	  => 'checkbox',
-							'title'   	  => esc_html__( 'Show company logo:', 'wpwing-wc-pdf-invoice' ),
-							'desc'        => 'Set company logo to be shown on invoices.',
+							'title'   	  => esc_html__( 'Show company logo on invoice:', 'wpwing-wc-pdf-invoice' ),
+							'desc'        => 'Yes',
 							'default' 	  => false,
 						),
 						array(
@@ -135,44 +142,44 @@ if ( ! class_exists( 'WPWing_WCPI_Settings' ) ) {
 						array(
 							'id'      	  => 'company_details_checkbox',
 							'type'    	  => 'checkbox',
-							'title'   	  => esc_html__( 'Show company details:', 'wpwing-wc-pdf-invoice' ),
-							'desc'        => 'Set company details to be shown on invoices.',
+							'title'   	  => esc_html__( 'Show company details on invoice:', 'wpwing-wc-pdf-invoice' ),
+							'desc'        => 'Yes',
 							'default' 	  => false,
 						),
 						array(
 							'id'          => 'company_details_text',
 							'type'        => 'textarea',
 							'title'       => esc_html__( 'Company details:', 'wpwing-wc-pdf-invoice' ),
-							'desc'        => 'Set company details to be shown on invoices.',
+							'desc'        => '',
 							'placeholder' => 'Write your company details, Address, City, State',
 						),
 						array(
 							'id'      	  => 'company_notes_checkbox',
 							'type'        => 'checkbox',
-							'title'   	  => esc_html__( 'Show notes:', 'wpwing-wc-pdf-invoice' ),
-							'desc'        => 'Set notes to be shown on invoices.',
+							'title'   	  => esc_html__( 'Show notes on invoice:', 'wpwing-wc-pdf-invoice' ),
+							'desc'        => 'Yes',
 							'default' 	  => false,
 						),
 						array(
 							'id'          => 'company_notes_text',
 							'type'        => 'textarea',
 							'title'       => esc_html__( 'Your notes:', 'wpwing-wc-pdf-invoice' ),
-							'desc'        => 'Write your notes.',
-							'placeholder' => 'Your notes',
+							'desc'        => '',
+							'placeholder' => 'Write your notes',
 						),
 						array(
 							'id'      	  => 'company_footer_checkbox',
 							'type'    	  => 'checkbox',
-							'title'   	  => esc_html__( 'Show footer:', 'wpwing-wc-pdf-invoice' ),
-							'desc'        => 'Set footer text to be shown on invoices.',
+							'title'   	  => esc_html__( 'Show footer on invoice:', 'wpwing-wc-pdf-invoice' ),
+							'desc'        => 'Yes',
 							'default' 	  => false,
 						),
 						array(
 							'id'          => 'company_footer_text',
 							'type'        => 'textarea',
 							'title'       => esc_html__( 'Footer text:', 'wpwing-wc-pdf-invoice' ),
-							'desc'        => 'Write your footer text.',
-							'placeholder' => 'Footer text',
+							'desc'        => '',
+							'placeholder' => 'Write footer text',
 						),
 					) )
 				)
