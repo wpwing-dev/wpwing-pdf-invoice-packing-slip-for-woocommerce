@@ -240,14 +240,16 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				$this->save_document( $document );
 			}
 
-			// Send invoice to billitng email address using wp_mail
-			$order = new WC_Order( $order_id );
-			$to = $order->get_billing_email();
-			$subject = __( 'Order Invoice (PDF)', 'wpwing-wc-pdf-invoice' );
-			$message = __( 'Dear Customer, Here is your order invoice. Please check the attachment.', 'wpwing-wc-pdf-invoice' );
-			$headers = array( 'Content-Type: text/html; charset=UTF-8' );
-			$attachment = WPWING_WCPI_DOCUMENT_SAVE_DIR . $order->get_meta( '_wpwing_wcpi_invoice_path' );
-			wc_mail( $to, $subject, $message, $headers, $attachment );
+			// Send invoice to customer billing email address using wc_mail
+			if ( $this->settings->get_option( 'invoice_send_customer' ) ) {
+				$order = new WC_Order( $order_id );
+				$to = $order->get_billing_email();
+				$subject = __( 'Order Invoice (PDF)', 'wpwing-wc-pdf-invoice' );
+				$message = __( 'Dear Customer, Here is your order invoice. Please check the attachment.', 'wpwing-wc-pdf-invoice' );
+				$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+				$attachment = WPWING_WCPI_DOCUMENT_SAVE_DIR . $order->get_meta( '_wpwing_wcpi_invoice_path' );
+				wc_mail( $to, $subject, $message, $headers, $attachment );
+			}
 
 		}
 
