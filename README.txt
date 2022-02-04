@@ -4,9 +4,9 @@ Contributors: wpwing, voboghure
 Donate link: https://wpwing.com/
 Tags: PDF, Invoice, Packing Slip, Proforma Invoice, Delivery Notes, Shipping Labels, WooCommerce, WPWing
 Requires at least: 4.8
-Tested up to: 5.8.2
-Requires PHP: 7.0
-Stable tag: 1.1.0
+Tested up to: 5.9
+Requires PHP: 7.1
+Stable tag: 1.2.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -58,12 +58,19 @@ You’re more than welcome! This plugin hosted on [github](https://github.com/wp
 
 1. PDF Invoice (sample).
 2. PDF Packing List (sample).
-3. Generate PDF from order admin page.
+3. Create PDF from order admin page.
 4. General settings page.
 5. Template settings page.
 
 
 == Changelog ==
+
+= 1.2.0 - 05/02/2022
+
+* Update: Add global condition for sending email to customer billing address.
+* Update: DOMPDF version updated to 1.1.1
+* Fix: Appropriate text for Invoice Settings checkbox.
+* Few minor improvements.
 
 = 1.1.0 - 25/12/2021
 
