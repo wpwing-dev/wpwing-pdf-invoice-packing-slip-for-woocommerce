@@ -65,7 +65,7 @@ You’re more than welcome! This plugin hosted on [github](https://github.com/wp
 
 == Changelog ==
 
-= 1.2.0 - 05/02/2022
+= 1.2.0 - 04/02/2022
 
 * Update: Add global condition for sending email to customer billing address.
 * Update: DOMPDF version updated to 1.1.1
