@@ -800,7 +800,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 					continue;
 				}
 
-				echo '<table class="form-table">';
+				echo '<table class="form-table wpwing-pdf-invoice">';
 				$this->do_settings_fields( $page, $section['id'] );
 				echo '</table>';
 			}

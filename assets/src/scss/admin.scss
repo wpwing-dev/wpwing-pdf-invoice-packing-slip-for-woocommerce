@@ -1,3 +1,7 @@
+.form-table.wpwing-pdf-invoice th {
+    width: 250px;
+}
+
 table.shop_table tr.order td.order-actions a.print-invoice {
     background-image: url('../images/invoice_view.png');
     background-repeat: no-repeat;
@@ -23,7 +27,6 @@ table.shop_table tr.order td.order-actions a.print-invoice {
     background-image: url('../images/invoice_cancel.png');
 }
 
-
 .widefat .column-order_actions a.button.wpwing_wcpi_create_invoice,
 .widefat .column-order_actions a.button.wpwing_wcpi_view_invoice,
 .widefat .column-wc_actions a.button.wpwing_wcpi_create_invoice,
@@ -41,7 +44,6 @@ table.shop_table tr.order td.order-actions a.print-invoice {
 .widefat .column-wc_actions a.button.wpwing_wcpi_view_invoice{
     background-image: url('../images/invoice_view.png');
 }
-
 
 .widefat .column-order_actions a.button.wpwing_wcpi_buttons,
 .widefat .column-wc_actions a.button.wpwing_wcpi_buttons{

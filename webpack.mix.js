@@ -11,7 +11,7 @@ mix.sass(`assets/src/scss/admin.scss`, `assets/public/css/admin${min}.css`);
 mix.notification('WPWing PDF Invoices Packing Slips for WooCommerce');  // Example: Mix.paths.root('images/icon.png')
 
 // File Banner
-mix.banner("WPWing PDF Invoices Packing Slips for WooCommerce v1.0.0 \n\nAuthor: Tapan ( wpwing.dev@gmail.com ) \nDate: " + new Date().toLocaleString() + "\nReleased under the GPLv3 license.");
+mix.banner("WPWing PDF Invoices Packing Slips for WooCommerce v1.0.0 \n\nAuthor: WP Wing ( wpwing.dev@gmail.com ) \nDate: " + new Date().toLocaleString() + "\nReleased under the GPLv3 license.");
 
 // WP Translation
 mix.translation('WPWing PDF Invoices Packing Slips for WooCommerce', 'wpwing-wc-pdf-invoice');
