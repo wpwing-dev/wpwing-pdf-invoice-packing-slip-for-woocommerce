@@ -30,6 +30,11 @@ jQuery(function($) {
 
   // Toggle Company Name text box
   let company_name = $('#company_name_checkbox-field').is(':checked');
+  if (company_name === true) {
+    $('#company_name_text-wrapper').show();
+  } else {
+    $('#company_name_text-wrapper').hide();
+  }
   $('body').on('click', '#company_name_checkbox-field', function(e) {
     console.log(company_name);
     if (company_name === true) {
