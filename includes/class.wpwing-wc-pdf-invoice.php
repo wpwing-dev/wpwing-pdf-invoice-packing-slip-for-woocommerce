@@ -28,7 +28,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since  1.0.0
 		 */
 		public function __construct() {
-
 			// Plugin will handel this actions
 			add_action( 'init', array( $this, 'init_plugin_actions' ) );
 
@@ -44,6 +43,23 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			// Add a create/view invoice button on admin orders page
 			// add_action( 'woocommerce_admin_order_actions_end', array( $this, 'add_back_end_invoice_buttons' ) );
 
+			add_filter( 'woocommerce_my_account_my_orders_actions', [ $this, 'filter_woocommerce_my_account_my_orders_actions'], 10, 2 );
+		}
+
+		/**
+		 * Add Invoice download link in my account > order section
+		 *
+		 * @since 1.3.1
+		 */
+		public function filter_woocommerce_my_account_my_orders_actions( $actions, $order ) {
+			$invoice = $this->get_document_by_type( $order->get_id(), 'invoice' );
+			if ( ( null != $invoice ) && $invoice->exists ) :
+				?>
+				<div style="clear: both;">
+					<a class="button tips wpwing_wcpi_view_invoice" data-tip="<?php _e( "View invoice", 'wpwing-wc-pdf-invoice' ); ?>" href="<?php echo add_query_arg( 'wpwing-view-invoice', $invoice->order->get_id() ); ?>"><?php _e( "Invoice", 'wpwing-wc-pdf-invoice' ); ?></a>
+				</div>
+				<?php
+			endif;
 		}
 
 		/**
@@ -52,7 +68,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 1.0.0
 		 */
 		public function init_plugin_actions() {
-
 			if ( isset( $_GET['wpwing-create-invoice'] ) ) {
 				$this->create_document( intval( $_GET['wpwing-create-invoice'] ), 'invoice' );
 			} elseif ( isset( $_GET[ 'wpwing-view-invoice' ] ) ) {
@@ -74,7 +89,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				wp_safe_redirect( $location );
 				exit();
 			}
-
 		}
 
 		/**
@@ -83,7 +97,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 1.0.0
 		 */
 		public function initialize() {
-
 			$date = getdate( time() );
 			$year = $date['year'];
 
@@ -96,7 +109,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			}
 
 			$this->settings = WPWing_WCPI_Settings::get_instance();
-
 		}
 
 		/**
@@ -105,9 +117,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since  1.0.0
 		 */
 		public function add_invoice_metabox() {
-
 			add_meta_box( 'wpwing-pdf-invoice-box', esc_html__( 'PDF Invoice by WPWing', 'wpwing-wc-pdf-invoice' ), array( $this, 'show_pdf_invoice_metabox', ), 'shop_order', 'side', 'high' );
-
 		}
 
 		/**
@@ -118,10 +128,8 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since  1.0.0
 		 */
 		public function show_pdf_invoice_metabox( $post ) {
-
 			$invoice = $this->get_document_by_type( $post->ID, 'invoice' );
 			$packing = $this->get_document_by_type( $post->ID, 'packing' );
-
 			?>
 			<div class="invoice-information">
 				<?php if ( ( null != $invoice ) && $invoice->exists ) : ?>
@@ -157,7 +165,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				<?php endif; ?>
 			</div>
 			<?php
-
 		}
 
 		/**
@@ -166,9 +173,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since  1.0.0
 		 */
 		public function enqueue_styles() {
-
 			wp_enqueue_style( 'wcpi-admin-css', WPWING_WCPI_ASSETS_URL . '/public/css/admin.css' );
-
 		}
 
 		/**
@@ -177,7 +182,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since  1.0.0
 		 */
 		public function enqueue_scripts() {
-
 			if ( ! did_action( 'wp_enqueue_media' ) ) {
 				wp_enqueue_media();
 			}
@@ -195,7 +199,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			) ) );
 
 			wp_enqueue_script( 'wcpi-admin-js' );
-
 		}
 
 		/**
@@ -208,7 +211,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 1.0.0
 		 */
 		public function get_document_by_type( $order_id, $document_type = '' ) {
-
 			switch ( $document_type ) {
 				case 'invoice' :
 					$document = new WCPI_Invoice( $order_id );
@@ -221,7 +223,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			}
 
 			return $document;
-
 		}
 
 		/**
@@ -233,7 +234,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 1.0.0
 		 */
 		public function create_document( $order_id, $document_type = '' ) {
-
 			$document = $this->get_document_by_type( $order_id, $document_type );
 
 			if ( null != $document ) {
@@ -250,7 +250,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				$attachment = WPWING_WCPI_DOCUMENT_SAVE_DIR . $order->get_meta( '_wpwing_wcpi_invoice_path' );
 				wc_mail( $to, $subject, $message, $headers, $attachment );
 			}
-
 		}
 
 		/**
@@ -262,7 +261,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 1.0.0
 		 */
 		public function view_document( $order_id, $document_type ) {
-
 			$document = $this->get_document_by_type( $order_id, $document_type );
 
 			if ( null != $document ) {
@@ -283,7 +281,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 					@readfile( $full_path );
 				}
 			}
-
 		}
 
 		/**
@@ -295,13 +292,11 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 1.0.0
      */
 		public function reset_document( $order_id, $document_type ) {
-
 			$document = $this->get_document_by_type( $order_id, $document_type );
 
 			if ( null != $document ) {
 				$document->reset();
 			}
-
 		}
 
 		/**
@@ -312,11 +307,9 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 1.0.0
 		 */
 		public function save_document( $document ) {
-
 			global $wpwing_wcpi_document;
 			$wpwing_wcpi_document = $document;
 			$wpwing_wcpi_document->save();
-
 		}
 
 	}
