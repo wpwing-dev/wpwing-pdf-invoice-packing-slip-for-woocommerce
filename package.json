@@ -1,8 +1,8 @@
 {
     "name": "wpwing-wc-pdf-invoice",
-    "version": "1.1.0",
+    "version": "1.3.2",
     "description": "Generate and Print PDF invoices and packing slips for WooCommerce orders.",
-    "author": "Tapan",
+    "author": "WPWing",
     "license": "GPL",
     "private": true,
     "scripts": {

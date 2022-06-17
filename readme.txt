@@ -6,7 +6,7 @@ Tags: PDF, Invoice, Packing Slip, Packing List, Proforma Invoice, Delivery Notes
 Requires at least: 4.8
 Tested up to: 6.0
 Requires PHP: 7.0
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -18,17 +18,21 @@ Want to print your WooCommerce order invoice or packing slip? Or download them i
 
 Want to print your WooCommerce order invoice or packing slip? Or download them in PDF format? You are in the right place! With WooCommerce you will feel the lacking of print invoices or packing lists, which we are happy to fulfill. **WPWing PDF Invoice and Packing Slip for WooCommerce** can download your WooCommerce order invoice and packing slip in PDF format for print or email.
 
-✅ Tested OK with WooCommerce 6.4
+✅ Tested OK with WooCommerce 6.5
 
 ### 🔥 FEATURES: ###
 
 - **Download PDF invoice and packing slip:** Easily generate and download PDF invoices and packing slips from your order admin page.
+- **Supported documents**: Creates and prints the following PDF documents from the WooCommerce order page.
+&#8226; Invoice
+&#8226; Packing list
 - **Supported documents:** Invoice and Packing list.
 - **Customization:** Customize invoices or packing list by adding your store logo, store name, and more.
+- **Print invoice from the My-Account page:** Allow logged-in customers to print their invoices from the My-Account page.
 
-About **WP Wing**
+= About WPWing =
 
-WP Wing is a startup company that creates quality WordPress/WooCommerce plugins/add-ons you searching for.
+WPWing is a startup company that creates quality WordPress/WooCommerce plugins/add-ons to solve unique WordPress/WooCommerce problems.
 
 == Installation ==
 
@@ -68,6 +72,11 @@ You’re more than welcome! This plugin is hosted on [github](https://github.com
 
 
 == Changelog ==
+
+= 1.3.2 - 17/06/2022
+
+* Fix: Deactive if dependent WooCommerce plugin is not activated.
+* Few minor improvements.
 
 = 1.3.1 - 08/06/2022
 

@@ -4,7 +4,7 @@
  * Plugin Name: WPWing PDF Invoice and Packing Slip for WooCommerce
  * Plugin URI: https://wpwing.com/
  * Description: <code><strong>WPWing PDF Invoice and Packing Slip for WooCommerce</strong></code> is able to download your WooCommerce order invoice and packing slip as PDF format for print or email.
- * Version: 1.3.1
+ * Version: 1.3.2
  * Author: WPWing
  * Author URI: https://wpwing.com/
  * Requires PHP: 7.0
@@ -22,7 +22,7 @@ $wp_upload_dir = wp_upload_dir();
 // Define constants
 defined( 'WPWING_WCPI_DOCUMENT_SAVE_DIR' ) || define( 'WPWING_WCPI_DOCUMENT_SAVE_DIR', $wp_upload_dir['basedir'] . '/wpwing-pdf-invoices/' );
 
-defined( 'WPWING_WCPI_VERSION' ) || define( 'WPWING_WCPI_VERSION', '1.3.1' );
+defined( 'WPWING_WCPI_VERSION' ) || define( 'WPWING_WCPI_VERSION', '1.3.2' );
 
 defined( 'WPWING_WCPI_FILE' ) || define( 'WPWING_WCPI_FILE', __FILE__ );
 
@@ -48,9 +48,13 @@ defined( 'WPWING_WCPI_VENDOR_DIR' ) || define( 'WPWING_WCPI_VENDOR_DIR', WPWING_
  * @since 1.0.0
  */
 function wpwing_wcpi_wc_error_admin_notice() {
-  echo '<div class="error"><p>';
-  _e( 'WPWing WooCommerce PDF Invoice is enabled but not effective. It requires WooCommerce in order to work.', 'wpwing-wc-pdf-invoice' );
-  echo '</p></div>';
+  echo '<div class="error notice">';
+  echo '<p>';
+  _e( '<strong>Error:</strong>', 'wpwing-wc-pdf-invoice' );
+  _e( 'The <em>WPWing PDF Invoice and Packing Slip for WooCommerce</em> plugin won\'t execute because the following required plugin is not active: <em>WooCommerce</em>. <br>Please activate this <a href="plugins.php">plugin</a> first.', 'wpwing-wc-pdf-invoice' );
+  echo '</p>';
+  echo '</div>';
+  echo '<div class="updated notice is-dismissible"><p>' . __( 'The <em>WPWing PDF Invoice and Packing Slip for WooCommerce</em> plugin deactivated.', 'wpwing-wc-pdf-invoice' ) . '</p></div>';
 }
 
 /**
@@ -115,6 +119,11 @@ add_action( 'wpwing_wcpi_init', 'wpwing_wcpi_init' );
 function wpwing_wcpi_install() {
   if ( ! function_exists( 'WC' ) ) {
     add_action( 'admin_notices', 'wpwing_wcpi_wc_error_admin_notice' );
+
+    // Call A Hook for Deactivate our plugin
+    require_once ABSPATH . 'wp-admin/includes/plugin.php';
+    deactivate_plugins( plugin_basename( __FILE__ ) );
+    return;
   } else {
     do_action( 'wpwing_wcpi_init' );
   }
