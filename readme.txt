@@ -4,13 +4,14 @@ Contributors:       wpwing, voboghure
 Donate link:        https://wpwing.com/
 Tags:               PDF, Invoice, Packing Slip, Packing List, Proforma Invoice, Delivery Notes, Shipping Labels, WooCommerce, WPWing
 Requires at least:  4.8
-Tested up to:       6.0
-Requires PHP:       7.0
-Stable tag:         1.3.3
+Tested up to:       6.2
+Requires PHP:       7.1
+Stable tag:         1.3.4
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
 Want to print your WooCommerce order invoice or packing slip? Or download them in PDF format? You are in the right place! With WooCommerce you will feel the lacking of print invoices or packing lists, which we are happy to fulfill. **WPWing PDF Invoice and Packing Slip for WooCommerce** can download your WooCommerce order invoice and packing slip in PDF format for print or email.
+
 
 == Description ==
 
@@ -33,6 +34,7 @@ Want to print your WooCommerce order invoice or packing slip? Or download them i
 = About WPWing =
 
 WPWing is a startup company that creates quality WordPress/WooCommerce plugins/add-ons to solve unique WordPress/WooCommerce problems.
+
 
 == Installation ==
 
@@ -73,13 +75,17 @@ You’re more than welcome! This plugin is hosted on [github](https://github.com
 
 == Changelog ==
 
-= 1.3.2 - 12/07/2022
+= 1.3.4 - 17/04/2023
+
+* Fix: Refactor and update the DOMPDF library.
+
+= 1.3.3 - 12/07/2022
 
 * Fix: Refactor and update code.
 
 = 1.3.2 - 17/06/2022
 
-* Fix: Deactive if dependent WooCommerce plugin is not activated.
+* Fix: Deactive if the dependent WooCommerce plugin is not activated.
 * Few minor improvements.
 
 = 1.3.1 - 08/06/2022
@@ -108,7 +114,7 @@ You’re more than welcome! This plugin is hosted on [github](https://github.com
 = 1.0.1 - 15/10/2021 =
 
 * Update: Settings text.
-* Update: Set default invoice number if empty in the settings section.
+* Update: Set the default invoice number if empty in the settings section.
 
 = 1.0.0 - 14/10/2021 =
 

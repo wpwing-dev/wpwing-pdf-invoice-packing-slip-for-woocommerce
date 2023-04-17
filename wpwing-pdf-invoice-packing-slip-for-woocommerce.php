@@ -3,15 +3,15 @@
 /**
  * Plugin Name:           WPWing PDF Invoice and Packing Slip for WooCommerce
  * Plugin URI:            https://wpwing.com/
- * Description:           <code><strong>WPWing PDF Invoice and Packing Slip for WooCommerce</strong></code> is able to download your WooCommerce order invoice and packing slip as PDF format for print or email.
- * Version:               1.3.3
+ * Description:           Download your WooCommerce order invoice and packing slip as PDF format for print or email.
+ * Version:               1.3.4
  * Author:                WPWing
  * Author URI:            https://wpwing.com/
- * Requires PHP:          7.0
+ * Requires PHP:          7.1
  * Requires at least:     4.8
- * Tested up to:          6.0
+ * Tested up to:          6.2
  * WC requires at least:  4.5
- * WC tested up to:       6.6
+ * WC tested up to:       7.6
  * License:               GPL-3.0-or-later
  * License URI:           https://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain:           wpwing-wc-pdf-invoice
@@ -24,7 +24,7 @@ $wp_upload_dir = wp_upload_dir();
 // Define constants
 defined( 'WPWING_WCPI_DOCUMENT_SAVE_DIR' ) || define( 'WPWING_WCPI_DOCUMENT_SAVE_DIR', $wp_upload_dir['basedir'] . '/wpwing-pdf-invoices/' );
 
-defined( 'WPWING_WCPI_VERSION' ) || define( 'WPWING_WCPI_VERSION', '1.3.3' );
+defined( 'WPWING_WCPI_VERSION' ) || define( 'WPWING_WCPI_VERSION', '1.3.4' );
 
 defined( 'WPWING_WCPI_FILE' ) || define( 'WPWING_WCPI_FILE', __FILE__ );
 
@@ -50,13 +50,13 @@ defined( 'WPWING_WCPI_VENDOR_DIR' ) || define( 'WPWING_WCPI_VENDOR_DIR', WPWING_
  * @since 1.0.0
  */
 function wpwing_wcpi_wc_error_admin_notice() {
-  echo '<div class="error notice">';
-  echo '<p>';
-  _e( '<strong>Error:</strong>', 'wpwing-wc-pdf-invoice' );
-  _e( 'The <em>WPWing PDF Invoice and Packing Slip for WooCommerce</em> plugin won\'t execute because the following required plugin is not active: <em>WooCommerce</em>. <br>Please activate this <a href="plugins.php">plugin</a> first.', 'wpwing-wc-pdf-invoice' );
-  echo '</p>';
-  echo '</div>';
-  echo '<div class="updated notice is-dismissible"><p>' . __( 'The <em>WPWing PDF Invoice and Packing Slip for WooCommerce</em> plugin deactivated.', 'wpwing-wc-pdf-invoice' ) . '</p></div>';
+    echo '<div class="error notice">';
+    echo '<p>';
+    _e( '<strong>Error:</strong>', 'wpwing-wc-pdf-invoice' );
+    _e( 'The <em>WPWing PDF Invoice and Packing Slip for WooCommerce</em> plugin won\'t execute because the following required plugin is not active: <em>WooCommerce</em>. <br>Please activate this <a href="plugins.php">plugin</a> first.', 'wpwing-wc-pdf-invoice' );
+    echo '</p>';
+    echo '</div>';
+    echo '<div class="updated notice is-dismissible"><p>' . __( 'The <em>WPWing PDF Invoice and Packing Slip for WooCommerce</em> plugin deactivated.', 'wpwing-wc-pdf-invoice' ) . '</p></div>';
 }
 
 /**
@@ -65,32 +65,32 @@ function wpwing_wcpi_wc_error_admin_notice() {
  * @since 1.0.0
  */
 if ( ! function_exists( 'wpwing_wcpi_protect_folder' ) ) {
-  function wpwing_wcpi_protect_folder() {
-    $files = [
-      [
-        'base'    => WPWING_WCPI_DOCUMENT_SAVE_DIR,
-        'file'    => 'index.html',
-        'content' => '',
-      ],
-      [
-        'base'    => WPWING_WCPI_DOCUMENT_SAVE_DIR,
-        'file'    => '.htaccess',
-        'content' => 'deny from all',
-      ],
-    ];
+    function wpwing_wcpi_protect_folder() {
+        $files = [
+            [
+                'base'    => WPWING_WCPI_DOCUMENT_SAVE_DIR,
+                'file'    => 'index.html',
+                'content' => '',
+            ],
+            [
+                'base'    => WPWING_WCPI_DOCUMENT_SAVE_DIR,
+                'file'    => '.htaccess',
+                'content' => 'deny from all',
+            ],
+        ];
 
-    foreach ( $files as $file ) {
-      if ( wp_mkdir_p( $file['base'] ) && ! file_exists( trailingslashit( $file['base'] ) . $file['file'] ) ) {
-        if ( $file_handle = @fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' ) ) {
-          fwrite( $file_handle, $file['content'] );
-          fclose( $file_handle );
+        foreach ( $files as $file ) {
+            if ( wp_mkdir_p( $file['base'] ) && ! file_exists( trailingslashit( $file['base'] ) . $file['file'] ) ) {
+                if ( $file_handle = @fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' ) ) {
+                    fwrite( $file_handle, $file['content'] );
+                    fclose( $file_handle );
+                }
+            }
         }
-      }
-    }
 
-    // Updating the option not to execute the function 'wpwing_wcpi_protect_folder' again
-    update_option( 'wpwing_wcpi_check_folder_already_protected', true );
-  }
+        // Updating the option not to execute the function 'wpwing_wcpi_protect_folder' again
+        update_option( 'wpwing_wcpi_check_folder_already_protected', true );
+    }
 }
 
 /**
@@ -99,16 +99,16 @@ if ( ! function_exists( 'wpwing_wcpi_protect_folder' ) ) {
  * @since 1.0.0
  */
 function wpwing_wcpi_init() {
-  load_plugin_textdomain( 'wpwing-wc-pdf-invoice', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+    load_plugin_textdomain( 'wpwing-wc-pdf-invoice', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
-  require_once WPWING_WCPI_INC_DIR . 'class.wpwing-wc-pdf-invoice.php';
-  require_once WPWING_WCPI_INC_DIR . 'class.wcpi-document.php';
-  require_once WPWING_WCPI_INC_DIR . 'class.wcpi-invoice.php';
-  require_once WPWING_WCPI_INC_DIR . 'class.wcpi-packing.php';
-  require_once WPWING_WCPI_INC_DIR . 'class-wpwing-wcpi-settings.php';
+    require_once WPWING_WCPI_INC_DIR . 'class.wpwing-wc-pdf-invoice.php';
+    require_once WPWING_WCPI_INC_DIR . 'class.wcpi-document.php';
+    require_once WPWING_WCPI_INC_DIR . 'class.wcpi-invoice.php';
+    require_once WPWING_WCPI_INC_DIR . 'class.wcpi-packing.php';
+    require_once WPWING_WCPI_INC_DIR . 'class-wpwing-wcpi-settings.php';
 
-  global $WPWing_WCPI_Instance;
-  $WPWing_WCPI_Instance = new WPWing_WC_Pdf_Invoice();
+    global $WPWing_WCPI_Instance;
+    $WPWing_WCPI_Instance = new WPWing_WC_Pdf_Invoice();
 }
 
 add_action( 'wpwing_wcpi_init', 'wpwing_wcpi_init' );
@@ -119,20 +119,21 @@ add_action( 'wpwing_wcpi_init', 'wpwing_wcpi_init' );
  * @since 1.0.0
  */
 function wpwing_wcpi_install() {
-  if ( ! function_exists( 'WC' ) ) {
-    add_action( 'admin_notices', 'wpwing_wcpi_wc_error_admin_notice' );
+    if ( ! function_exists( 'WC' ) ) {
+        add_action( 'admin_notices', 'wpwing_wcpi_wc_error_admin_notice' );
 
-    // Call A Hook for Deactivate our plugin
-    require_once ABSPATH . 'wp-admin/includes/plugin.php';
-    deactivate_plugins( plugin_basename( __FILE__ ) );
-    return;
-  } else {
-    do_action( 'wpwing_wcpi_init' );
-  }
+        // Call A Hook for Deactivate our plugin
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        deactivate_plugins( plugin_basename( __FILE__ ) );
 
-  if ( ! get_option( 'wpwing_wcpi_check_folder_already_protected' ) ) {
-    wpwing_wcpi_protect_folder();
-  }
+        return;
+    } else {
+        do_action( 'wpwing_wcpi_init' );
+    }
+
+    if ( ! get_option( 'wpwing_wcpi_check_folder_already_protected' ) ) {
+        wpwing_wcpi_protect_folder();
+    }
 }
 
 add_action( 'plugins_loaded', 'wpwing_wcpi_install', 11 );
@@ -145,13 +146,13 @@ add_action( 'plugins_loaded', 'wpwing_wcpi_install', 11 );
  */
 
 if ( ! function_exists( 'log_it' ) ) {
-  function log_it( $message ) {
-    if ( WP_DEBUG === true ) {
-      if ( is_array( $message ) || is_object( $message ) ) {
-        error_log( "\r\n" . print_r( $message, true ) );
-      } else {
-        error_log( $message );
-      }
+    function log_it( $message ) {
+        if ( WP_DEBUG === true ) {
+            if ( is_array( $message ) || is_object( $message ) ) {
+                error_log( "\r\n" . print_r( $message, true ) );
+            } else {
+                error_log( $message );
+            }
+        }
     }
-  }
 }
