@@ -1,7 +1,7 @@
 {
     "name": "wpwing-wc-pdf-invoice",
-    "version": "1.3.3",
-    "description": "Generate and Print PDF invoices and packing slips for WooCommerce orders.",
+    "version": "1.3.4",
+    "description": "Download your WooCommerce order invoice and packing slip as PDF format for print or email.",
     "author": "WPWing",
     "license": "GPL",
     "private": true,
@@ -14,6 +14,7 @@
         "package": "npm run bundle && npm run package:bundle"
     },
     "devDependencies": {
+        "babel-plugin-dynamic-import-node": "^2.3.3",
         "cli-color": "^2.0.0",
         "cross-env": "^7.0.3",
         "emojic": "^1.1.16",

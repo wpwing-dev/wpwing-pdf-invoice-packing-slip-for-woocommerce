@@ -134,18 +134,18 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			<div class="invoice-information">
 				<?php if ( ( null != $invoice ) && $invoice->exists ) : ?>
 					<div style="overflow: hidden; padding: 5px 0">
-            <span style="float:left"><?php _e( 'Invoiced on: ', 'wpwing-wc-pdf-invoice' ); ?></span>
+						<span style="float:left"><?php _e( 'Invoiced on: ', 'wpwing-wc-pdf-invoice' ); ?></span>
 						<strong><span style="float:right"><?php echo esc_html( $invoice->get_formatted_date() ); ?></span></strong>
 					</div>
 
 					<div style="overflow: hidden; padding: 5px 0">
-            <span style="float:left"><?php _e( 'Invoice number: ', 'wpwing-wc-pdf-invoice' ); ?></span>
+						<span style="float:left"><?php _e( 'Invoice number: ', 'wpwing-wc-pdf-invoice' ); ?></span>
 						<strong><span style="float:right"><?php echo esc_html( $invoice->get_formatted_invoice_number() ); ?></span></strong>
 					</div>
 
 					<div style="clear: both; margin-top: 15px">
-						<a class="button tips wpwing_wcpi_view_invoice" data-tip="<?php _e( "View invoice", 'wpwing-wc-pdf-invoice' ); ?>" href="<?php echo add_query_arg( 'wpwing-view-invoice', $invoice->order->get_id() ); ?>"><?php _e( "Invoice", 'wpwing-wc-pdf-invoice' ); ?></a>
-						<a class="button tips wpwing_wcpi_cancel_invoice" data-tip="<?php _e( "Cancel invoice", 'wpwing-wc-pdf-invoice' ); ?>" href="<?php echo add_query_arg( 'wpwing-reset-invoice', $invoice->order->get_id() ); ?>"><?php _e( "Invoice", 'wpwing-wc-pdf-invoice' ); ?></a>
+						<a class="button tips wpwing_wcpi_view_invoice" data-tip="<?php _e( "View Invoice", 'wpwing-wc-pdf-invoice' ); ?>" href="<?php echo add_query_arg( 'wpwing-view-invoice', $invoice->order->get_id() ); ?>"><?php _e( "Invoice", 'wpwing-wc-pdf-invoice' ); ?></a>
+						<a class="button tips wpwing_wcpi_cancel_invoice" data-tip="<?php _e( "Cancel Invoice", 'wpwing-wc-pdf-invoice' ); ?>" href="<?php echo add_query_arg( 'wpwing-reset-invoice', $invoice->order->get_id() ); ?>"><?php _e( "Invoice", 'wpwing-wc-pdf-invoice' ); ?></a>
 					</div>
 				<?php else : ?>
 					<p>
