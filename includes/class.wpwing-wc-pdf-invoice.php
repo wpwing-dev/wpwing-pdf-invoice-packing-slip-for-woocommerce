@@ -144,7 +144,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 					</div>
 
 					<div style="clear: both; margin-top: 15px">
-						<a class="button tips wpwing_wcpi_view_invoice" data-tip="<?php _e( "View Invoice", 'wpwing-wc-pdf-invoice' ); ?>" href="<?php echo add_query_arg( 'wpwing-view-invoice', $invoice->order->get_id() ); ?>"><?php _e( "Invoice", 'wpwing-wc-pdf-invoice' ); ?></a>
+						<a class="button tips wpwing_wcpi_view_invoice" data-tip="<?php _e( "View Invoice", 'wpwing-wc-pdf-invoice' ); ?>" href="<?php echo add_query_arg( 'wpwing-view-invoice', $invoice->order->get_id() ); ?>" target=”_blank”><?php _e( "Invoice", 'wpwing-wc-pdf-invoice' ); ?></a>
 						<a class="button tips wpwing_wcpi_cancel_invoice" data-tip="<?php _e( "Cancel Invoice", 'wpwing-wc-pdf-invoice' ); ?>" href="<?php echo add_query_arg( 'wpwing-reset-invoice', $invoice->order->get_id() ); ?>"><?php _e( "Invoice", 'wpwing-wc-pdf-invoice' ); ?></a>
 					</div>
 				<?php else : ?>
@@ -155,7 +155,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 
 				<?php if ( ( null != $packing ) && $packing->exists ) : ?>
 					<div style="clear: both; margin-top: 15px">
-						<a class="button tips wpwing_wcpi_view_invoice" data-tip="<?php _e( "View Packing Slip", 'wpwing-wc-pdf-invoice' ); ?>" href="<?php echo add_query_arg( 'wpwing-view-packing', $packing->order->get_id() ); ?>"><?php _e( "Packing Slip", 'wpwing-wc-pdf-invoice' ); ?></a>
+						<a class="button tips wpwing_wcpi_view_invoice" data-tip="<?php _e( "View Packing Slip", 'wpwing-wc-pdf-invoice' ); ?>" href="<?php echo add_query_arg( 'wpwing-view-packing', $packing->order->get_id() ); ?>" target=”_blank”><?php _e( "Packing Slip", 'wpwing-wc-pdf-invoice' ); ?></a>
 						<a class="button tips wpwing_wcpi_cancel_invoice" data-tip="<?php _e( "Cancel Packing Slip", 'wpwing-wc-pdf-invoice' ); ?>" href="<?php echo add_query_arg( 'wpwing-reset-packing', $packing->order->get_id() ); ?>"><?php _e( "Packing Slip", 'wpwing-wc-pdf-invoice' ); ?></a>
 					</div>
 				<?php else : ?>

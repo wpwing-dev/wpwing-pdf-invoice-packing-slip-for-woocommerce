@@ -5,4 +5,4 @@ package-lock.json
 mix-manifest.json
 /node_modules
 /vendor
-/DOC/*
+/DOC

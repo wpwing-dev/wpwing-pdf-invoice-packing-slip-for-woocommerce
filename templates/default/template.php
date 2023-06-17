@@ -20,7 +20,7 @@
 		<style type="text/css">
 			body {
 				color: #000;
-				font-family: "DejaVu Sans", "open sans", "sans-serif";
+				font-family: DejaVu Sans, sans-serif;
 			}
 		</style>
 		<?php

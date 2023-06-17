@@ -1,6 +1,6 @@
 {
-    "name": "wpwing-wc-pdf-invoice",
-    "version": "1.3.4",
+    "name": "pdf-invoice-packing-slip-for-woocommerce",
+    "version": "1.4.0",
     "description": "Download your WooCommerce order invoice and packing slip as PDF format for print or email.",
     "author": "WPWing",
     "license": "GPL",
