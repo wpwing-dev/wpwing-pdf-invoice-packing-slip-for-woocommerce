@@ -6,20 +6,20 @@ Tags:               PDF, Invoice, Packing Slip, Packing List, Proforma Invoice, 
 Requires at least:  4.8
 Tested up to:       6.4
 Requires PHP:       7.1
-Stable tag:         1.4.1
+Stable tag:         1.4.2
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
-Want to print your WooCommerce order invoice or packing slip? Or download them in PDF format? You are in the right place! With WooCommerce you will feel the lack of print invoices or packing lists, which we are happy to fulfill. **WPWing PDF Invoice and Packing Slip for WooCommerce** can download your WooCommerce order invoice and packing slip in PDF format for print or email.
+Do you want to print your WooCommerce order invoice or packing slip? Or download them in PDF format? You are in the right place! With WooCommerce you will feel the lack of print invoices or packing lists, which we are happy to fulfill. **PDF Invoice and Packing Slip for WooCommerce** can download your WooCommerce order invoice and packing slip in PDF format for print or email.
 
 
 == Description ==
 
 = Must have plugin for WooCommerce with tremendous support =
 
-Want to print your WooCommerce order invoice or packing slip? Or download them in PDF format? You are in the right place! With WooCommerce you will feel the lack of print invoices or packing lists, which we are happy to fulfill. **WPWing PDF Invoice and Packing Slip for WooCommerce** can download your WooCommerce order invoice and packing slip in PDF format for print or email.
+Do you want to print your WooCommerce order invoice or packing slip? Or download them in PDF format? You are in the right place! With WooCommerce you will feel the lack of print invoices or packing lists, which we are happy to fulfill. **PDF Invoice and Packing Slip for WooCommerce** can download your WooCommerce order invoice and packing slip in PDF format for print or email.
 
-✅ Tested OK with WooCommerce 8.5
+✅ Tested OK with WooCommerce 8.6
 
 ### 🔥 FEATURES: ###
 
@@ -50,11 +50,11 @@ WPWing is a startup company that creates quality WordPress/WooCommerce plugins/a
 
 = Do I need coding skills to use PDF Invoice and Packing Slip for WooCommerce? =
 
-Not at all! **WPWing PDF Invoice and Packing Slip for WooCommerce** is simple and super user-friendly.
+Not at all! **PDF Invoice and Packing Slip for WooCommerce** is simple and super user-friendly.
 
 = Do I need to edit my current WordPress theme?
 
-No, **WPWing PDF Invoice and Packing Slip for WooCommerce** works seamlessly with any WordPress theme. You just need to install the plugin and you are ready to create PDF from the WooCommerce order.
+No, **PDF Invoice and Packing Slip for WooCommerce** works seamlessly with any WordPress theme. You just need to install the plugin and you are ready to create PDF from the WooCommerce order.
 
 = Can I contribute to the code? =
 
@@ -72,51 +72,56 @@ You’re more than welcome! This plugin is hosted on [github](https://github.com
 
 == Changelog ==
 
-= 1.4.1 - 20/01/2024
+= 1.4.2 - 17/02/2024 =
+
+* Compatibility check with WC's latest version.
+* Few minor improvements.
+
+= 1.4.1 - 20/01/2024 =
 
 * Update: DOM PDF version 2.0.4
 * Compatibility check with WP's latest version.
 * Compatibility check with WC's latest version.
 * Few minor improvements.
 
-= 1.4.0 - 17/06/2023
+= 1.4.0 - 17/06/2023 =
 
 * Update: Remove WPWing prefix from the plugin name
 * Update: Invoice and Packing slip open in new tab
 * Few minor improvements.
 
-= 1.3.4 - 17/04/2023
+= 1.3.4 - 17/04/2023 =
 
 * Fix: Refactor and update the DOMPDF library.
 
-= 1.3.3 - 12/07/2022
+= 1.3.3 - 12/07/2022 =
 
 * Fix: Refactor and update code.
 
-= 1.3.2 - 17/06/2022
+= 1.3.2 - 17/06/2022 =
 
 * Fix: Deactive if the dependent WooCommerce plugin is not activated.
 * Few minor improvements.
 
-= 1.3.1 - 08/06/2022
+= 1.3.1 - 08/06/2022 =
 
 * Update: Add download invoice feature in customer "My Account > Orders" section.
 * Few minor improvements.
 
-= 1.3.0 - 08/05/2022
+= 1.3.0 - 08/05/2022 =
 
 * Update: Invoice settings template UI/UX.
 * Update: DOMPDF version updated to 1.2.2
 * Few minor improvements.
 
-= 1.2.0 - 04/02/2022
+= 1.2.0 - 04/02/2022 =
 
 * Update: Add global condition for sending email to the customer billing address.
 * Update: DOMPDF version updated to 1.1.1
 * Fix: Appropriate text for Invoice Settings checkbox.
 * Few minor improvements.
 
-= 1.1.0 - 25/12/2021
+= 1.1.0 - 25/12/2021 =
 
 * Update: Send PDF Invoice attached with email when admin creates an invoice.
 * Few minor bug fixes and improvements.
