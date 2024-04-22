@@ -4,9 +4,9 @@ Contributors:       wpwing, voboghure
 Donate link:        https://wpwing.com/
 Tags:               PDF, Invoice, Packing Slip, Packing List, Proforma Invoice, Delivery Notes, Shipping Labels, WooCommerce, WPWing
 Requires at least:  4.8
-Tested up to:       6.4
+Tested up to:       6.5
 Requires PHP:       7.1
-Stable tag:         1.4.2
+Stable tag:         1.4.3
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -71,6 +71,11 @@ You’re more than welcome! This plugin is hosted on [github](https://github.com
 
 
 == Changelog ==
+
+= 1.4.3 - 22/04/2024 =
+
+* Compatibility check with WordPress v6.5 WooCommerce v8.8.
+* Few minor improvements.
 
 = 1.4.2 - 17/02/2024 =
 
