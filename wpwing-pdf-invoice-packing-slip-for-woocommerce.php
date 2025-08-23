@@ -4,14 +4,15 @@
  * Plugin Name:           PDF Invoice and Packing Slip for WooCommerce
  * Plugin URI:            https://wpwing.com/
  * Description:           Download your WooCommerce order invoice and packing slip as PDF format for print or email.
- * Version:               1.4.3
+ * Version:               1.5.0
  * Author:                WPWing
  * Author URI:            https://wpwing.com/
  * Requires PHP:          7.1
  * Requires at least:     4.8
- * Tested up to:          6.5
+ * Tested up to:          6.8
  * WC requires at least:  4.5
- * WC tested up to:       8.8
+ * WC tested up to:       10.1.1
+ * WC HPOS Compatible:    Yes
  * License:               GPL-3.0-or-later
  * License URI:           https://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain:           wpwing-wc-pdf-invoice
@@ -24,7 +25,7 @@ $wp_upload_dir = wp_upload_dir();
 // Define constants
 defined( 'WPWING_WCPI_DOCUMENT_SAVE_DIR' ) || define( 'WPWING_WCPI_DOCUMENT_SAVE_DIR', $wp_upload_dir['basedir'] . '/wpwing-pdf-invoices/' );
 
-defined( 'WPWING_WCPI_VERSION' ) || define( 'WPWING_WCPI_VERSION', '1.3.4' );
+defined( 'WPWING_WCPI_VERSION' ) || define( 'WPWING_WCPI_VERSION', '1.5.0' );
 
 defined( 'WPWING_WCPI_FILE' ) || define( 'WPWING_WCPI_FILE', __FILE__ );
 
@@ -43,6 +44,17 @@ defined( 'WPWING_WCPI_TEMPLATE_DIR' ) || define( 'WPWING_WCPI_TEMPLATE_DIR', WPW
 defined( 'WPWING_WCPI_INC_DIR' ) || define( 'WPWING_WCPI_INC_DIR', WPWING_WCPI_DIR . 'includes/' );
 
 defined( 'WPWING_WCPI_VENDOR_DIR' ) || define( 'WPWING_WCPI_VENDOR_DIR', WPWING_WCPI_DIR . 'vendor/' );
+
+/** Implement HPOS compatibility */
+add_action( 'before_woocommerce_init', function() {
+    if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+            'custom_order_tables',
+            __FILE__,
+            true // true if compatible, false otherwise
+        );
+    }
+} );
 
 /**
  * Show notification if WooCommerce is not installed
