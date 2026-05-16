@@ -34,7 +34,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			$this->initialize();
 
 			// Add metabox in admin order page
-			add_action( 'add_meta_boxes', array( $this, 'add_invoice_metabox' ) );
+			add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'add_invoice_metabox' ) );
 
 			//  Add stylesheets and scripts files to back-end
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
@@ -173,7 +173,8 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since  1.0.0
 		 */
 		public function enqueue_styles() {
-			wp_enqueue_style( 'wcpi-admin-css', WPWING_WCPI_ASSETS_URL . '/public/css/admin.css' );
+			$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+			wp_enqueue_style( 'wcpi-admin-css', WPWING_WCPI_ASSETS_URL . "/public/css/admin{$suffix}.css", array(), WPWING_WCPI_VERSION );
 		}
 
 		/**
@@ -186,7 +187,9 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				wp_enqueue_media();
 			}
 
-			wp_register_script( 'wcpi-admin-js', WPWING_WCPI_ASSETS_URL . '/public/js/admin.js', array(
+			$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
+			wp_register_script( 'wcpi-admin-js', WPWING_WCPI_ASSETS_URL . "/public/js/admin{$suffix}.js", array(
 				'jquery',
 				'jquery-ui-sortable'
 			), WPWING_WCPI_VERSION, true );

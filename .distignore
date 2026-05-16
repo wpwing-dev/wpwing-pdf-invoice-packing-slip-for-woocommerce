@@ -1,0 +1,14 @@
+.git/
+.gitignore
+.distignore
+Makefile
+node_modules/
+assets/src/
+package.json
+package-lock.json
+composer.json
+composer.lock
+phpcs.xml
+dist/
+.DS_Store
+*.map
