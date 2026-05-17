@@ -2,6 +2,10 @@ PLUGIN_SLUG = wpwing-pdf-invoice-packing-slip-for-woocommerce
 DIST_DIR    = dist
 BUILD_DIR   = $(DIST_DIR)/$(PLUGIN_SLUG)
 
+PRO_SLUG    = wpwing-pdf-invoice-packing-slip-pro
+PRO_SRC     = pro
+PRO_BUILD   = $(DIST_DIR)/$(PRO_SLUG)
+
 .DEFAULT_GOAL := help
 
 help: ## Show available commands
@@ -62,3 +66,28 @@ clean-build: ## Remove staging build dir
 clean: ## Remove the entire dist directory
 	rm -rf $(DIST_DIR)
 .PHONY: clean
+
+zip-pro: clean-build-pro ## Build pro addon zip into dist/
+	mkdir -p $(PRO_BUILD)
+	rsync -r --exclude='.gitignore' $(PRO_SRC)/ $(PRO_BUILD)/
+	cd $(DIST_DIR) && zip -r $(PRO_SLUG).zip $(PRO_SLUG)/
+	rm -rf $(PRO_BUILD)
+	@echo "Built: $(DIST_DIR)/$(PRO_SLUG).zip"
+.PHONY: zip-pro
+
+version-pro: ## Bump pro version strings — usage: make version-pro V=1.0.1
+	@[ -n "$(V)" ] || (echo "Usage: make version-pro V=1.0.1" && exit 1)
+	sed -i "s/Version: .*/Version: $(V)/" $(PRO_SRC)/$(PRO_SLUG).php
+	sed -i "s/define( 'WPWING_WCPI_PRO_VERSION', '.*' )/define( 'WPWING_WCPI_PRO_VERSION', '$(V)' )/" $(PRO_SRC)/$(PRO_SLUG).php
+	@echo "Pro version bumped to $(V)"
+.PHONY: version-pro
+
+release-pro: ## Full pro release — usage: make release-pro V=1.0.1
+	@[ -n "$(V)" ] || (echo "Usage: make release-pro V=1.0.1" && exit 1)
+	$(MAKE) version-pro V=$(V)
+	$(MAKE) zip-pro
+.PHONY: release-pro
+
+clean-build-pro: ## Remove pro staging build dir
+	rm -rf $(PRO_BUILD)
+.PHONY: clean-build-pro
