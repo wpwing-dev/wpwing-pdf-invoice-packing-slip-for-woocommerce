@@ -9,9 +9,9 @@
  * Author URI:            https://wpwing.com/
  * Requires PHP:          7.1
  * Requires at least:     4.8
- * Tested up to:          6.8
+ * Tested up to:          6.9
  * WC requires at least:  4.5
- * WC tested up to:       10.1.1
+ * WC tested up to:       10.7.0
  * WC HPOS Compatible:    Yes
  * License:               GPL-3.0-or-later
  * License URI:           https://www.gnu.org/licenses/gpl-3.0.html
@@ -93,7 +93,10 @@ if (  ! function_exists( 'wpwing_wcpi_protect_folder' ) ) {
 
 		foreach ( $files as $file ) {
 			if ( wp_mkdir_p( $file['base'] ) && ! file_exists( trailingslashit( $file['base'] ) . $file['file'] ) ) {
-				if ( $file_handle = @fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+				$file_handle = fopen( trailingslashit( $file['base'] ) . $file['file'], 'w' );
+				if ( false !== $file_handle ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 					fwrite( $file_handle, $file['content'] );
 					fclose( $file_handle );
 				}

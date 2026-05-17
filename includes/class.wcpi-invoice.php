@@ -70,8 +70,10 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 				$this->date = $this->order->get_meta( '_wpwing_wcpi_invoice_date' );
 				$this->save_path = $this->order->get_meta( '_wpwing_wcpi_invoice_path' );
 			} else {
-				$this->prefix = $this->settings->get_option( 'invoice_prefix' ) ? $this->settings->get_option( 'invoice_prefix' ) : 'prefix';
-				$this->suffix = $this->settings->get_option( 'invoice_suffix' ) ? $this->settings->get_option( 'invoice_suffix' ) : 'suffix';
+				$prefix       = $this->settings->get_option( 'invoice_prefix' );
+				$this->prefix = $prefix ? $prefix : 'prefix';
+				$suffix       = $this->settings->get_option( 'invoice_suffix' );
+				$this->suffix = $suffix ? $suffix : 'suffix';
 			}
 
 		}
@@ -118,18 +120,28 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 		}
 
 		/**
-		 * Return the next available invoice number
+		 * Return the next available invoice number and atomically increment the counter.
 		 *
-		 * @since 1.0.0
+		 * Uses a MySQL advisory lock so concurrent requests cannot receive the same number.
+		 *
+		 * @since 1.5.0
 		 */
 		public function get_new_invoice_number() {
 
-			$current_invoice_number = $this->settings->get_option( 'invoice_number' );
-			if ( ! isset( $current_invoice_number ) || ! is_numeric( $current_invoice_number ) ) {
-				$current_invoice_number = 1;
+			global $wpdb;
+
+			$wpdb->query( $wpdb->prepare( 'SELECT GET_LOCK(%s, 5)', 'wpwing_wcpi_invoice_number' ) );
+
+			$current = (int) $this->settings->get_option( 'invoice_number' );
+			if ( $current < 1 ) {
+				$current = 1;
 			}
 
-			return $current_invoice_number;
+			$this->settings->set_option( 'invoice_number', $current + 1 );
+
+			$wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', 'wpwing_wcpi_invoice_number' ) );
+
+			return $current;
 
 		}
 
@@ -150,9 +162,9 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 			$year = $date['year'];
 
 			if ( $this->settings->get_option( 'invoice_number_reset_yearly' ) ) {
-				$current_year = (int) date( 'Y' );
+				$current_year = (int) wp_date( 'Y' );
 				$stored_year  = (int) $this->settings->get_option( '_invoice_last_year' );
-				if ( $stored_year > 0 && $stored_year < $current_year ) {
+				if ( $stored_year > 0 && $stored_year !== $current_year ) {
 					$this->settings->set_option( 'invoice_number', 1 );
 				}
 				if ( $stored_year !== $current_year ) {
@@ -166,6 +178,14 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 
 			$filename = apply_filters( 'wpwing_wcpi_invoice_filename', "/invoice_" . $this->number, $this );
 			$this->save_path = $year . $filename . ".pdf";
+			$pdf_path = WPWING_WCPI_DOCUMENT_SAVE_DIR . $this->save_path;
+			add_action( 'wpwing_wcpi_before_template_generation', array( $this, 'init_template_generation_actions' ) );
+			$this->save_file( $pdf_path );
+
+			if ( ! file_exists( $pdf_path ) ) {
+				return;
+			}
+
 			$this->exists = true;
 
 			$this->order->update_meta_data( '_wpwing_wcpi_invoiced', $this->exists );
@@ -177,14 +197,6 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 
 			$this->order->apply_changes();
 			$this->order->save_meta_data();
-
-			$pdf_path = WPWING_WCPI_DOCUMENT_SAVE_DIR . $this->save_path;
-			add_action( 'wpwing_wcpi_before_template_generation', array( $this, 'init_template_generation_actions' ) );
-			$this->save_file( $pdf_path );
-			if ( ! $invoice_number ) {
-				// Auto increment the invoice number for next invoice
-				$this->settings->set_option( 'invoice_number', $this->number + 1 );
-			}
 
 		}
 
@@ -350,8 +362,11 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 		public function show_invoice_template_product_list() {
 
 			$theme_dir = $this->get_theme_dir();
+			$file      = $theme_dir . 'invoice/products.php';
 
-			include( $theme_dir . 'invoice/products.php' );
+			if ( file_exists( $file ) ) {
+				include( $file );
+			}
 
 		}
 
@@ -363,6 +378,8 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 		public function show_invoice_template_footer() {
 
 			$theme_dir = $this->get_theme_dir();
+			$notes     = null;
+			$footer    = null;
 
 			if ( $this->settings->get_option( 'company_notes_checkbox' ) ) {
 				$notes = $this->settings->get_option( 'company_notes_text' );
@@ -371,7 +388,10 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 				$footer = $this->settings->get_option( 'company_footer_text' );
 			}
 
-			include( $theme_dir . 'invoice/footer.php' );
+			$file = $theme_dir . 'invoice/footer.php';
+			if ( file_exists( $file ) ) {
+				include( $file );
+			}
 
 		}
 

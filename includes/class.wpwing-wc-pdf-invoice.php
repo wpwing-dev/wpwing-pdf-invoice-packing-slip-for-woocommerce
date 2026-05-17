@@ -32,7 +32,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 
 			$this->initialize();
 
-			add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'add_invoice_metabox' ) );
+			add_action( 'add_meta_boxes', array( $this, 'add_invoice_metabox' ) );
 			add_action( 'admin_notices', array( $this, 'show_admin_notices' ) );
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
@@ -121,23 +121,50 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			}
 
 			if ( isset( $_GET['wpwing_bulk_created'] ) ) {
-				$count = intval( $_GET['wpwing_bulk_created'] );
-				$type  = isset( $_GET['wpwing_bulk_type'] ) ? sanitize_key( $_GET['wpwing_bulk_type'] ) : 'invoice';
-				$label = 'invoice' === $type ? __( 'invoice', 'wpwing-wc-pdf-invoice' ) : __( 'packing slip', 'wpwing-wc-pdf-invoice' );
+				$count   = intval( $_GET['wpwing_bulk_created'] );
+				$skipped = isset( $_GET['wpwing_bulk_skipped'] ) ? intval( $_GET['wpwing_bulk_skipped'] ) : 0;
+				$type    = isset( $_GET['wpwing_bulk_type'] ) ? sanitize_key( $_GET['wpwing_bulk_type'] ) : 'invoice';
+				$label   = 'invoice' === $type ? __( 'invoice', 'wpwing-wc-pdf-invoice' ) : __( 'packing slip', 'wpwing-wc-pdf-invoice' );
+
+				// translators: %1$d: count of generated documents, %2$s: document type label.
+				$message = sprintf( _n( '%1$d %2$s generated.', '%1$d %2$ss generated.', $count, 'wpwing-wc-pdf-invoice' ), $count, $label );
+
+				if ( $skipped > 0 ) {
+					// translators: %d: number of orders not processed due to the 50-order batch limit.
+					$message .= ' ' . sprintf( _n( '%d order was not processed (50-order limit per action — run again to continue).', '%d orders were not processed (50-order limit per action — run again to continue).', $skipped, 'wpwing-wc-pdf-invoice' ), $skipped );
+				}
 
 				printf(
 					'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
-					esc_html(
-						// translators: %1$d: count of generated documents, %2$s: document type label.
-						sprintf( _n( '%1$d %2$s generated.', '%1$d %2$ss generated.', $count, 'wpwing-wc-pdf-invoice' ), $count, $label )
-					)
+					esc_html( $message )
 				);
 			}
 			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		}
 
 		/**
-		 * Process document action GET requests with nonce verification.
+		 * Whether the current user may manage (create/view/cancel) documents for a given order.
+		 * Admins always pass. Customers pass only for view actions on their own orders.
+		 *
+		 * @param int  $order_id     WooCommerce order ID.
+		 * @param bool $admin_only   True for write actions (create/cancel); false allows order owner too.
+		 * @return bool
+		 */
+		private function user_can_manage_order( $order_id, $admin_only = false ) {
+			if ( current_user_can( 'manage_woocommerce' ) ) {
+				return true;
+			}
+			if ( $admin_only ) {
+				return false;
+			}
+			$order = wc_get_order( $order_id );
+			return $order instanceof WC_Order
+				&& is_user_logged_in()
+				&& get_current_user_id() === (int) $order->get_customer_id();
+		}
+
+		/**
+		 * Process document action GET requests with nonce and capability verification.
 		 *
 		 * @since 1.0.0
 		 */
@@ -149,6 +176,9 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_create_invoice_' . $order_id ) ) {
 					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
 				}
+				if ( ! $this->user_can_manage_order( $order_id, true ) ) {
+					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wc-pdf-invoice' ) );
+				}
 				$this->create_document( $order_id, 'invoice' );
 				$notice = 'invoice_created';
 
@@ -156,6 +186,9 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				$order_id = intval( $_GET['wpwing-view-invoice'] );
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_view_invoice_' . $order_id ) ) {
 					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
+				}
+				if ( ! $this->user_can_manage_order( $order_id ) ) {
+					wp_die( esc_html__( 'You do not have permission to view this document.', 'wpwing-wc-pdf-invoice' ) );
 				}
 				$this->view_document( $order_id, 'invoice' );
 				return;
@@ -165,6 +198,9 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_reset_invoice_' . $order_id ) ) {
 					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
 				}
+				if ( ! $this->user_can_manage_order( $order_id, true ) ) {
+					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wc-pdf-invoice' ) );
+				}
 				$this->reset_document( $order_id, 'invoice' );
 				$notice = 'invoice_cancelled';
 
@@ -172,6 +208,9 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				$order_id = intval( $_GET['wpwing-create-packing'] );
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_create_packing_' . $order_id ) ) {
 					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
+				}
+				if ( ! $this->user_can_manage_order( $order_id, true ) ) {
+					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wc-pdf-invoice' ) );
 				}
 				$this->create_document( $order_id, 'packing' );
 				$notice = 'packing_created';
@@ -181,6 +220,9 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_view_packing_' . $order_id ) ) {
 					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
 				}
+				if ( ! $this->user_can_manage_order( $order_id ) ) {
+					wp_die( esc_html__( 'You do not have permission to view this document.', 'wpwing-wc-pdf-invoice' ) );
+				}
 				$this->view_document( $order_id, 'packing' );
 				return;
 
@@ -188,6 +230,9 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				$order_id = intval( $_GET['wpwing-reset-packing'] );
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_reset_packing_' . $order_id ) ) {
 					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
+				}
+				if ( ! $this->user_can_manage_order( $order_id, true ) ) {
+					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wc-pdf-invoice' ) );
 				}
 				$this->reset_document( $order_id, 'packing' );
 				$notice = 'packing_cancelled';
@@ -229,7 +274,8 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since  1.0.0
 		 */
 		public function add_invoice_metabox() {
-			add_meta_box( 'wpwing-pdf-invoice-box', esc_html__( 'PDF Invoice by WPWing', 'wpwing-wc-pdf-invoice' ), array( $this, 'show_pdf_invoice_metabox' ), 'shop_order', 'side', 'high' );
+			$screen = function_exists( 'wc_get_page_screen_id' ) ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+			add_meta_box( 'wpwing-pdf-invoice-box', esc_html__( 'PDF Invoice by WPWing', 'wpwing-wc-pdf-invoice' ), array( $this, 'show_pdf_invoice_metabox' ), $screen, 'side', 'high' );
 		}
 
 		/**
@@ -240,8 +286,9 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since  1.0.0
 		 */
 		public function show_pdf_invoice_metabox( $post ) {
-			$invoice = $this->get_document_by_type( $post->ID, 'invoice' );
-			$packing = $this->get_document_by_type( $post->ID, 'packing' );
+			$order_id = $post instanceof WC_Order ? $post->get_id() : $post->ID;
+			$invoice  = $this->get_document_by_type( $order_id, 'invoice' );
+			$packing  = $this->get_document_by_type( $order_id, 'packing' );
 			?>
 			<div class="invoice-information">
 
@@ -308,11 +355,30 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		}
 
 		/**
+		 * Return true when the current admin screen belongs to this plugin.
+		 *
+		 * @return bool
+		 * @since 1.5.0
+		 */
+		private function is_plugin_screen() {
+			$screen = get_current_screen();
+			if ( ! $screen ) {
+				return false;
+			}
+			$order_screen = function_exists( 'wc_get_page_screen_id' ) ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+			$allowed      = array( 'wpwing-pdf-invoice', $order_screen, 'woocommerce_page_wc-orders' );
+			return in_array( $screen->id, $allowed, true );
+		}
+
+		/**
 		 * Enqueue css file
 		 *
 		 * @since  1.0.0
 		 */
 		public function enqueue_styles() {
+			if ( ! $this->is_plugin_screen() ) {
+				return;
+			}
 			$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 			wp_enqueue_style( 'wcpi-admin-css', WPWING_WCPI_ASSETS_URL . "/public/css/admin{$suffix}.css", array(), WPWING_WCPI_VERSION );
 		}
@@ -323,6 +389,10 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since  1.0.0
 		 */
 		public function enqueue_scripts() {
+			if ( ! $this->is_plugin_screen() ) {
+				return;
+			}
+
 			if ( ! did_action( 'wp_enqueue_media' ) ) {
 				wp_enqueue_media();
 			}
@@ -393,7 +463,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		public function create_document( $order_id, $document_type = '' ) {
 			if ( 'invoice' === $document_type && $this->settings->get_option( 'invoice_disable_free_orders' ) ) {
 				$order = wc_get_order( $order_id );
-				if ( $order && 0 == $order->get_total() ) {
+				if ( $order && (float) $order->get_total() === 0.0 ) {
 					return;
 				}
 			}
@@ -420,9 +490,13 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				$full_path      = WPWING_WCPI_DOCUMENT_SAVE_DIR . $document->save_path;
 				$button_behavior = $this->settings->get_option( 'invoice_button_behavior' );
 
+				if ( ! file_exists( $full_path ) ) {
+					wp_die( esc_html__( 'Invoice file not found. Please regenerate the invoice.', 'wpwing-wc-pdf-invoice' ) );
+				}
+
 				if ( 'open' === $button_behavior ) {
 					header( 'Content-type: application/pdf' );
-					header( 'Content-Disposition: inline; filename="' . basename( $full_path ) . '"' );
+					header( 'Content-Disposition: inline; filename="' . sanitize_file_name( basename( $full_path ) ) . '"' );
 					header( 'Content-Transfer-Encoding: binary' );
 					header( 'Content-Length: ' . filesize( $full_path ) );
 					header( 'Accept-Ranges: bytes' );
@@ -431,7 +505,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 					exit();
 				} else {
 					header( 'Content-type: application/pdf' );
-					header( 'Content-Disposition: attachment; filename="' . basename( $full_path ) . '"' );
+					header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( basename( $full_path ) ) . '"' );
 					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
 					readfile( $full_path );
 				}
@@ -478,9 +552,15 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 2.0.0
 		 */
 		public function maybe_auto_generate( $order_id, $old_status, $new_status, $order ) {
+			static $running = false;
+			if ( $running ) {
+				return;
+			}
+			$running = true;
+
 			$invoice_statuses = $this->settings->get_option( 'invoice_auto_statuses' );
 			if ( is_array( $invoice_statuses ) && in_array( $new_status, $invoice_statuses, true ) ) {
-				$skip = $this->settings->get_option( 'invoice_disable_free_orders' ) && 0 == $order->get_total();
+				$skip = $this->settings->get_option( 'invoice_disable_free_orders' ) && (float) $order->get_total() === 0.0;
 				if ( ! $skip ) {
 					$invoice = $this->get_document_by_type( $order_id, 'invoice' );
 					if ( null !== $invoice && ! $invoice->exists ) {
@@ -496,6 +576,8 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 					$this->save_document( $packing );
 				}
 			}
+
+			$running = false;
 		}
 
 		/**
@@ -509,6 +591,11 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 2.0.0
 		 */
 		public function attach_document_to_email( $attachments, $email_id, $object ) {
+			static $running = false;
+			if ( $running ) {
+				return $attachments;
+			}
+
 			$configured_ids = $this->settings->get_option( 'invoice_attach_to_emails' );
 
 			if ( ! is_array( $configured_ids ) || ! in_array( $email_id, $configured_ids, true ) ) {
@@ -519,10 +606,12 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				return $attachments;
 			}
 
+			$running  = true;
 			$order_id = $object->get_id();
 			$invoice  = $this->get_document_by_type( $order_id, 'invoice' );
 
 			if ( null === $invoice ) {
+				$running = false;
 				return $attachments;
 			}
 
@@ -535,6 +624,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				$attachments[] = $path;
 			}
 
+			$running = false;
 			return $attachments;
 		}
 
@@ -569,8 +659,11 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 
 			$document_type = ( 'wpwing_generate_invoices' === $action ) ? 'invoice' : 'packing';
 			$count         = 0;
+			$all_ids       = (array) $ids;
+			$batch_ids     = array_slice( $all_ids, 0, 50 );
+			$skipped       = count( $all_ids ) - count( $batch_ids );
 
-			foreach ( $ids as $order_id ) {
+			foreach ( $batch_ids as $order_id ) {
 				$document = $this->get_document_by_type( intval( $order_id ), $document_type );
 				if ( null !== $document && ! $document->exists ) {
 					$this->save_document( $document );
@@ -578,11 +671,12 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				}
 			}
 
-			$redirect_to = remove_query_arg( array( 'wpwing_bulk_type', 'wpwing_bulk_created' ), $redirect_to );
+			$redirect_to = remove_query_arg( array( 'wpwing_bulk_type', 'wpwing_bulk_created', 'wpwing_bulk_skipped' ), $redirect_to );
 			$redirect_to = add_query_arg(
 				array(
 					'wpwing_bulk_type'    => $document_type,
 					'wpwing_bulk_created' => $count,
+					'wpwing_bulk_skipped' => $skipped,
 				),
 				$redirect_to
 			);

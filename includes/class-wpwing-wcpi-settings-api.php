@@ -192,7 +192,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			$page_title = esc_html__( 'PDF Invoice for WooCommerce Settings', 'wpwing-wc-pdf-invoice' );
 			$menu_title = esc_html__( 'Invoice Settings', 'wpwing-wc-pdf-invoice' );
-			add_menu_page( $page_title, $menu_title, 'edit_theme_options', $this->slug, array( $this, 'settings_form' ), 'dashicons-pdf', 31 );
+			add_menu_page( $page_title, $menu_title, 'manage_woocommerce', $this->slug, array( $this, 'settings_form' ), 'dashicons-pdf', 31 );
 
 		}
 
@@ -356,16 +356,44 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		public function sanitize_callback( $options ) {
 
+			if ( ! is_array( $options ) ) {
+				return array();
+			}
+
 			foreach ( $this->get_defaults() as $opt ) {
-				if ( 'checkbox' === $opt['type'] && ! isset( $options[ $opt['id'] ] ) ) {
-					$options[ $opt['id'] ] = 0;
-				}
-				if ( 'multiselect' === $opt['type'] ) {
-					if ( ! isset( $options[ $opt['id'] ] ) ) {
-						$options[ $opt['id'] ] = array();
-					} else {
-						$options[ $opt['id'] ] = array_map( 'sanitize_key', (array) $options[ $opt['id'] ] );
+				$id   = $opt['id'];
+				$type = $opt['type'];
+
+				if ( ! isset( $options[ $id ] ) ) {
+					if ( 'checkbox' === $type ) {
+						$options[ $id ] = 0;
+					} elseif ( 'multiselect' === $type ) {
+						$options[ $id ] = array();
 					}
+					continue;
+				}
+
+				switch ( $type ) {
+					case 'text':
+					case 'select':
+					case 'radio':
+						$options[ $id ] = sanitize_text_field( $options[ $id ] );
+						break;
+					case 'textarea':
+						$options[ $id ] = sanitize_textarea_field( $options[ $id ] );
+						break;
+					case 'upload':
+						$options[ $id ] = esc_url_raw( $options[ $id ] );
+						break;
+					case 'number':
+						$options[ $id ] = absint( $options[ $id ] );
+						break;
+					case 'checkbox':
+						$options[ $id ] = absint( $options[ $id ] ) ? 1 : 0;
+						break;
+					case 'multiselect':
+						$options[ $id ] = array_map( 'sanitize_key', (array) $options[ $id ] );
+						break;
 				}
 			}
 
@@ -375,13 +403,13 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		public function is_reset_all() {
 
-			return isset( $_GET['page'] ) && ( $_GET['page'] == $this->slug ) && isset( $_GET[ $this->setting_reset_name ] );
+			return isset( $_GET['page'] ) && ( sanitize_key( $_GET['page'] ) === $this->slug ) && isset( $_GET[ $this->setting_reset_name ] );
 
 		}
 
 		public function is_show_pro() {
 
-			return isset( $_GET['page'] ) && ( $_GET['page'] == $this->slug ) && isset( $_GET[ $this->show_pro_name ] );
+			return isset( $_GET['page'] ) && ( sanitize_key( $_GET['page'] ) === $this->slug ) && isset( $_GET[ $this->show_pro_name ] );
 
 		}
 
@@ -393,6 +421,12 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		public function settings_init() {
 
 			if ( $this->is_reset_all() ) {
+				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_reset_settings' ) ) {
+					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
+				}
+				if ( ! current_user_can( 'manage_woocommerce' ) ) {
+					wp_die( esc_html__( 'You do not have permission to reset settings.', 'wpwing-wc-pdf-invoice' ) );
+				}
 				$this->delete_settings();
 				wp_redirect( $this->settings_url() );
 			}
@@ -542,7 +576,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
-			$html = sprintf( '<fieldset><label><input %1$s type="checkbox" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s /> %6$s</label></fieldset>', esc_attr( $attrs ), esc_attr( $args['id'] ), true, esc_html( $this->settings_name ), checked( $value, true, false ), esc_attr( $args['desc'] ) );
+			$html = sprintf( '<fieldset><label><input %1$s type="checkbox" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s /> %6$s</label></fieldset>', esc_attr( $attrs ), esc_attr( $args['id'] ), true, esc_html( $this->settings_name ), checked( $value, true, false ), esc_html( $args['desc'] ) );
 
 			echo wp_kses( $html, $this->allowed_html );
 
@@ -693,7 +727,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$desc = '';
 
 			if ( ! empty( $args['desc'] ) ) {
-				$desc .= sprintf( '<p class="description">%s</p>', $args['desc'] );
+				$desc .= sprintf( '<p class="description">%s</p>', esc_html( $args['desc'] ) );
 			} else {
 				$desc .= '';
 			}
@@ -766,7 +800,10 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		 */
 		public function reset_url() {
 
-			return add_query_arg( array( 'page' => $this->slug, 'reset' => '' ), admin_url( 'admin.php' ) );
+			return wp_nonce_url(
+				add_query_arg( array( 'page' => $this->slug, 'reset' => '' ), admin_url( 'admin.php' ) ),
+				'wpwing_reset_settings'
+			);
 
 		}
 

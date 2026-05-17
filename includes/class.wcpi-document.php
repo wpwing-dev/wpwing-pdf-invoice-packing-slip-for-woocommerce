@@ -37,6 +37,11 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 		public $is_valid = false;
 
 		/**
+		 * @var WPWing_WCPI_Settings Settings instance, set by child classes.
+		 */
+		protected $settings;
+
+		/**
 		 * Constructor
 		 *
 		 * Initialize class with WooCommerce order object
@@ -49,7 +54,7 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 			$this->order = wc_get_order( $order_id );
 
 			// Check if an order exists for this order id
-			$this->is_valid = isset( $this->order );
+			$this->is_valid = $this->order instanceof WC_Order;
 
 		}
 
@@ -82,8 +87,20 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 		 */
 		public function save_file( $file_path ) {
 
+			$dir = dirname( $file_path );
+			if ( ! file_exists( $dir ) ) {
+				wp_mkdir_p( $dir );
+			}
+
 			$pdf_content = $this->generate_template();
-			file_put_contents( $file_path, $pdf_content );
+			$bytes = file_put_contents( $file_path, $pdf_content );
+
+			if ( false === $bytes ) {
+				wc_get_logger()->error(
+					sprintf( 'WPWing PDF Invoice: failed to write PDF to %s', $file_path ),
+					array( 'source' => 'wpwing-pdf-invoice' )
+				);
+			}
 
 		}
 
@@ -135,7 +152,7 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 			if ( ! $format) {
 				$format = 'd/m/Y';
 			}
-			$date = $this->order->get_meta( '_completed_date' ) ? date( $format, strtotime( $this->order->get_meta( '_completed_date' ) ) ) : date( $format, $this->order->get_date_created()->getTimestamp() );
+			$date = $this->order->get_meta( '_completed_date' ) ? wp_date( $format, strtotime( $this->order->get_meta( '_completed_date' ) ) ) : wp_date( $format, $this->order->get_date_created()->getTimestamp() );
 
 			return $date;
 

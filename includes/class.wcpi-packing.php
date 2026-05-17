@@ -115,6 +115,14 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 
 			$filename = apply_filters( 'wpwing_wcpi_packing_filename', "/packing_" . $this->number, $this );
 			$this->save_path = $year . $filename . ".pdf";
+			$pdf_path = WPWING_WCPI_DOCUMENT_SAVE_DIR . $this->save_path;
+			add_action( 'wpwing_wcpi_before_template_generation', array( $this, 'init_template_generation_actions' ) );
+			$this->save_file( $pdf_path );
+
+			if ( ! file_exists( $pdf_path ) ) {
+				return;
+			}
+
 			$this->exists = true;
 
 			$this->order->update_meta_data( '_wpwing_wcpi_packing', $this->exists );
@@ -122,10 +130,6 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 
 			$this->order->apply_changes();
 			$this->order->save_meta_data();
-
-			$pdf_path = WPWING_WCPI_DOCUMENT_SAVE_DIR . $this->save_path;
-			add_action( 'wpwing_wcpi_before_template_generation', array( $this, 'init_template_generation_actions' ) );
-			$this->save_file( $pdf_path );
 
 		}
 
@@ -277,8 +281,11 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 		public function show_packing_template_product_list() {
 
 			$theme_dir = $this->get_theme_dir();
+			$file      = $theme_dir . 'packing/products.php';
 
-			include( $theme_dir . 'packing/products.php' );
+			if ( file_exists( $file ) ) {
+				include( $file );
+			}
 
 		}
 
@@ -290,6 +297,8 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 		public function show_packing_template_footer() {
 
 			$theme_dir = $this->get_theme_dir();
+			$notes     = null;
+			$footer    = null;
 
 			if ( $this->settings->get_option( 'company_notes_checkbox' ) ) {
 				$notes = $this->settings->get_option( 'company_notes_text' );
@@ -298,7 +307,10 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 				$footer = $this->settings->get_option( 'company_footer_text' );
 			}
 
-			include( $theme_dir . 'packing/footer.php' );
+			$file = $theme_dir . 'packing/footer.php';
+			if ( file_exists( $file ) ) {
+				include( $file );
+			}
 
 		}
 

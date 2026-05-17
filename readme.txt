@@ -4,7 +4,7 @@ Contributors:       wpwing, voboghure
 Donate link:        https://wpwing.com/
 Tags:               PDF, Invoice, Packing Slip, Packing List, Proforma Invoice, Delivery Notes, Shipping Labels, WooCommerce, WPWing
 Requires at least:  4.8
-Tested up to:       6.8
+Tested up to:       6.9
 Requires PHP:       7.1
 Stable tag:         1.5.0
 License:            GPL-3.0-or-later
@@ -19,7 +19,7 @@ Do you want to print your WooCommerce order invoice or packing slip? Or download
 
 Do you want to print your WooCommerce order invoice or packing slip? Or download them in PDF format? You are in the right place! With WooCommerce you will feel the lack of print invoices or packing lists, which we are happy to fulfill. **PDF Invoice and Packing Slip for WooCommerce** can download your WooCommerce order invoice and packing slip in PDF format for print or email.
 
-✅ Tested OK with WooCommerce 10.1.1
+✅ Tested OK with WooCommerce 10.7.0
 
 ### 🔥 FEATURES: ###
 
@@ -72,10 +72,26 @@ You’re more than welcome! This plugin is hosted on [github](https://github.com
 
 == Changelog ==
 
-= 1.5.0 - 24/08/2025 =
+= 1.5.0 - 18/05/2026 =
 
-* Compatible with WooCommerce’s (v10.1.1) HPOS feature
-* Compatibility check with WordPress v6.8.2
+* New: Auto-generate invoice and packing slip on configurable order status change.
+* New: Attach invoice and packing slip PDF to any WooCommerce transactional email.
+* New: Bulk generate invoices and packing slips from the WooCommerce orders list.
+* New: Invoice and packing slip status column on the orders list.
+* New: Structured company information fields — address, city, ZIP, country, phone, email, and VAT/tax ID.
+* New: Paper size selection (A4 or Letter).
+* New: Option to show shipping address on invoice.
+* New: Option to show product SKU column on invoice.
+* New: Yearly invoice number reset option.
+* New: Option to skip invoice generation for free (zero-total) orders.
+* New: Multiple template selection — Default and Modern templates included.
+* New: Live invoice and packing slip preview in Template settings.
+* New: High-Performance Order Storage (HPOS) compatibility.
+* Security: All document actions (create, view, cancel) are now CSRF-protected with nonces.
+* Update: My Account invoice button uses WooCommerce native action — no longer breaks flex layout.
+* Update: Cancel invoice/packing slip now shows a confirmation dialog before proceeding.
+* Update: Admin notices confirm success or failure after every document action.
+* Compatibility check with WordPress v6.9 and WooCommerce v10.7.0.
 * Few minor improvements.
 
 = 1.4.3 - 22/04/2024 =
