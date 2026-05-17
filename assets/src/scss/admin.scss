@@ -2,81 +2,131 @@
     width: 250px;
 }
 
-table.shop_table tr.order td.order-actions a.print-invoice {
-    background-image: url('../images/invoice_view.png');
-    background-repeat: no-repeat;
-    background-position: 5px center;
-    text-indent: 15px;
-}
+// Metabox — summary line (only when invoice exists)
+.wpwing-wcpi-summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px 8px;
+    padding-bottom: 8px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
 
-#wpwing-pdf-invoice-box .wpwing-wcpi-meta-row {
-    overflow: hidden;
-    padding: 5px 0;
-
-    span:first-child {
-        float: left;
-    }
+    .wpwing-wcpi-sep { color: #c3c4c7; }
 
     strong {
-        float: right;
+        font-family: monospace;
+        font-size: 11px;
+        background: #f6f7f7;
+        padding: 1px 4px;
+        border-radius: 3px;
     }
 }
 
-#wpwing-pdf-invoice-box .wpwing-wcpi-meta-actions {
-    clear: both;
-    margin-top: 15px;
+// Metabox — document rows (Invoice / Packing Slip)
+.wpwing-wcpi-doc-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 0;
+
+    & + & { border-top: 1px solid #f0f0f0; }
+
+    .wpwing-wcpi-doc-icon {
+        color: #646970;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+
+    .wpwing-wcpi-doc-label {
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .wpwing-wcpi-doc-actions {
+        display: flex;
+        gap: 4px;
+        margin-left: auto;
+
+        a.button {
+            padding: 0 8px;
+            min-height: 24px;
+            line-height: 22px;
+            font-size: 11px;
+        }
+
+        .wpwing-btn-cancel {
+            color: #d63638;
+            border-color: #d63638;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+
+            .dashicons {
+                font-size: 13px;
+                width: 13px;
+                height: 13px;
+            }
+
+            &:hover, &:focus {
+                background: #d63638;
+                color: #fff;
+            }
+        }
+    }
 }
 
-#wpwing-pdf-invoice-box div.invoice-information a {
-    background-repeat: no-repeat;
-    background-position: 5px center;
-    text-indent: 20px;
-}
-
-#wpwing-pdf-invoice-box div.invoice-information a.wpwing_wcpi_create_invoice {
-    background-image: url('../images/invoice_add.png');
-}
-
-#wpwing-pdf-invoice-box div.invoice-information a.wpwing_wcpi_view_invoice {
-    background-image: url('../images/invoice_view.png');
-}
-
-#wpwing-pdf-invoice-box div.invoice-information a.wpwing_wcpi_cancel_invoice {
-    background-image: url('../images/invoice_cancel.png');
-}
-
-.widefat .column-order_actions a.button.wpwing_wcpi_create_invoice,
-.widefat .column-order_actions a.button.wpwing_wcpi_view_invoice,
-.widefat .column-wc_actions a.button.wpwing_wcpi_create_invoice,
-.widefat .column-wc_actions a.button.wpwing_wcpi_view_invoice{
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-
-.widefat .column-order_actions a.button.wpwing_wcpi_create_invoice,
-.widefat .column-wc_actions a.button.wpwing_wcpi_create_invoice{
-    background-image: url('../images/invoice_add.png');
-}
-
-.widefat .column-order_actions a.button.wpwing_wcpi_view_invoice,
-.widefat .column-wc_actions a.button.wpwing_wcpi_view_invoice{
-    background-image: url('../images/invoice_view.png');
-}
-
+// Orders list — icon buttons base style (square, text hidden)
 .widefat .column-order_actions a.button.wpwing_wcpi_buttons,
-.widefat .column-wc_actions a.button.wpwing_wcpi_buttons{
+.widefat .column-wc_actions a.button.wpwing_wcpi_buttons {
     display: inline-block;
     text-indent: -9999px;
     position: relative;
     padding: 0 !important;
     height: 2em !important;
     width: 2em;
-    position: relative;
 }
 
 .widefat .column-order_actions a.button.wpwing_wcpi_buttons:after,
-.widefat .column-wc_actions a.button.wpwing_wcpi_buttons:after{
+.widefat .column-wc_actions a.button.wpwing_wcpi_buttons:after {
     display: none;
+}
+
+// Orders list — Create button (dashicons-plus-alt replaces invoice_add.png)
+.widefat .column-order_actions a.button.wpwing_wcpi_create_invoice,
+.widefat .column-wc_actions a.button.wpwing_wcpi_create_invoice {
+    &::before {
+        font-family: dashicons;
+        content: "\f132";
+        font-size: 16px;
+        line-height: 1;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-indent: 0;
+    }
+}
+
+// Orders list — View button (dashicons-visibility replaces invoice_view.png)
+.widefat .column-order_actions a.button.wpwing_wcpi_view_invoice,
+.widefat .column-wc_actions a.button.wpwing_wcpi_view_invoice {
+    &::before {
+        font-family: dashicons;
+        content: "\f177";
+        font-size: 16px;
+        line-height: 1;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-indent: 0;
+    }
 }
 
 .column-wpwing_invoice {
@@ -153,4 +203,3 @@ table.shop_table tr.order td.order-actions a.print-invoice {
         color: #000;
     }
 }
-

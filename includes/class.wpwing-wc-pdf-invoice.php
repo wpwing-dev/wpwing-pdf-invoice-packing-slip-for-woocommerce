@@ -290,65 +290,71 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			$invoice  = $this->get_document_by_type( $order_id, 'invoice' );
 			$packing  = $this->get_document_by_type( $order_id, 'packing' );
 			?>
-			<div class="invoice-information">
+			<div class="wpwing-wcpi-metabox">
 
 				<?php if ( ( null !== $invoice ) && $invoice->exists ) : ?>
-					<div class="wpwing-wcpi-meta-row">
-						<span><?php esc_html_e( 'Invoiced on:', 'wpwing-wc-pdf-invoice' ); ?></span>
-						<strong><?php echo esc_html( $invoice->get_formatted_date() ); ?></strong>
-					</div>
-					<div class="wpwing-wcpi-meta-row">
-						<span><?php esc_html_e( 'Invoice number:', 'wpwing-wc-pdf-invoice' ); ?></span>
-						<strong><?php echo esc_html( $invoice->get_formatted_invoice_number() ); ?></strong>
-					</div>
-					<div class="wpwing-wcpi-meta-actions">
-						<a class="button tips wpwing_wcpi_view_invoice"
-							data-tip="<?php esc_attr_e( 'View Invoice', 'wpwing-wc-pdf-invoice' ); ?>"
-							href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-view-invoice', $invoice->order->get_id() ), 'wpwing_view_invoice_' . $invoice->order->get_id() ) ); ?>"
-							target="_blank">
-							<?php esc_html_e( 'View Invoice', 'wpwing-wc-pdf-invoice' ); ?>
-						</a>
-						<a class="button tips wpwing_wcpi_cancel_invoice"
-							data-tip="<?php esc_attr_e( 'Cancel Invoice', 'wpwing-wc-pdf-invoice' ); ?>"
-							href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-invoice', $invoice->order->get_id() ), 'wpwing_reset_invoice_' . $invoice->order->get_id() ) ); ?>"
-							onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to cancel this invoice?', 'wpwing-wc-pdf-invoice' ); ?>')">
-							<?php esc_html_e( 'Cancel Invoice', 'wpwing-wc-pdf-invoice' ); ?>
-						</a>
-					</div>
-				<?php else : ?>
-					<p>
-						<a class="button tips wpwing_wcpi_create_invoice"
-							data-tip="<?php esc_attr_e( 'Create Invoice', 'wpwing-wc-pdf-invoice' ); ?>"
-							href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-invoice', $invoice->order->get_id() ), 'wpwing_create_invoice_' . $invoice->order->get_id() ) ); ?>">
-							<?php esc_html_e( 'Create Invoice', 'wpwing-wc-pdf-invoice' ); ?>
-						</a>
-					</p>
+				<div class="wpwing-wcpi-summary">
+					<?php esc_html_e( 'Invoiced on:', 'wpwing-wc-pdf-invoice' ); ?>
+					<strong><?php echo esc_html( $invoice->get_formatted_date() ); ?></strong>
+					<span class="wpwing-wcpi-sep">|</span>
+					<?php esc_html_e( 'Invoice:', 'wpwing-wc-pdf-invoice' ); ?>
+					<strong><?php echo esc_html( $invoice->get_formatted_invoice_number() ); ?></strong>
+				</div>
 				<?php endif; ?>
 
-				<?php if ( ( null !== $packing ) && $packing->exists ) : ?>
-					<div class="wpwing-wcpi-meta-actions">
-						<a class="button tips wpwing_wcpi_view_invoice"
-							data-tip="<?php esc_attr_e( 'View Packing Slip', 'wpwing-wc-pdf-invoice' ); ?>"
-							href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-view-packing', $packing->order->get_id() ), 'wpwing_view_packing_' . $packing->order->get_id() ) ); ?>"
-							target="_blank">
-							<?php esc_html_e( 'View Packing Slip', 'wpwing-wc-pdf-invoice' ); ?>
-						</a>
-						<a class="button tips wpwing_wcpi_cancel_invoice"
-							data-tip="<?php esc_attr_e( 'Cancel Packing Slip', 'wpwing-wc-pdf-invoice' ); ?>"
-							href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-packing', $packing->order->get_id() ), 'wpwing_reset_packing_' . $packing->order->get_id() ) ); ?>"
-							onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to cancel this packing slip?', 'wpwing-wc-pdf-invoice' ); ?>')">
-							<?php esc_html_e( 'Cancel Packing Slip', 'wpwing-wc-pdf-invoice' ); ?>
-						</a>
+				<div class="wpwing-wcpi-doc-row">
+					<span class="dashicons dashicons-media-document wpwing-wcpi-doc-icon"></span>
+					<span class="wpwing-wcpi-doc-label"><?php esc_html_e( 'Invoice:', 'wpwing-wc-pdf-invoice' ); ?></span>
+					<div class="wpwing-wcpi-doc-actions">
+						<?php if ( ( null !== $invoice ) && $invoice->exists ) : ?>
+							<a class="button tips wpwing_wcpi_view_invoice"
+								data-tip="<?php esc_attr_e( 'View Invoice', 'wpwing-wc-pdf-invoice' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-view-invoice', $invoice->order->get_id() ), 'wpwing_view_invoice_' . $invoice->order->get_id() ) ); ?>"
+								target="_blank">
+								<?php esc_html_e( 'View', 'wpwing-wc-pdf-invoice' ); ?>
+							</a>
+							<a class="button tips wpwing_wcpi_cancel_invoice wpwing-btn-cancel"
+								data-tip="<?php esc_attr_e( 'Cancel Invoice', 'wpwing-wc-pdf-invoice' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-invoice', $invoice->order->get_id() ), 'wpwing_reset_invoice_' . $invoice->order->get_id() ) ); ?>"
+								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to cancel this invoice?', 'wpwing-wc-pdf-invoice' ); ?>')">
+								<span class="dashicons dashicons-dismiss"></span><?php esc_html_e( 'Cancel', 'wpwing-wc-pdf-invoice' ); ?>
+							</a>
+						<?php else : ?>
+							<a class="button tips wpwing_wcpi_create_invoice"
+								data-tip="<?php esc_attr_e( 'Create Invoice', 'wpwing-wc-pdf-invoice' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-invoice', $invoice->order->get_id() ), 'wpwing_create_invoice_' . $invoice->order->get_id() ) ); ?>">
+								<?php esc_html_e( 'Create', 'wpwing-wc-pdf-invoice' ); ?>
+							</a>
+						<?php endif; ?>
 					</div>
-				<?php else : ?>
-					<p>
-						<a class="button tips wpwing_wcpi_create_invoice"
-							data-tip="<?php esc_attr_e( 'Create Packing Slip', 'wpwing-wc-pdf-invoice' ); ?>"
-							href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-packing', $packing->order->get_id() ), 'wpwing_create_packing_' . $packing->order->get_id() ) ); ?>">
-							<?php esc_html_e( 'Create Packing Slip', 'wpwing-wc-pdf-invoice' ); ?>
-						</a>
-					</p>
-				<?php endif; ?>
+				</div>
+
+				<div class="wpwing-wcpi-doc-row">
+					<span class="dashicons dashicons-archive wpwing-wcpi-doc-icon"></span>
+					<span class="wpwing-wcpi-doc-label"><?php esc_html_e( 'Packing Slip:', 'wpwing-wc-pdf-invoice' ); ?></span>
+					<div class="wpwing-wcpi-doc-actions">
+						<?php if ( ( null !== $packing ) && $packing->exists ) : ?>
+							<a class="button tips wpwing_wcpi_view_invoice"
+								data-tip="<?php esc_attr_e( 'View Packing Slip', 'wpwing-wc-pdf-invoice' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-view-packing', $packing->order->get_id() ), 'wpwing_view_packing_' . $packing->order->get_id() ) ); ?>"
+								target="_blank">
+								<?php esc_html_e( 'View', 'wpwing-wc-pdf-invoice' ); ?>
+							</a>
+							<a class="button tips wpwing_wcpi_cancel_invoice wpwing-btn-cancel"
+								data-tip="<?php esc_attr_e( 'Cancel Packing Slip', 'wpwing-wc-pdf-invoice' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-packing', $packing->order->get_id() ), 'wpwing_reset_packing_' . $packing->order->get_id() ) ); ?>"
+								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to cancel this packing slip?', 'wpwing-wc-pdf-invoice' ); ?>')">
+								<span class="dashicons dashicons-dismiss"></span><?php esc_html_e( 'Cancel', 'wpwing-wc-pdf-invoice' ); ?>
+							</a>
+						<?php else : ?>
+							<a class="button tips wpwing_wcpi_create_invoice"
+								data-tip="<?php esc_attr_e( 'Create Packing Slip', 'wpwing-wc-pdf-invoice' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-packing', $packing->order->get_id() ), 'wpwing_create_packing_' . $packing->order->get_id() ) ); ?>">
+								<?php esc_html_e( 'Create', 'wpwing-wc-pdf-invoice' ); ?>
+							</a>
+						<?php endif; ?>
+					</div>
+				</div>
 
 			</div>
 			<?php
