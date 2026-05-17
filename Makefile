@@ -39,12 +39,13 @@ version: ## Bump version strings — usage: make version V=1.6.0
 	@echo "Version bumped to $(V)"
 .PHONY: version
 
-zip: clean-build assets vendor-prod ## Build distributable zip into dist/
+zip: clean-build assets ## Build distributable zip into dist/
 	mkdir -p $(BUILD_DIR)
 	rsync -r --exclude-from=.distignore . $(BUILD_DIR)/
+	composer install --no-dev --optimize-autoloader --working-dir=$(BUILD_DIR)
+	rm -f $(BUILD_DIR)/composer.json $(BUILD_DIR)/composer.lock
 	cd $(DIST_DIR) && zip -r $(PLUGIN_SLUG).zip $(PLUGIN_SLUG)/
 	rm -rf $(BUILD_DIR)
-	composer install
 	@echo "Built: $(DIST_DIR)/$(PLUGIN_SLUG).zip"
 .PHONY: zip
 

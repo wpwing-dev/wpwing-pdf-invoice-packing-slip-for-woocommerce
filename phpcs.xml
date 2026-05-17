@@ -4,6 +4,7 @@
 
     <file>includes/</file>
     <file>templates/</file>
+    <file>pro/</file>
     <file>wpwing-pdf-invoice-packing-slip-for-woocommerce.php</file>
 
     <exclude-pattern>*/vendor/*</exclude-pattern>

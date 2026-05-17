@@ -3,11 +3,10 @@
 .distignore
 Makefile
 node_modules/
+vendor/
 assets/src/
 package.json
 package-lock.json
-composer.json
-composer.lock
 phpcs.xml
 dist/
 pro/
