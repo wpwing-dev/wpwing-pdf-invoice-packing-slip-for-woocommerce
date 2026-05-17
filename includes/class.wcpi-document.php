@@ -124,12 +124,31 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 
 			require_once( WPWING_WCPI_VENDOR_DIR . 'autoload.php' );
 
+			// Use a writable font cache so Dompdf generates complete .ufm metrics
+			// from the full TTF glyph table, covering all currency symbols (Taka,
+			// Bitcoin, etc.) that the bundled vendor .ufm files omit.
+			$font_cache = trailingslashit( wp_upload_dir()['basedir'] ) . 'wpwing-pdf-fonts/';
+			wp_mkdir_p( $font_cache );
+
 			$options = new Options();
 			$options->setIsRemoteEnabled( true );
+			$options->setFontDir( $font_cache );
+			$options->setFontCache( $font_cache );
 
 			$paper_size = WPWing_WCPI_Settings::get_instance()->get_option( 'paper_size' );
-			$dompdf     = new Dompdf();
-			$dompdf->setOptions( $options );
+			$dompdf     = new Dompdf( $options );
+
+			// One-time font registration — skipped on every subsequent PDF.
+			if ( ! file_exists( $font_cache . 'fonts_ready' ) ) {
+				$src     = WPWING_WCPI_VENDOR_DIR . 'dompdf/dompdf/lib/fonts/';
+				$metrics = $dompdf->getFontMetrics();
+				$metrics->registerFont( array( 'family' => 'DejaVu Sans', 'weight' => 'normal', 'style' => 'normal' ),  'file://' . $src . 'DejaVuSans.ttf' );
+				$metrics->registerFont( array( 'family' => 'DejaVu Sans', 'weight' => 'bold',   'style' => 'normal' ),  'file://' . $src . 'DejaVuSans-Bold.ttf' );
+				$metrics->registerFont( array( 'family' => 'DejaVu Sans', 'weight' => 'normal', 'style' => 'italic' ),  'file://' . $src . 'DejaVuSans-Oblique.ttf' );
+				$metrics->registerFont( array( 'family' => 'DejaVu Sans', 'weight' => 'bold',   'style' => 'italic' ),  'file://' . $src . 'DejaVuSans-BoldOblique.ttf' );
+				file_put_contents( $font_cache . 'fonts_ready', '1' );
+			}
+
 			$dompdf->setPaper( $paper_size ? strtolower( $paper_size ) : 'a4' );
 			$dompdf->loadHtml( $html );
 			$dompdf->render();

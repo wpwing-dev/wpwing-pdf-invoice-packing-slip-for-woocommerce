@@ -116,14 +116,14 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 			$filename = apply_filters( 'wpwing_wcpi_packing_filename', "/packing_" . $this->number, $this );
 			$this->save_path = $year . $filename . ".pdf";
 			$pdf_path = WPWING_WCPI_DOCUMENT_SAVE_DIR . $this->save_path;
+			$this->exists = true;
 			add_action( 'wpwing_wcpi_before_template_generation', array( $this, 'init_template_generation_actions' ) );
 			$this->save_file( $pdf_path );
 
 			if ( ! file_exists( $pdf_path ) ) {
+				$this->exists = false;
 				return;
 			}
-
-			$this->exists = true;
 
 			$this->order->update_meta_data( '_wpwing_wcpi_packing', $this->exists );
 			$this->order->update_meta_data( '_wpwing_wcpi_packing_path', $this->save_path );
