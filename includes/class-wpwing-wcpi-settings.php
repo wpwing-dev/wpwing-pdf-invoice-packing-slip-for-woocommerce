@@ -45,6 +45,20 @@ if ( ! class_exists( 'WPWing_WCPI_Settings' ) ) {
 
 			do_action( 'before_wpwing_wcpi_settings', $this );
 
+			$order_statuses = array();
+			if ( function_exists( 'wc_get_order_statuses' ) ) {
+				foreach ( wc_get_order_statuses() as $status => $label ) {
+					$order_statuses[ substr( $status, 3 ) ] = $label; // strip 'wc-' prefix to match hook value.
+				}
+			}
+
+			$email_options = array(
+				'customer_processing_order' => esc_html__( 'Processing Order', 'wpwing-wc-pdf-invoice' ),
+				'customer_completed_order'  => esc_html__( 'Completed Order', 'wpwing-wc-pdf-invoice' ),
+				'customer_invoice'          => esc_html__( 'Customer Invoice / Order Details', 'wpwing-wc-pdf-invoice' ),
+				'customer_on_hold_order'    => esc_html__( 'Order On-Hold', 'wpwing-wc-pdf-invoice' ),
+			);
+
 			$this->add_setting( 'wpwing_pdf_general', esc_html__( 'General', 'wpwing-wc-pdf-invoice' ), apply_filters( 'wpwing_wcpi_general_settings_section', array(
 				array(
 					'title'  => esc_html__( 'General Section', 'wpwing-wc-pdf-invoice' ),
@@ -97,11 +111,28 @@ if ( ! class_exists( 'WPWing_WCPI_Settings' ) ) {
 							'default' => 'download'
 						),
 						array(
-							'id'      	  => 'invoice_send_customer',
-							'type'    	  => 'checkbox',
-							'title'   	  => esc_html__( 'Send invoice to customer:', 'wpwing-wc-pdf-invoice' ),
-							'desc'        => 'Yes',
-							'default' 	  => false,
+							'id'      => 'invoice_auto_statuses',
+							'type'    => 'multiselect',
+							'title'   => esc_html__( 'Auto-generate invoice on status:', 'wpwing-wc-pdf-invoice' ),
+							'desc'    => esc_html__( 'Invoice is created automatically when an order reaches one of these statuses. Only created once per order.', 'wpwing-wc-pdf-invoice' ),
+							'options' => $order_statuses,
+							'default' => array(),
+						),
+						array(
+							'id'      => 'packing_auto_statuses',
+							'type'    => 'multiselect',
+							'title'   => esc_html__( 'Auto-generate packing slip on status:', 'wpwing-wc-pdf-invoice' ),
+							'desc'    => esc_html__( 'Packing slip is created automatically when an order reaches one of these statuses. Only created once per order.', 'wpwing-wc-pdf-invoice' ),
+							'options' => $order_statuses,
+							'default' => array(),
+						),
+						array(
+							'id'      => 'invoice_attach_to_emails',
+							'type'    => 'multiselect',
+							'title'   => esc_html__( 'Attach invoice PDF to emails:', 'wpwing-wc-pdf-invoice' ),
+							'desc'    => esc_html__( 'Invoice PDF is attached to the selected WooCommerce emails. Invoice is auto-created if it does not exist yet.', 'wpwing-wc-pdf-invoice' ),
+							'options' => $email_options,
+							'default' => array(),
 						),
 					) )
 				)

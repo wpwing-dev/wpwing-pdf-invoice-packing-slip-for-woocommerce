@@ -39,6 +39,28 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 			add_filter( 'woocommerce_my_account_my_orders_actions', array( $this, 'filter_woocommerce_my_account_my_orders_actions' ), 10, 2 );
+
+			// Auto-generate on status change.
+			add_action( 'woocommerce_order_status_changed', array( $this, 'maybe_auto_generate' ), 10, 4 );
+
+			// Attach PDF to WooCommerce emails.
+			add_filter( 'woocommerce_email_attachments', array( $this, 'attach_document_to_email' ), 10, 3 );
+
+			// Bulk actions — classic orders screen.
+			add_filter( 'bulk_actions-edit-shop_order', array( $this, 'add_bulk_actions' ) );
+			add_filter( 'handle_bulk_actions-edit-shop_order', array( $this, 'handle_bulk_actions' ), 10, 3 );
+
+			// Bulk actions — HPOS orders screen.
+			add_filter( 'bulk_actions-woocommerce_page_wc-orders', array( $this, 'add_bulk_actions' ) );
+			add_filter( 'handle_bulk_actions-woocommerce_page_wc-orders', array( $this, 'handle_bulk_actions' ), 10, 3 );
+
+			// Invoice status column — classic orders screen.
+			add_filter( 'manage_shop_order_posts_columns', array( $this, 'add_order_list_column' ) );
+			add_action( 'manage_shop_order_posts_custom_column', array( $this, 'render_order_list_column' ), 10, 2 );
+
+			// Invoice status column — HPOS orders screen.
+			add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'add_order_list_column' ) );
+			add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'render_order_list_column' ), 10, 2 );
 		}
 
 		/**
@@ -74,27 +96,41 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 2.0.0
 		 */
 		public function show_admin_notices() {
-			if ( ! isset( $_GET['wpwing_notice'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				return;
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_GET['wpwing_notice'] ) ) {
+				$notice = sanitize_key( $_GET['wpwing_notice'] );
+
+				$messages = array(
+					'invoice_created'   => array( 'success', __( 'Invoice created successfully.', 'wpwing-wc-pdf-invoice' ) ),
+					'invoice_cancelled' => array( 'warning', __( 'Invoice has been cancelled.', 'wpwing-wc-pdf-invoice' ) ),
+					'packing_created'   => array( 'success', __( 'Packing slip created successfully.', 'wpwing-wc-pdf-invoice' ) ),
+					'packing_cancelled' => array( 'warning', __( 'Packing slip has been cancelled.', 'wpwing-wc-pdf-invoice' ) ),
+				);
+
+				if ( isset( $messages[ $notice ] ) ) {
+					list( $type, $message ) = $messages[ $notice ];
+					printf(
+						'<div class="notice notice-%s is-dismissible"><p>%s</p></div>',
+						esc_attr( $type ),
+						esc_html( $message )
+					);
+				}
 			}
 
-			$notice = sanitize_key( $_GET['wpwing_notice'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_GET['wpwing_bulk_created'] ) ) {
+				$count = intval( $_GET['wpwing_bulk_created'] );
+				$type  = isset( $_GET['wpwing_bulk_type'] ) ? sanitize_key( $_GET['wpwing_bulk_type'] ) : 'invoice';
+				$label = 'invoice' === $type ? __( 'invoice', 'wpwing-wc-pdf-invoice' ) : __( 'packing slip', 'wpwing-wc-pdf-invoice' );
 
-			$messages = array(
-				'invoice_created'    => array( 'success', __( 'Invoice created successfully.', 'wpwing-wc-pdf-invoice' ) ),
-				'invoice_cancelled'  => array( 'warning', __( 'Invoice has been cancelled.', 'wpwing-wc-pdf-invoice' ) ),
-				'packing_created'    => array( 'success', __( 'Packing slip created successfully.', 'wpwing-wc-pdf-invoice' ) ),
-				'packing_cancelled'  => array( 'warning', __( 'Packing slip has been cancelled.', 'wpwing-wc-pdf-invoice' ) ),
-			);
-
-			if ( isset( $messages[ $notice ] ) ) {
-				list( $type, $message ) = $messages[ $notice ];
 				printf(
-					'<div class="notice notice-%s is-dismissible"><p>%s</p></div>',
-					esc_attr( $type ),
-					esc_html( $message )
+					'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+					esc_html(
+						// translators: %1$d: count of generated documents, %2$s: document type label.
+						sprintf( _n( '%1$d %2$s generated.', '%1$d %2$ss generated.', $count, 'wpwing-wc-pdf-invoice' ), $count, $label )
+					)
 				);
 			}
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		}
 
 		/**
@@ -353,16 +389,6 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			if ( null !== $document ) {
 				$this->save_document( $document );
 			}
-
-			if ( $this->settings->get_option( 'invoice_send_customer' ) ) {
-				$order      = new WC_Order( $order_id );
-				$to         = $order->get_billing_email();
-				$subject    = __( 'Order Invoice (PDF)', 'wpwing-wc-pdf-invoice' );
-				$message    = __( 'Dear Customer, Here is your order invoice. Please check the attachment.', 'wpwing-wc-pdf-invoice' );
-				$headers    = array( 'Content-Type: text/html; charset=UTF-8' );
-				$attachment = WPWING_WCPI_DOCUMENT_SAVE_DIR . $order->get_meta( '_wpwing_wcpi_invoice_path' );
-				wc_mail( $to, $subject, $message, $headers, $attachment );
-			}
 		}
 
 		/**
@@ -425,6 +451,181 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			global $wpwing_wcpi_document;
 			$wpwing_wcpi_document = $document;
 			$wpwing_wcpi_document->save();
+		}
+
+		/**
+		 * Auto-generate invoice or packing slip when an order status matches configured triggers.
+		 *
+		 * @param int      $order_id   Order ID.
+		 * @param string   $old_status Previous status slug (without wc- prefix).
+		 * @param string   $new_status New status slug (without wc- prefix).
+		 * @param WC_Order $order      Order object.
+		 *
+		 * @since 2.0.0
+		 */
+		public function maybe_auto_generate( $order_id, $old_status, $new_status, $order ) {
+			$invoice_statuses = $this->settings->get_option( 'invoice_auto_statuses' );
+			if ( is_array( $invoice_statuses ) && in_array( $new_status, $invoice_statuses, true ) ) {
+				$invoice = $this->get_document_by_type( $order_id, 'invoice' );
+				if ( null !== $invoice && ! $invoice->exists ) {
+					$this->save_document( $invoice );
+				}
+			}
+
+			$packing_statuses = $this->settings->get_option( 'packing_auto_statuses' );
+			if ( is_array( $packing_statuses ) && in_array( $new_status, $packing_statuses, true ) ) {
+				$packing = $this->get_document_by_type( $order_id, 'packing' );
+				if ( null !== $packing && ! $packing->exists ) {
+					$this->save_document( $packing );
+				}
+			}
+		}
+
+		/**
+		 * Attach the invoice PDF to configured WooCommerce transactional emails.
+		 *
+		 * @param array    $attachments Current email attachments.
+		 * @param string   $email_id    WooCommerce email ID.
+		 * @param WC_Order $object      Object passed to the email (usually WC_Order).
+		 * @return array
+		 *
+		 * @since 2.0.0
+		 */
+		public function attach_document_to_email( $attachments, $email_id, $object ) {
+			$configured_ids = $this->settings->get_option( 'invoice_attach_to_emails' );
+
+			if ( ! is_array( $configured_ids ) || ! in_array( $email_id, $configured_ids, true ) ) {
+				return $attachments;
+			}
+
+			if ( ! ( $object instanceof WC_Order ) ) {
+				return $attachments;
+			}
+
+			$order_id = $object->get_id();
+			$invoice  = $this->get_document_by_type( $order_id, 'invoice' );
+
+			if ( null === $invoice ) {
+				return $attachments;
+			}
+
+			if ( ! $invoice->exists ) {
+				$this->save_document( $invoice );
+			}
+
+			$path = WPWING_WCPI_DOCUMENT_SAVE_DIR . $invoice->save_path;
+			if ( file_exists( $path ) ) {
+				$attachments[] = $path;
+			}
+
+			return $attachments;
+		}
+
+		/**
+		 * Register bulk actions on the orders list screen.
+		 *
+		 * @param array $actions Existing bulk actions.
+		 * @return array
+		 *
+		 * @since 2.0.0
+		 */
+		public function add_bulk_actions( $actions ) {
+			$actions['wpwing_generate_invoices'] = __( 'Generate Invoices', 'wpwing-wc-pdf-invoice' );
+			$actions['wpwing_generate_packing']  = __( 'Generate Packing Slips', 'wpwing-wc-pdf-invoice' );
+			return $actions;
+		}
+
+		/**
+		 * Process bulk invoice / packing slip generation.
+		 *
+		 * @param string $redirect_to Redirect URL after processing.
+		 * @param string $action      Bulk action key.
+		 * @param array  $ids         Selected order IDs.
+		 * @return string
+		 *
+		 * @since 2.0.0
+		 */
+		public function handle_bulk_actions( $redirect_to, $action, $ids ) {
+			if ( 'wpwing_generate_invoices' !== $action && 'wpwing_generate_packing' !== $action ) {
+				return $redirect_to;
+			}
+
+			$document_type = ( 'wpwing_generate_invoices' === $action ) ? 'invoice' : 'packing';
+			$count         = 0;
+
+			foreach ( $ids as $order_id ) {
+				$document = $this->get_document_by_type( intval( $order_id ), $document_type );
+				if ( null !== $document && ! $document->exists ) {
+					$this->save_document( $document );
+					++$count;
+				}
+			}
+
+			$redirect_to = remove_query_arg( array( 'wpwing_bulk_type', 'wpwing_bulk_created' ), $redirect_to );
+			$redirect_to = add_query_arg(
+				array(
+					'wpwing_bulk_type'    => $document_type,
+					'wpwing_bulk_created' => $count,
+				),
+				$redirect_to
+			);
+
+			return $redirect_to;
+		}
+
+		/**
+		 * Add invoice status column to the orders list table.
+		 *
+		 * @param array $columns Existing table columns.
+		 * @return array
+		 *
+		 * @since 2.0.0
+		 */
+		public function add_order_list_column( $columns ) {
+			$new_columns = array();
+			foreach ( $columns as $key => $label ) {
+				$new_columns[ $key ] = $label;
+				if ( 'order_status' === $key ) {
+					$new_columns['wpwing_invoice'] = __( 'Invoice', 'wpwing-wc-pdf-invoice' );
+				}
+			}
+			return $new_columns;
+		}
+
+		/**
+		 * Render the invoice status column cell.
+		 *
+		 * Works for both classic (post ID int) and HPOS (WC_Order object) screens.
+		 *
+		 * @param string         $column      Column key.
+		 * @param int|WC_Order   $order_or_id Order ID or WC_Order object.
+		 *
+		 * @since 2.0.0
+		 */
+		public function render_order_list_column( $column, $order_or_id ) {
+			if ( 'wpwing_invoice' !== $column ) {
+				return;
+			}
+
+			$order_id = $order_or_id instanceof WC_Order ? $order_or_id->get_id() : intval( $order_or_id );
+			$invoice  = $this->get_document_by_type( $order_id, 'invoice' );
+
+			if ( null !== $invoice && $invoice->exists ) {
+				printf(
+					'<span class="dashicons dashicons-yes-alt" title="%s"></span>',
+					esc_attr__( 'Invoice generated', 'wpwing-wc-pdf-invoice' )
+				);
+			} else {
+				$url = wp_nonce_url(
+					add_query_arg( 'wpwing-create-invoice', $order_id ),
+					'wpwing_create_invoice_' . $order_id
+				);
+				printf(
+					'<a href="%s" title="%s"><span class="dashicons dashicons-plus-alt2"></span></a>',
+					esc_url( $url ),
+					esc_attr__( 'Create Invoice', 'wpwing-wc-pdf-invoice' )
+				);
+			}
 		}
 
 	}

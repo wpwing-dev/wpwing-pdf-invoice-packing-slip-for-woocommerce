@@ -44,6 +44,8 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 				'name' => [],
 				'value' => [],
 				'readonly' => [],
+				'multiple' => [],
+				'size' => [],
 			],
 			'option' => [
 				'value' => [],
@@ -348,8 +350,15 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		public function sanitize_callback( $options ) {
 
 			foreach ( $this->get_defaults() as $opt ) {
-				if ( $opt['type'] === 'checkbox' && ! isset( $options[ $opt['id'] ] ) ) {
+				if ( 'checkbox' === $opt['type'] && ! isset( $options[ $opt['id'] ] ) ) {
 					$options[ $opt['id'] ] = 0;
+				}
+				if ( 'multiselect' === $opt['type'] ) {
+					if ( ! isset( $options[ $opt['id'] ] ) ) {
+						$options[ $opt['id'] ] = array();
+					} else {
+						$options[ $opt['id'] ] = array_map( 'sanitize_key', (array) $options[ $opt['id'] ] );
+					}
 				}
 			}
 
@@ -467,6 +476,10 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 					$this->select_field_callback( $field );
 					break;
 
+				case 'multiselect':
+					$this->multiselect_field_callback( $field );
+					break;
+
 				case 'upload':
 					$this->upload_field_callback( $field );
 					break;
@@ -541,6 +554,39 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
 			$html = sprintf( '<select %5$s class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]">%3$s</select>', esc_html( $size ), esc_attr( $args['id'] ), implode( '', $options ), esc_html( $this->settings_name ), esc_attr( $attrs ) );
+			$html .= $this->get_field_description( $args );
+
+			echo wp_kses( $html, $this->allowed_html );
+
+		}
+
+		/**
+		 * Multi-select field
+		 *
+		 * @since 2.0.0
+		 */
+		public function multiselect_field_callback( $args ) {
+
+			$options     = apply_filters( "wpwing_wcpi_settings_{$args['id']}_multiselect_options", $args['options'] );
+			$saved_value = $this->get_option( $args['id'] );
+			$value       = is_array( $saved_value ) ? $saved_value : array();
+			$size        = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
+			$attrs       = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
+
+			$option_html = implode( '', array_map( function ( $key, $option ) use ( $value ) {
+				$selected = in_array( $key, $value, true ) ? ' selected="selected"' : '';
+				return '<option value="' . esc_attr( $key ) . '"' . $selected . '>' . esc_html( $option ) . '</option>';
+			}, array_keys( $options ), $options ) );
+
+			$html  = sprintf(
+				'<select %5$s multiple="multiple" size="6" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s][]">%3$s</select>',
+				esc_html( $size ),
+				esc_attr( $args['id'] ),
+				$option_html,
+				esc_html( $this->settings_name ),
+				esc_attr( $attrs )
+			);
+			$html .= '<p class="description">' . esc_html__( 'Hold Ctrl (Windows) or Cmd (Mac) to select multiple options.', 'wpwing-wc-pdf-invoice' ) . '</p>';
 			$html .= $this->get_field_description( $args );
 
 			echo wp_kses( $html, $this->allowed_html );

@@ -79,3 +79,23 @@ table.shop_table tr.order td.order-actions a.print-invoice {
     display: none;
 }
 
+.column-wpwing_invoice {
+    width: 50px;
+    text-align: center;
+
+    .dashicons {
+        color: #2271b1;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+
+    .dashicons-yes-alt {
+        color: #00a32a;
+    }
+
+    a {
+        text-decoration: none;
+    }
+}
+
