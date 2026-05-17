@@ -67,6 +67,9 @@ clean: ## Remove the entire dist directory
 	rm -rf $(DIST_DIR)
 .PHONY: clean
 
+dist: zip zip-pro ## Build both FREE and PRO plugin zips into dist/
+.PHONY: dist
+
 zip-pro: clean-build-pro ## Build pro addon zip into dist/
 	mkdir -p $(PRO_BUILD)
 	rsync -r --exclude='.gitignore' $(PRO_SRC)/ $(PRO_BUILD)/
