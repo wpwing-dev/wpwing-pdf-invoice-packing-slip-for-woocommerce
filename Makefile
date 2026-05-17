@@ -52,8 +52,11 @@ zip: clean-build assets ## Build distributable zip into dist/
 release: ## Full release — usage: make release V=1.6.0
 	@[ -n "$(V)" ] || (echo "Usage: make release V=1.6.0" && exit 1)
 	$(MAKE) version V=$(V)
+	$(MAKE) check
 	$(MAKE) lint
 	$(MAKE) zip
+	@echo ""
+	@echo "Next: git commit -am 'Release v$(V)' && make tag V=$(V) && git push && git push --tags"
 .PHONY: release
 
 vendor-prod: ## Install Composer deps without dev packages
@@ -90,8 +93,45 @@ release-pro: ## Full pro release — usage: make release-pro V=1.0.1
 	@[ -n "$(V)" ] || (echo "Usage: make release-pro V=1.0.1" && exit 1)
 	$(MAKE) version-pro V=$(V)
 	$(MAKE) zip-pro
+	@echo ""
+	@echo "Next: git commit -am 'Release pro v$(V)' && git tag -a pro-v$(V) -m 'Release pro v$(V)' && git push --tags"
 .PHONY: release-pro
 
 clean-build-pro: ## Remove pro staging build dir
 	rm -rf $(PRO_BUILD)
 .PHONY: clean-build-pro
+
+check: ## Verify version strings are consistent across all files
+	@V=$$(grep 'Version:' $(PLUGIN_SLUG).php | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1); \
+	echo "Checking version $$V …"; \
+	errors=0; \
+	grep -q "\"version\": \"$$V\"" package.json          || { echo "  FAIL: version in package.json"; errors=1; }; \
+	grep -qP "Stable tag:\s+$$V" readme.txt               || { echo "  FAIL: Stable tag in readme.txt"; errors=1; }; \
+	grep -q "WPWING_WCPI_VERSION', '$$V'" $(PLUGIN_SLUG).php || { echo "  FAIL: WPWING_WCPI_VERSION constant"; errors=1; }; \
+	[ $$errors -eq 0 ] && echo "  All version strings match $$V ✓" || exit 1
+.PHONY: check
+
+tag: ## Create annotated git tag — usage: make tag V=1.6.0
+	@[ -n "$(V)" ] || (echo "Usage: make tag V=1.6.0" && exit 1)
+	git tag -a "v$(V)" -m "Release v$(V)"
+	@echo "Tagged v$(V) — push with: git push --tags"
+.PHONY: tag
+
+setup: ## Bootstrap dev environment (first-time setup)
+	composer install
+	npm install
+	@printf '#!/bin/sh\nmake lint\n' > .git/hooks/pre-push
+	@chmod +x .git/hooks/pre-push
+	@echo "Dev environment ready. Run 'make assets' to build CSS/JS."
+.PHONY: setup
+
+changelog: ## Print commits since last tag to help update CHANGELOG.md
+	@LAST=$$(git describe --tags --abbrev=0 2>/dev/null); \
+	if [ -n "$$LAST" ]; then \
+		echo "Commits since $$LAST:"; \
+		git log $$LAST..HEAD --pretty=format:"- %s" --no-merges; \
+	else \
+		echo "No tags yet — showing all commits:"; \
+		git log --pretty=format:"- %s" --no-merges; \
+	fi
+.PHONY: changelog
