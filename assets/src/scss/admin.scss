@@ -9,6 +9,24 @@ table.shop_table tr.order td.order-actions a.print-invoice {
     text-indent: 15px;
 }
 
+#wpwing-pdf-invoice-box .wpwing-wcpi-meta-row {
+    overflow: hidden;
+    padding: 5px 0;
+
+    span:first-child {
+        float: left;
+    }
+
+    strong {
+        float: right;
+    }
+}
+
+#wpwing-pdf-invoice-box .wpwing-wcpi-meta-actions {
+    clear: both;
+    margin-top: 15px;
+}
+
 #wpwing-pdf-invoice-box div.invoice-information a {
     background-repeat: no-repeat;
     background-position: 5px center;
