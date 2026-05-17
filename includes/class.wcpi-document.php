@@ -88,8 +88,10 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 			$options = new Options();
 			$options->setIsRemoteEnabled( true );
 
-			$dompdf = new Dompdf();
+			$paper_size = WPWing_WCPI_Settings::get_instance()->get_option( 'paper_size' );
+			$dompdf     = new Dompdf();
 			$dompdf->setOptions( $options );
+			$dompdf->setPaper( $paper_size ? strtolower( $paper_size ) : 'a4' );
 			$dompdf->loadHtml( $html );
 			$dompdf->render();
 

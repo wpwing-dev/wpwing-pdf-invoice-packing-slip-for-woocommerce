@@ -1,13 +1,19 @@
-<?php global $wpwing_wcpi_document; ?>
+<?php
+global $wpwing_wcpi_document;
+$show_sku = (bool) $wpwing_wcpi_document->settings->get_option( 'show_product_sku' );
+?>
 
 <table class="invoice-details">
 	<thead>
 	<tr>
-		<th class="column-product"><?php _e( 'Product', 'wpwing-wc-pdf-invoice' ); ?></th>
-		<th class="column-quantity"><?php _e( 'Qty', 'wpwing-wc-pdf-invoice' ); ?></th>
-		<th class="column-price"><?php _e( 'Price', 'wpwing-wc-pdf-invoice' ); ?></th>
-		<th class="column-total"><?php _e( 'Line total', 'wpwing-wc-pdf-invoice' ); ?></th>
-		<th class="column-tax"><?php _e( 'Tax', 'wpwing-wc-pdf-invoice' ); ?></th>
+		<th class="column-product"><?php esc_html_e( 'Product', 'wpwing-wc-pdf-invoice' ); ?></th>
+		<?php if ( $show_sku ) : ?>
+			<th class="column-sku"><?php esc_html_e( 'SKU', 'wpwing-wc-pdf-invoice' ); ?></th>
+		<?php endif; ?>
+		<th class="column-quantity"><?php esc_html_e( 'Qty', 'wpwing-wc-pdf-invoice' ); ?></th>
+		<th class="column-price"><?php esc_html_e( 'Price', 'wpwing-wc-pdf-invoice' ); ?></th>
+		<th class="column-total"><?php esc_html_e( 'Line total', 'wpwing-wc-pdf-invoice' ); ?></th>
+		<th class="column-tax"><?php esc_html_e( 'Tax', 'wpwing-wc-pdf-invoice' ); ?></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -16,19 +22,24 @@
 	$order_items = $wpwing_wcpi_document->order->get_items();
 	foreach ( $order_items as $item_id => $item ) {
 		if ( isset( $item['qty'] ) ) {
-			$price_per_unit = $item["line_subtotal"] / $item['qty'];
-			$price_per_unit_sale = $item["line_total"] / $item['qty'];
-			$discount = $price_per_unit - $price_per_unit_sale;
+			$price_per_unit      = $item['line_subtotal'] / $item['qty'];
+			$price_per_unit_sale = $item['line_total'] / $item['qty'];
+			$discount            = $price_per_unit - $price_per_unit_sale;
 		}
-		$tax = $item["line_tax"];
+		$tax     = $item['line_tax'];
+		$product = $item->get_product();
+		$sku     = ( $show_sku && $product ) ? $product->get_sku() : '';
 
 		?>
 
 		<tr>
 			<td class="column-product"><?php echo esc_html( $item['name'] ); ?></td>
-			<td class="column-quantity"><?php echo ( isset( $item['qty'] ) ) ? esc_html( $item['qty'] ) : ''; ?></td>
+			<?php if ( $show_sku ) : ?>
+				<td class="column-sku"><?php echo esc_html( $sku ); ?></td>
+			<?php endif; ?>
+			<td class="column-quantity"><?php echo isset( $item['qty'] ) ? esc_html( $item['qty'] ) : ''; ?></td>
 			<td class="column-price"><?php echo wc_price( $price_per_unit ); ?></td>
-			<td class="column-total"><?php echo wc_price( $item["line_subtotal"] ); ?></td>
+			<td class="column-total"><?php echo wc_price( $item['line_subtotal'] ); ?></td>
 			<td class="column-tax"><?php echo wc_price( $tax ); ?></td>
 		</tr>
 

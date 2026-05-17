@@ -100,6 +100,13 @@ if ( ! class_exists( 'WPWing_WCPI_Settings' ) ) {
 							'placeholder' => 'd/m/Y',
 						),
 						array(
+							'id'      => 'invoice_number_reset_yearly',
+							'type'    => 'checkbox',
+							'title'   => esc_html__( 'Reset invoice number yearly:', 'wpwing-wc-pdf-invoice' ),
+							'desc'    => 'Yes',
+							'default' => false,
+						),
+						array(
 							'id'      	  => 'invoice_button_behavior',
 							'type'        => 'radio',
 							'title'       => esc_html__( 'PDF invoice button behaviour:', 'wpwing-wc-pdf-invoice' ),
@@ -109,6 +116,23 @@ if ( ! class_exists( 'WPWing_WCPI_Settings' ) ) {
 								'open'		=> esc_html__( 'Open PDF on Browser', 'wpwing-wc-pdf-invoice' ),
 							),
 							'default' => 'download'
+						),
+						array(
+							'id'      => 'paper_size',
+							'type'    => 'radio',
+							'title'   => esc_html__( 'Paper size:', 'wpwing-wc-pdf-invoice' ),
+							'options' => array(
+								'A4'     => esc_html__( 'A4', 'wpwing-wc-pdf-invoice' ),
+								'letter' => esc_html__( 'Letter', 'wpwing-wc-pdf-invoice' ),
+							),
+							'default' => 'A4',
+						),
+						array(
+							'id'      => 'invoice_disable_free_orders',
+							'type'    => 'checkbox',
+							'title'   => esc_html__( 'Disable invoice for free orders:', 'wpwing-wc-pdf-invoice' ),
+							'desc'    => 'Yes',
+							'default' => false,
 						),
 						array(
 							'id'      => 'invoice_auto_statuses',
@@ -178,11 +202,53 @@ if ( ! class_exists( 'WPWing_WCPI_Settings' ) ) {
 							'default' 	  => false,
 						),
 						array(
-							'id'          => 'company_details_text',
-							'type'        => 'textarea',
-							'title'       => esc_html__( 'Company details:', 'wpwing-wc-pdf-invoice' ),
+							'id'          => 'company_address',
+							'type'        => 'text',
+							'title'       => esc_html__( 'Street address:', 'wpwing-wc-pdf-invoice' ),
 							'desc'        => '',
-							'placeholder' => 'Write your company details, Address, City, State',
+							'placeholder' => '123 Main St',
+						),
+						array(
+							'id'          => 'company_city',
+							'type'        => 'text',
+							'title'       => esc_html__( 'City:', 'wpwing-wc-pdf-invoice' ),
+							'desc'        => '',
+							'placeholder' => 'City',
+						),
+						array(
+							'id'          => 'company_zip',
+							'type'        => 'text',
+							'title'       => esc_html__( 'ZIP / Postcode:', 'wpwing-wc-pdf-invoice' ),
+							'desc'        => '',
+							'placeholder' => '10001',
+						),
+						array(
+							'id'          => 'company_country',
+							'type'        => 'text',
+							'title'       => esc_html__( 'Country:', 'wpwing-wc-pdf-invoice' ),
+							'desc'        => '',
+							'placeholder' => 'United States',
+						),
+						array(
+							'id'          => 'company_phone',
+							'type'        => 'text',
+							'title'       => esc_html__( 'Phone:', 'wpwing-wc-pdf-invoice' ),
+							'desc'        => '',
+							'placeholder' => '+1 (555) 000-0000',
+						),
+						array(
+							'id'          => 'company_email',
+							'type'        => 'text',
+							'title'       => esc_html__( 'Company email:', 'wpwing-wc-pdf-invoice' ),
+							'desc'        => '',
+							'placeholder' => 'info@example.com',
+						),
+						array(
+							'id'          => 'company_vat',
+							'type'        => 'text',
+							'title'       => esc_html__( 'VAT / Tax ID:', 'wpwing-wc-pdf-invoice' ),
+							'desc'        => '',
+							'placeholder' => 'VAT12345678',
 						),
 						array(
 							'id'      	  => 'company_notes_checkbox',
@@ -211,6 +277,20 @@ if ( ! class_exists( 'WPWing_WCPI_Settings' ) ) {
 							'title'       => esc_html__( 'Footer text:', 'wpwing-wc-pdf-invoice' ),
 							'desc'        => '',
 							'placeholder' => 'Write footer text',
+						),
+						array(
+							'id'      => 'show_shipping_address',
+							'type'    => 'checkbox',
+							'title'   => esc_html__( 'Show shipping address on invoice:', 'wpwing-wc-pdf-invoice' ),
+							'desc'    => 'Yes',
+							'default' => false,
+						),
+						array(
+							'id'      => 'show_product_sku',
+							'type'    => 'checkbox',
+							'title'   => esc_html__( 'Show product SKU on invoice:', 'wpwing-wc-pdf-invoice' ),
+							'desc'    => 'Yes',
+							'default' => false,
 						),
 					) )
 				)

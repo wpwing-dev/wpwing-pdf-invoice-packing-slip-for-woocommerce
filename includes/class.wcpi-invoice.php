@@ -149,6 +149,17 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 			$date = getdate( $this->date );
 			$year = $date['year'];
 
+			if ( $this->settings->get_option( 'invoice_number_reset_yearly' ) ) {
+				$current_year = (int) date( 'Y' );
+				$stored_year  = (int) $this->settings->get_option( '_invoice_last_year' );
+				if ( $stored_year > 0 && $stored_year < $current_year ) {
+					$this->settings->set_option( 'invoice_number', 1 );
+				}
+				if ( $stored_year !== $current_year ) {
+					$this->settings->set_option( '_invoice_last_year', $current_year );
+				}
+			}
+
 			$invoice_number = apply_filters( 'wpwing_wcpi_new_invoice_number', null, $this->order );
 
 			$this->number = $invoice_number ? $invoice_number : $this->get_new_invoice_number();
@@ -200,20 +211,49 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 		 */
 		public function show_invoice_template_company_data() {
 
-			$company_name = $this->settings->get_option( 'company_name_checkbox' ) ? $this->settings->get_option( 'company_name_text' ) : null;
-			$company_details = $this->settings->get_option( 'company_details_checkbox' ) ? nl2br( $this->settings->get_option( 'company_details_text' ) ) : null;
+			$company_name    = $this->settings->get_option( 'company_name_checkbox' ) ? $this->settings->get_option( 'company_name_text' ) : null;
+			$show_details    = (bool) $this->settings->get_option( 'company_details_checkbox' );
 
-
-			if ( ! isset( $company_name ) && ! isset( $company_details ) ) {
+			if ( ! $company_name && ! $show_details ) {
 				return;
 			}
 
-			echo '<span class="invoice-from-to">' . __( "Invoice From", 'wpwing-wc-pdf-invoice' ) . ' </span>';
-			if ( isset( $company_name ) ) {
-				echo '<div class="company-name">' . wp_kses_post( $company_name ) . '</div>';
+			echo '<span class="invoice-from-to">' . esc_html__( 'Invoice From', 'wpwing-wc-pdf-invoice' ) . '</span>';
+
+			if ( $company_name ) {
+				echo '<div class="company-name">' . esc_html( $company_name ) . '</div>';
 			}
-			if ( isset( $company_details ) ) {
-				echo '<div class="company-details" > ' . wp_kses_post( $company_details ) . '</div > ';
+
+			if ( $show_details ) {
+				$address = $this->settings->get_option( 'company_address' );
+				$city    = $this->settings->get_option( 'company_city' );
+				$zip     = $this->settings->get_option( 'company_zip' );
+				$country = $this->settings->get_option( 'company_country' );
+				$phone   = $this->settings->get_option( 'company_phone' );
+				$email   = $this->settings->get_option( 'company_email' );
+				$vat     = $this->settings->get_option( 'company_vat' );
+
+				echo '<div class="company-details">';
+				if ( $address ) {
+					echo '<div>' . esc_html( $address ) . '</div>';
+				}
+				$city_line = trim( $zip . ' ' . $city );
+				if ( $city_line ) {
+					echo '<div>' . esc_html( $city_line ) . '</div>';
+				}
+				if ( $country ) {
+					echo '<div>' . esc_html( $country ) . '</div>';
+				}
+				if ( $phone ) {
+					echo '<div>' . esc_html__( 'Tel:', 'wpwing-wc-pdf-invoice' ) . ' ' . esc_html( $phone ) . '</div>';
+				}
+				if ( $email ) {
+					echo '<div>' . esc_html__( 'Email:', 'wpwing-wc-pdf-invoice' ) . ' ' . esc_html( $email ) . '</div>';
+				}
+				if ( $vat ) {
+					echo '<div>' . esc_html__( 'VAT:', 'wpwing-wc-pdf-invoice' ) . ' ' . esc_html( $vat ) . '</div>';
+				}
+				echo '</div>';
 			}
 
 		}
@@ -248,14 +288,19 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 
 			global $wpwing_wcpi_document;
 
-			echo '<div class="invoice-to-section" > ';
+			echo '<div class="invoice-to-section">';
 
 			if ( $wpwing_wcpi_document->order->get_formatted_billing_address() ) {
-				echo '<span class="invoice-from-to" > ' . __( "Invoice To", 'wpwing-wc-pdf-invoice' ) . '</span > ';
-				echo '<div class="customer-details">' . wp_kses( $wpwing_wcpi_document->order->get_formatted_billing_address(), array( "br" => array() ) ) . '</div>';
+				echo '<span class="invoice-from-to">' . esc_html__( 'Invoice To', 'wpwing-wc-pdf-invoice' ) . '</span>';
+				echo '<div class="customer-details">' . wp_kses( $wpwing_wcpi_document->order->get_formatted_billing_address(), array( 'br' => array() ) ) . '</div>';
 			}
 
-			echo '</div > ';
+			if ( $this->settings->get_option( 'show_shipping_address' ) && $wpwing_wcpi_document->order->get_formatted_shipping_address() ) {
+				echo '<span class="invoice-from-to invoice-ship-to">' . esc_html__( 'Ship To', 'wpwing-wc-pdf-invoice' ) . '</span>';
+				echo '<div class="customer-details">' . wp_kses( $wpwing_wcpi_document->order->get_formatted_shipping_address(), array( 'br' => array() ) ) . '</div>';
+			}
+
+			echo '</div>';
 
 		}
 

@@ -154,19 +154,48 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 		public function show_packing_template_company_data() {
 
 			$company_name = $this->settings->get_option( 'company_name_checkbox' ) ? $this->settings->get_option( 'company_name_text' ) : null;
-			$company_details = $this->settings->get_option( 'company_details_checkbox' ) ? nl2br( $this->settings->get_option( 'company_details_text' ) ) : null;
+			$show_details = (bool) $this->settings->get_option( 'company_details_checkbox' );
 
-
-			if ( ! isset( $company_name ) && ! isset( $company_details ) ) {
+			if ( ! $company_name && ! $show_details ) {
 				return;
 			}
 
-			echo '<span class="invoice-from-to">' . __( "Packing From", 'wpwing-wc-pdf-invoice' ) . ' </span>';
-			if ( isset( $company_name ) ) {
-				echo '<div class="company-name">' . wp_kses_post( $company_name ) . '</div>';
+			echo '<span class="invoice-from-to">' . esc_html__( 'Packing From', 'wpwing-wc-pdf-invoice' ) . '</span>';
+
+			if ( $company_name ) {
+				echo '<div class="company-name">' . esc_html( $company_name ) . '</div>';
 			}
-			if ( isset( $company_details ) ) {
-				echo '<div class="company-details" > ' . wp_kses_post( $company_details ) . '</div > ';
+
+			if ( $show_details ) {
+				$address = $this->settings->get_option( 'company_address' );
+				$city    = $this->settings->get_option( 'company_city' );
+				$zip     = $this->settings->get_option( 'company_zip' );
+				$country = $this->settings->get_option( 'company_country' );
+				$phone   = $this->settings->get_option( 'company_phone' );
+				$email   = $this->settings->get_option( 'company_email' );
+				$vat     = $this->settings->get_option( 'company_vat' );
+
+				echo '<div class="company-details">';
+				if ( $address ) {
+					echo '<div>' . esc_html( $address ) . '</div>';
+				}
+				$city_line = trim( $zip . ' ' . $city );
+				if ( $city_line ) {
+					echo '<div>' . esc_html( $city_line ) . '</div>';
+				}
+				if ( $country ) {
+					echo '<div>' . esc_html( $country ) . '</div>';
+				}
+				if ( $phone ) {
+					echo '<div>' . esc_html__( 'Tel:', 'wpwing-wc-pdf-invoice' ) . ' ' . esc_html( $phone ) . '</div>';
+				}
+				if ( $email ) {
+					echo '<div>' . esc_html__( 'Email:', 'wpwing-wc-pdf-invoice' ) . ' ' . esc_html( $email ) . '</div>';
+				}
+				if ( $vat ) {
+					echo '<div>' . esc_html__( 'VAT:', 'wpwing-wc-pdf-invoice' ) . ' ' . esc_html( $vat ) . '</div>';
+				}
+				echo '</div>';
 			}
 
 		}

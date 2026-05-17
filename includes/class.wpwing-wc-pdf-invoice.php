@@ -384,6 +384,13 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 1.0.0
 		 */
 		public function create_document( $order_id, $document_type = '' ) {
+			if ( 'invoice' === $document_type && $this->settings->get_option( 'invoice_disable_free_orders' ) ) {
+				$order = wc_get_order( $order_id );
+				if ( $order && 0 == $order->get_total() ) {
+					return;
+				}
+			}
+
 			$document = $this->get_document_by_type( $order_id, $document_type );
 
 			if ( null !== $document ) {
@@ -466,9 +473,12 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		public function maybe_auto_generate( $order_id, $old_status, $new_status, $order ) {
 			$invoice_statuses = $this->settings->get_option( 'invoice_auto_statuses' );
 			if ( is_array( $invoice_statuses ) && in_array( $new_status, $invoice_statuses, true ) ) {
-				$invoice = $this->get_document_by_type( $order_id, 'invoice' );
-				if ( null !== $invoice && ! $invoice->exists ) {
-					$this->save_document( $invoice );
+				$skip = $this->settings->get_option( 'invoice_disable_free_orders' ) && 0 == $order->get_total();
+				if ( ! $skip ) {
+					$invoice = $this->get_document_by_type( $order_id, 'invoice' );
+					if ( null !== $invoice && ! $invoice->exists ) {
+						$this->save_document( $invoice );
+					}
 				}
 			}
 
