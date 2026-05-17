@@ -45,6 +45,17 @@ if ( ! class_exists( 'WPWing_WCPI_Settings' ) ) {
 
 			do_action( 'before_wpwing_wcpi_settings', $this );
 
+			$templates = array();
+			if ( defined( 'WPWING_WCPI_TEMPLATE_DIR' ) && is_dir( WPWING_WCPI_TEMPLATE_DIR ) ) {
+				foreach ( (array) glob( WPWING_WCPI_TEMPLATE_DIR . '*', GLOB_ONLYDIR ) as $dir ) {
+					$name              = basename( $dir );
+					$templates[ $name ] = ucfirst( $name );
+				}
+			}
+			if ( empty( $templates ) ) {
+				$templates = array( 'default' => 'Default' );
+			}
+
 			$order_statuses = array();
 			if ( function_exists( 'wc_get_order_statuses' ) ) {
 				foreach ( wc_get_order_statuses() as $status => $label ) {
@@ -167,6 +178,27 @@ if ( ! class_exists( 'WPWing_WCPI_Settings' ) ) {
 					'title'  => esc_html__( 'Template Section', 'wpwing-wc-pdf-invoice' ),
 					'desc'   => esc_html__( 'Basic template for PDF Invoice', 'wpwing-wc-pdf-invoice' ),
 					'fields' => apply_filters( 'wpwing_wcpi_template_settings_fields', array(
+						array(
+							'id'      => 'invoice_template',
+							'type'    => 'select',
+							'title'   => esc_html__( 'Invoice template:', 'wpwing-wc-pdf-invoice' ),
+							'options' => $templates,
+							'default' => 'default',
+						),
+						array(
+							'id'      => 'packing_template',
+							'type'    => 'select',
+							'title'   => esc_html__( 'Packing slip template:', 'wpwing-wc-pdf-invoice' ),
+							'options' => $templates,
+							'default' => 'default',
+						),
+						array(
+							'id'    => 'invoice_preview_btn',
+							'type'  => 'button',
+							'title' => esc_html__( 'Preview invoice', 'wpwing-wc-pdf-invoice' ),
+							'label' => esc_html__( 'Preview Invoice', 'wpwing-wc-pdf-invoice' ),
+							'desc'  => esc_html__( 'Preview the invoice template using your most recent order.', 'wpwing-wc-pdf-invoice' ),
+						),
 						array(
 							'id'      	  => 'company_name_checkbox',
 							'type'    	  => 'checkbox',

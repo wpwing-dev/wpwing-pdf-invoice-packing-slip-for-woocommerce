@@ -54,6 +54,28 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 		}
 
 		/**
+		 * Resolve the theme directory for this document type.
+		 * Falls back to 'default/' if the selected template directory is missing.
+		 *
+		 * @return string Absolute path with trailing slash.
+		 * @since 2.0.0
+		 */
+		public function get_theme_dir() {
+
+			$settings   = WPWing_WCPI_Settings::get_instance();
+			$option_key = 'invoice' === $this->document_type ? 'invoice_template' : 'packing_template';
+			$theme      = $settings->get_option( $option_key );
+			$theme_dir  = WPWING_WCPI_TEMPLATE_DIR . trailingslashit( $theme ? $theme : 'default' );
+
+			if ( ! is_dir( $theme_dir ) ) {
+				$theme_dir = WPWING_WCPI_TEMPLATE_DIR . 'default/';
+			}
+
+			return apply_filters( 'wpwing_wcpi_pdf_theme_dir', $theme_dir, $this->document_type );
+
+		}
+
+		/**
 		 * Generate and save PDF invoice file
 		 *
 		 * @since 1.0.0
@@ -74,7 +96,7 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 
 			$this->init_template();
 
-			$theme_dir = WPWING_WCPI_TEMPLATE_DIR . apply_filters( 'wpwing_wcpi_pdf_theme', 'default/' );
+			$theme_dir = $this->get_theme_dir();
 
 			do_action( 'wpwing_wcpi_before_template_generation' );
 
@@ -157,7 +179,7 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 		 */
 		public function add_template_head() {
 
-			$theme_dir = WPWING_WCPI_TEMPLATE_DIR . apply_filters( 'wpwing_wcpi_pdf_theme', 'default/' );
+			$theme_dir = $this->get_theme_dir();
 			$template_filename = $this->document_type . '/style.css';
       $template_path = $theme_dir . $template_filename;
 			if ( file_exists( $template_path ) ) {
@@ -183,7 +205,7 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 		public function add_template_content() {
 
 			global $wpwing_wcpi_document;
-			$theme_dir = WPWING_WCPI_TEMPLATE_DIR . apply_filters( 'wpwing_wcpi_pdf_theme', 'default/' );
+			$theme_dir = $this->get_theme_dir();
 			$template_filename = $this->document_type . '/index.php';
 			$template_path = $theme_dir . $template_filename;
 

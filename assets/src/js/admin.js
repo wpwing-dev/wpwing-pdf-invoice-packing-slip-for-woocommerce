@@ -62,24 +62,25 @@ jQuery(function($) {
     }
   });
 
-  // Toggle Comapny Details input box
+  // Toggle Company Details fields
+  var $companyDetailFields = $('#company_address-wrapper, #company_city-wrapper, #company_zip-wrapper, #company_country-wrapper, #company_phone-wrapper, #company_email-wrapper, #company_vat-wrapper');
   let companyDetails = $('#company_details_checkbox-field').is(':checked');
   if (companyDetails === true) {
-    $('#company_details_text-wrapper').show();
+    $companyDetailFields.show();
   } else {
-    $('#company_details_text-wrapper').hide();
+    $companyDetailFields.hide();
   }
   $('body').on('click', '#company_details_checkbox-field', function(e) {
     if (companyDetails === true) {
-      $('#company_details_text-wrapper').hide('slow');
+      $companyDetailFields.hide('slow');
       companyDetails = false;
     } else {
-      $('#company_details_text-wrapper').show('slow');
+      $companyDetailFields.show('slow');
       companyDetails = true;
     }
   });
 
-  // Toggle Comapny Notes input box
+  // Toggle Company Notes input box
   let companyNotes = $('#company_notes_checkbox-field').is(':checked');
   if (companyNotes === true) {
     $('#company_notes_text-wrapper').show();
@@ -96,7 +97,7 @@ jQuery(function($) {
     }
   });
 
-  // Toggle Comapny Footer input box
+  // Toggle Company Footer input box
   let companyFooter = $('#company_footer_checkbox-field').is(':checked');
   if (companyFooter === true) {
     $('#company_footer_text-wrapper').show();
@@ -112,5 +113,60 @@ jQuery(function($) {
       companyFooter = true;
     }
   });
+
+  // Invoice preview button
+  $('body').on('click', '#invoice_preview_btn-field', function(e) {
+    e.preventDefault();
+    var $btn = $(this);
+    $btn.prop('disabled', true).text(wpwing_wcpi_object.preview_loading);
+
+    $.ajax({
+      url: wpwing_wcpi_object.ajax_url,
+      type: 'POST',
+      data: {
+        action: 'wpwing_preview_document',
+        nonce: wpwing_wcpi_object.preview_nonce,
+        document_type: 'invoice',
+      },
+      success: function(response) {
+        $btn.prop('disabled', false).text(wpwing_wcpi_object.preview_btn);
+        if (response.success) {
+          openPreviewModal(response.data.html);
+        } else {
+          alert(response.data);
+        }
+      },
+      error: function() {
+        $btn.prop('disabled', false).text(wpwing_wcpi_object.preview_btn);
+        alert('Preview failed. Please try again.');
+      },
+    });
+  });
+
+  function openPreviewModal(html) {
+    var $overlay = $('<div id="wpwing-preview-overlay"></div>');
+    var $modal   = $('<div id="wpwing-preview-modal"></div>');
+    var $close   = $('<button id="wpwing-preview-close" type="button">&times;</button>');
+    var $title   = $('<h2></h2>').text(wpwing_wcpi_object.preview_title);
+    var $iframe  = $('<iframe id="wpwing-preview-frame" frameborder="0"></iframe>');
+
+    $modal.append($close).append($title).append($iframe);
+    $overlay.append($modal);
+    $('body').append($overlay);
+
+    var iframeDoc = $iframe[0].contentDocument || $iframe[0].contentWindow.document;
+    iframeDoc.open();
+    iframeDoc.write(html);
+    iframeDoc.close();
+
+    $overlay.on('click', '#wpwing-preview-close', function() {
+      $overlay.remove();
+    });
+    $overlay.on('click', function(e) {
+      if ($(e.target).is($overlay)) {
+        $overlay.remove();
+      }
+    });
+  }
 
 });

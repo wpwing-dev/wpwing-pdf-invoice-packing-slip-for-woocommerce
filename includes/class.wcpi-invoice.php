@@ -349,7 +349,7 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 		 */
 		public function show_invoice_template_product_list() {
 
-			$theme_dir = WPWING_WCPI_TEMPLATE_DIR . apply_filters( 'wpwing_wcpi_pdf_theme', 'default/' );
+			$theme_dir = $this->get_theme_dir();
 
 			include( $theme_dir . 'invoice/products.php' );
 
@@ -362,7 +362,7 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 		 */
 		public function show_invoice_template_footer() {
 
-			$theme_dir = WPWING_WCPI_TEMPLATE_DIR . apply_filters( 'wpwing_wcpi_pdf_theme', 'default/' );
+			$theme_dir = $this->get_theme_dir();
 
 			if ( $this->settings->get_option( 'company_notes_checkbox' ) ) {
 				$notes = $this->settings->get_option( 'company_notes_text' );

@@ -61,6 +61,9 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			// Invoice status column — HPOS orders screen.
 			add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'add_order_list_column' ) );
 			add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'render_order_list_column' ), 10, 2 );
+
+			// AJAX invoice/packing preview.
+			add_action( 'wp_ajax_wpwing_preview_document', array( $this, 'ajax_preview_document' ) );
 		}
 
 		/**
@@ -340,10 +343,14 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				apply_filters(
 					'wpwing_wcpi_admin_localize',
 					array(
-						'ajax_url'     => admin_url( 'admin-ajax.php' ),
-						'ajax_loader'  => WPWING_WCPI_ASSETS_URL . '/images/ajax-loader.gif',
+						'ajax_url'       => admin_url( 'admin-ajax.php' ),
+						'ajax_loader'    => WPWING_WCPI_ASSETS_URL . '/images/ajax-loader.gif',
 						'logo_message_1' => esc_html__( 'The logo your uploading is ', 'wpwing-wc-pdf-invoice' ),
 						'logo_message_2' => esc_html__( '. Logo must be no bigger than 300 x 150 pixels', 'wpwing-wc-pdf-invoice' ),
+						'preview_nonce'  => wp_create_nonce( 'wpwing_preview_document' ),
+						'preview_btn'    => esc_html__( 'Preview Invoice', 'wpwing-wc-pdf-invoice' ),
+						'preview_title'  => esc_html__( 'Invoice Preview', 'wpwing-wc-pdf-invoice' ),
+						'preview_loading' => esc_html__( 'Loading…', 'wpwing-wc-pdf-invoice' ),
 					)
 				)
 			);
@@ -636,6 +643,51 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 					esc_attr__( 'Create Invoice', 'wpwing-wc-pdf-invoice' )
 				);
 			}
+		}
+
+		/**
+		 * AJAX handler: render an HTML preview of the invoice or packing slip template.
+		 *
+		 * @since 2.0.0
+		 */
+		public function ajax_preview_document() {
+			check_ajax_referer( 'wpwing_preview_document', 'nonce' );
+
+			if ( ! current_user_can( 'manage_woocommerce' ) ) {
+				wp_send_json_error( __( 'Permission denied.', 'wpwing-wc-pdf-invoice' ) );
+			}
+
+			$document_type = isset( $_POST['document_type'] ) ? sanitize_key( $_POST['document_type'] ) : 'invoice';
+
+			$orders = wc_get_orders( array( 'limit' => 1, 'orderby' => 'date', 'order' => 'DESC' ) );
+			if ( empty( $orders ) ) {
+				wp_send_json_error( __( 'No orders found to preview.', 'wpwing-wc-pdf-invoice' ) );
+			}
+
+			$order_id = $orders[0]->get_id();
+			$document = $this->get_document_by_type( $order_id, $document_type );
+
+			if ( null === $document ) {
+				wp_send_json_error( __( 'Invalid document type.', 'wpwing-wc-pdf-invoice' ) );
+			}
+
+			$document->exists = true;
+
+			global $wpwing_wcpi_document;
+			$wpwing_wcpi_document = $document;
+
+			$document->init_template();
+			$document->init_template_generation_actions();
+
+			$theme_dir = $document->get_theme_dir();
+
+			ob_start();
+			wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
+			$html = ob_get_clean();
+
+			$document->flush_template();
+
+			wp_send_json_success( array( 'html' => $html ) );
 		}
 
 	}

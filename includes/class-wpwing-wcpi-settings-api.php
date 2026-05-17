@@ -68,6 +68,13 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			],
 			'br' => [],
 			'strong' => [],
+		'button' => [
+			'type'     => [],
+			'id'       => [],
+			'class'    => [],
+			'name'     => [],
+			'disabled' => [],
+		],
 		];
 
 		public function __construct() {
@@ -480,6 +487,10 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 					$this->multiselect_field_callback( $field );
 					break;
 
+				case 'button':
+					$this->button_field_callback( $field );
+					break;
+
 				case 'upload':
 					$this->upload_field_callback( $field );
 					break;
@@ -554,6 +565,26 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
 			$html = sprintf( '<select %5$s class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]">%3$s</select>', esc_html( $size ), esc_attr( $args['id'] ), implode( '', $options ), esc_html( $this->settings_name ), esc_attr( $attrs ) );
+			$html .= $this->get_field_description( $args );
+
+			echo wp_kses( $html, $this->allowed_html );
+
+		}
+
+		/**
+		 * Button field — renders a clickable button (no saved value).
+		 *
+		 * @since 2.0.0
+		 */
+		public function button_field_callback( $args ) {
+
+			$class = isset( $args['class'] ) ? $args['class'] : '';
+			$html  = sprintf(
+				'<button type="button" id="%s-field" class="button %s">%s</button>',
+				esc_attr( $args['id'] ),
+				esc_attr( $class ),
+				esc_html( $args['label'] )
+			);
 			$html .= $this->get_field_description( $args );
 
 			echo wp_kses( $html, $this->allowed_html );
