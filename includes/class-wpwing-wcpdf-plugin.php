@@ -2,16 +2,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
+if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 
 	/**
 	 * Implements features of WPWing WC Pdf Invoice
 	 *
-	 * @class   WPWing_WC_Pdf_Invoice
+	 * @class   WPWing_WcPdf_Plugin
 	 * @package WPWing
 	 * @since   1.0.0
 	 */
-	class WPWing_WC_Pdf_Invoice {
+	class WPWing_WcPdf_Plugin {
 
 		/**
 		 * Settings API instance
@@ -86,7 +86,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 
 				$actions['wpwing_invoice'] = array(
 					'url'  => $nonce_url,
-					'name' => __( 'Invoice', 'wpwing-wc-pdf-invoice' ),
+					'name' => __( 'Invoice', 'wpwing-wcpdf' ),
 				);
 			}
 
@@ -104,10 +104,10 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				$notice = sanitize_key( $_GET['wpwing_notice'] );
 
 				$messages = array(
-					'invoice_created'   => array( 'success', __( 'Invoice created successfully.', 'wpwing-wc-pdf-invoice' ) ),
-					'invoice_cancelled' => array( 'warning', __( 'Invoice has been cancelled.', 'wpwing-wc-pdf-invoice' ) ),
-					'packing_created'   => array( 'success', __( 'Packing slip created successfully.', 'wpwing-wc-pdf-invoice' ) ),
-					'packing_cancelled' => array( 'warning', __( 'Packing slip has been cancelled.', 'wpwing-wc-pdf-invoice' ) ),
+					'invoice_created'   => array( 'success', __( 'Invoice created successfully.', 'wpwing-wcpdf' ) ),
+					'invoice_cancelled' => array( 'warning', __( 'Invoice has been cancelled.', 'wpwing-wcpdf' ) ),
+					'packing_created'   => array( 'success', __( 'Packing slip created successfully.', 'wpwing-wcpdf' ) ),
+					'packing_cancelled' => array( 'warning', __( 'Packing slip has been cancelled.', 'wpwing-wcpdf' ) ),
 				);
 
 				if ( isset( $messages[ $notice ] ) ) {
@@ -124,14 +124,14 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				$count   = intval( $_GET['wpwing_bulk_created'] );
 				$skipped = isset( $_GET['wpwing_bulk_skipped'] ) ? intval( $_GET['wpwing_bulk_skipped'] ) : 0;
 				$type    = isset( $_GET['wpwing_bulk_type'] ) ? sanitize_key( $_GET['wpwing_bulk_type'] ) : 'invoice';
-				$label   = 'invoice' === $type ? __( 'invoice', 'wpwing-wc-pdf-invoice' ) : __( 'packing slip', 'wpwing-wc-pdf-invoice' );
+				$label   = 'invoice' === $type ? __( 'invoice', 'wpwing-wcpdf' ) : __( 'packing slip', 'wpwing-wcpdf' );
 
 				// translators: %1$d: count of generated documents, %2$s: document type label.
-				$message = sprintf( _n( '%1$d %2$s generated.', '%1$d %2$ss generated.', $count, 'wpwing-wc-pdf-invoice' ), $count, $label );
+				$message = sprintf( _n( '%1$d %2$s generated.', '%1$d %2$ss generated.', $count, 'wpwing-wcpdf' ), $count, $label );
 
 				if ( $skipped > 0 ) {
 					// translators: %d: number of orders not processed due to the 50-order batch limit.
-					$message .= ' ' . sprintf( _n( '%d order was not processed (50-order limit per action — run again to continue).', '%d orders were not processed (50-order limit per action — run again to continue).', $skipped, 'wpwing-wc-pdf-invoice' ), $skipped );
+					$message .= ' ' . sprintf( _n( '%d order was not processed (50-order limit per action — run again to continue).', '%d orders were not processed (50-order limit per action — run again to continue).', $skipped, 'wpwing-wcpdf' ), $skipped );
 				}
 
 				printf(
@@ -174,10 +174,10 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			if ( isset( $_GET['wpwing-create-invoice'] ) ) {
 				$order_id = intval( $_GET['wpwing-create-invoice'] );
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_create_invoice_' . $order_id ) ) {
-					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
 				}
 				if ( ! $this->user_can_manage_order( $order_id, true ) ) {
-					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wcpdf' ) );
 				}
 				$this->create_document( $order_id, 'invoice' );
 				$notice = 'invoice_created';
@@ -185,10 +185,10 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			} elseif ( isset( $_GET['wpwing-view-invoice'] ) ) {
 				$order_id = intval( $_GET['wpwing-view-invoice'] );
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_view_invoice_' . $order_id ) ) {
-					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
 				}
 				if ( ! $this->user_can_manage_order( $order_id ) ) {
-					wp_die( esc_html__( 'You do not have permission to view this document.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'You do not have permission to view this document.', 'wpwing-wcpdf' ) );
 				}
 				$this->view_document( $order_id, 'invoice' );
 				return;
@@ -196,10 +196,10 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			} elseif ( isset( $_GET['wpwing-reset-invoice'] ) ) {
 				$order_id = intval( $_GET['wpwing-reset-invoice'] );
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_reset_invoice_' . $order_id ) ) {
-					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
 				}
 				if ( ! $this->user_can_manage_order( $order_id, true ) ) {
-					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wcpdf' ) );
 				}
 				$this->reset_document( $order_id, 'invoice' );
 				$notice = 'invoice_cancelled';
@@ -207,10 +207,10 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			} elseif ( isset( $_GET['wpwing-create-packing'] ) ) {
 				$order_id = intval( $_GET['wpwing-create-packing'] );
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_create_packing_' . $order_id ) ) {
-					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
 				}
 				if ( ! $this->user_can_manage_order( $order_id, true ) ) {
-					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wcpdf' ) );
 				}
 				$this->create_document( $order_id, 'packing' );
 				$notice = 'packing_created';
@@ -218,10 +218,10 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			} elseif ( isset( $_GET['wpwing-view-packing'] ) ) {
 				$order_id = intval( $_GET['wpwing-view-packing'] );
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_view_packing_' . $order_id ) ) {
-					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
 				}
 				if ( ! $this->user_can_manage_order( $order_id ) ) {
-					wp_die( esc_html__( 'You do not have permission to view this document.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'You do not have permission to view this document.', 'wpwing-wcpdf' ) );
 				}
 				$this->view_document( $order_id, 'packing' );
 				return;
@@ -229,10 +229,10 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			} elseif ( isset( $_GET['wpwing-reset-packing'] ) ) {
 				$order_id = intval( $_GET['wpwing-reset-packing'] );
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_reset_packing_' . $order_id ) ) {
-					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
 				}
 				if ( ! $this->user_can_manage_order( $order_id, true ) ) {
-					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wcpdf' ) );
 				}
 				$this->reset_document( $order_id, 'packing' );
 				$notice = 'packing_cancelled';
@@ -257,15 +257,15 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			$date = getdate( time() );
 			$year = $date['year'];
 
-			if ( ! file_exists( WPWING_WCPI_DOCUMENT_SAVE_DIR ) ) {
-				wp_mkdir_p( WPWING_WCPI_DOCUMENT_SAVE_DIR );
+			if ( ! file_exists( WPWING_WCPDF_DOCUMENT_SAVE_DIR ) ) {
+				wp_mkdir_p( WPWING_WCPDF_DOCUMENT_SAVE_DIR );
 			}
 
-			if ( ! file_exists( WPWING_WCPI_DOCUMENT_SAVE_DIR . $year ) ) {
-				wp_mkdir_p( WPWING_WCPI_DOCUMENT_SAVE_DIR . $year );
+			if ( ! file_exists( WPWING_WCPDF_DOCUMENT_SAVE_DIR . $year ) ) {
+				wp_mkdir_p( WPWING_WCPDF_DOCUMENT_SAVE_DIR . $year );
 			}
 
-			$this->settings = WPWing_WCPI_Settings::get_instance();
+			$this->settings = WPWing_WcPdf_Settings::get_instance();
 		}
 
 		/**
@@ -275,7 +275,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 */
 		public function add_invoice_metabox() {
 			$screen = function_exists( 'wc_get_page_screen_id' ) ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
-			add_meta_box( 'wpwing-pdf-invoice-box', esc_html__( 'PDF Invoice by WPWing', 'wpwing-wc-pdf-invoice' ), array( $this, 'show_pdf_invoice_metabox' ), $screen, 'side', 'high' );
+			add_meta_box( 'wpwing-pdf-invoice-box', esc_html__( 'PDF Invoice by WPWing', 'wpwing-wcpdf' ), array( $this, 'show_pdf_invoice_metabox' ), $screen, 'side', 'high' );
 		}
 
 		/**
@@ -290,67 +290,67 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			$invoice  = $this->get_document_by_type( $order_id, 'invoice' );
 			$packing  = $this->get_document_by_type( $order_id, 'packing' );
 			?>
-			<div class="wpwing-wcpi-metabox">
+			<div class="wpwing-wcpdf-metabox">
 
 				<?php if ( ( null !== $invoice ) && $invoice->exists ) : ?>
-				<div class="wpwing-wcpi-summary">
-					<?php esc_html_e( 'Invoiced on:', 'wpwing-wc-pdf-invoice' ); ?>
+				<div class="wpwing-wcpdf-summary">
+					<?php esc_html_e( 'Invoiced on:', 'wpwing-wcpdf' ); ?>
 					<strong><?php echo esc_html( $invoice->get_formatted_date() ); ?></strong>
-					<span class="wpwing-wcpi-sep">|</span>
-					<?php esc_html_e( 'Invoice:', 'wpwing-wc-pdf-invoice' ); ?>
+					<span class="wpwing-wcpdf-sep">|</span>
+					<?php esc_html_e( 'Invoice:', 'wpwing-wcpdf' ); ?>
 					<strong><?php echo esc_html( $invoice->get_formatted_invoice_number() ); ?></strong>
 				</div>
 				<?php endif; ?>
 
-				<div class="wpwing-wcpi-doc-row">
-					<span class="dashicons dashicons-media-document wpwing-wcpi-doc-icon"></span>
-					<span class="wpwing-wcpi-doc-label"><?php esc_html_e( 'Invoice:', 'wpwing-wc-pdf-invoice' ); ?></span>
-					<div class="wpwing-wcpi-doc-actions">
+				<div class="wpwing-wcpdf-doc-row">
+					<span class="dashicons dashicons-media-document wpwing-wcpdf-doc-icon"></span>
+					<span class="wpwing-wcpdf-doc-label"><?php esc_html_e( 'Invoice:', 'wpwing-wcpdf' ); ?></span>
+					<div class="wpwing-wcpdf-doc-actions">
 						<?php if ( ( null !== $invoice ) && $invoice->exists ) : ?>
-							<a class="button tips wpwing_wcpi_view_invoice"
-								data-tip="<?php esc_attr_e( 'View Invoice', 'wpwing-wc-pdf-invoice' ); ?>"
+							<a class="button tips wpwing_wcpdf_view_invoice"
+								data-tip="<?php esc_attr_e( 'View Invoice', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-view-invoice', $invoice->order->get_id() ), 'wpwing_view_invoice_' . $invoice->order->get_id() ) ); ?>"
 								target="_blank">
-								<?php esc_html_e( 'View', 'wpwing-wc-pdf-invoice' ); ?>
+								<?php esc_html_e( 'View', 'wpwing-wcpdf' ); ?>
 							</a>
-							<a class="button tips wpwing_wcpi_cancel_invoice wpwing-btn-cancel"
-								data-tip="<?php esc_attr_e( 'Cancel Invoice', 'wpwing-wc-pdf-invoice' ); ?>"
+							<a class="button tips wpwing_wcpdf_cancel_invoice wpwing-btn-cancel"
+								data-tip="<?php esc_attr_e( 'Cancel Invoice', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-invoice', $invoice->order->get_id() ), 'wpwing_reset_invoice_' . $invoice->order->get_id() ) ); ?>"
-								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to cancel this invoice?', 'wpwing-wc-pdf-invoice' ); ?>')">
-								<span class="dashicons dashicons-dismiss"></span><?php esc_html_e( 'Cancel', 'wpwing-wc-pdf-invoice' ); ?>
+								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to cancel this invoice?', 'wpwing-wcpdf' ); ?>')">
+								<span class="dashicons dashicons-dismiss"></span><?php esc_html_e( 'Cancel', 'wpwing-wcpdf' ); ?>
 							</a>
 						<?php else : ?>
-							<a class="button tips wpwing_wcpi_create_invoice"
-								data-tip="<?php esc_attr_e( 'Create Invoice', 'wpwing-wc-pdf-invoice' ); ?>"
+							<a class="button tips wpwing_wcpdf_create_invoice"
+								data-tip="<?php esc_attr_e( 'Create Invoice', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-invoice', $invoice->order->get_id() ), 'wpwing_create_invoice_' . $invoice->order->get_id() ) ); ?>">
-								<?php esc_html_e( 'Create', 'wpwing-wc-pdf-invoice' ); ?>
+								<?php esc_html_e( 'Create', 'wpwing-wcpdf' ); ?>
 							</a>
 						<?php endif; ?>
 					</div>
 				</div>
 
-				<div class="wpwing-wcpi-doc-row">
-					<span class="dashicons dashicons-archive wpwing-wcpi-doc-icon"></span>
-					<span class="wpwing-wcpi-doc-label"><?php esc_html_e( 'Packing Slip:', 'wpwing-wc-pdf-invoice' ); ?></span>
-					<div class="wpwing-wcpi-doc-actions">
+				<div class="wpwing-wcpdf-doc-row">
+					<span class="dashicons dashicons-archive wpwing-wcpdf-doc-icon"></span>
+					<span class="wpwing-wcpdf-doc-label"><?php esc_html_e( 'Packing Slip:', 'wpwing-wcpdf' ); ?></span>
+					<div class="wpwing-wcpdf-doc-actions">
 						<?php if ( ( null !== $packing ) && $packing->exists ) : ?>
-							<a class="button tips wpwing_wcpi_view_invoice"
-								data-tip="<?php esc_attr_e( 'View Packing Slip', 'wpwing-wc-pdf-invoice' ); ?>"
+							<a class="button tips wpwing_wcpdf_view_invoice"
+								data-tip="<?php esc_attr_e( 'View Packing Slip', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-view-packing', $packing->order->get_id() ), 'wpwing_view_packing_' . $packing->order->get_id() ) ); ?>"
 								target="_blank">
-								<?php esc_html_e( 'View', 'wpwing-wc-pdf-invoice' ); ?>
+								<?php esc_html_e( 'View', 'wpwing-wcpdf' ); ?>
 							</a>
-							<a class="button tips wpwing_wcpi_cancel_invoice wpwing-btn-cancel"
-								data-tip="<?php esc_attr_e( 'Cancel Packing Slip', 'wpwing-wc-pdf-invoice' ); ?>"
+							<a class="button tips wpwing_wcpdf_cancel_invoice wpwing-btn-cancel"
+								data-tip="<?php esc_attr_e( 'Cancel Packing Slip', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-packing', $packing->order->get_id() ), 'wpwing_reset_packing_' . $packing->order->get_id() ) ); ?>"
-								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to cancel this packing slip?', 'wpwing-wc-pdf-invoice' ); ?>')">
-								<span class="dashicons dashicons-dismiss"></span><?php esc_html_e( 'Cancel', 'wpwing-wc-pdf-invoice' ); ?>
+								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to cancel this packing slip?', 'wpwing-wcpdf' ); ?>')">
+								<span class="dashicons dashicons-dismiss"></span><?php esc_html_e( 'Cancel', 'wpwing-wcpdf' ); ?>
 							</a>
 						<?php else : ?>
-							<a class="button tips wpwing_wcpi_create_invoice"
-								data-tip="<?php esc_attr_e( 'Create Packing Slip', 'wpwing-wc-pdf-invoice' ); ?>"
+							<a class="button tips wpwing_wcpdf_create_invoice"
+								data-tip="<?php esc_attr_e( 'Create Packing Slip', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-packing', $packing->order->get_id() ), 'wpwing_create_packing_' . $packing->order->get_id() ) ); ?>">
-								<?php esc_html_e( 'Create', 'wpwing-wc-pdf-invoice' ); ?>
+								<?php esc_html_e( 'Create', 'wpwing-wcpdf' ); ?>
 							</a>
 						<?php endif; ?>
 					</div>
@@ -386,7 +386,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				return;
 			}
 			$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-			wp_enqueue_style( 'wcpi-admin-css', WPWING_WCPI_ASSETS_URL . "/public/css/admin{$suffix}.css", array(), WPWING_WCPI_VERSION );
+			wp_enqueue_style( 'wcpdf-admin-css', WPWING_WCPDF_ASSETS_URL . "/public/css/admin{$suffix}.css", array(), WPWING_WCPDF_VERSION );
 		}
 
 		/**
@@ -406,32 +406,32 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
 			wp_register_script(
-				'wcpi-admin-js',
-				WPWING_WCPI_ASSETS_URL . "/public/js/admin{$suffix}.js",
+				'wcpdf-admin-js',
+				WPWING_WCPDF_ASSETS_URL . "/public/js/admin{$suffix}.js",
 				array( 'jquery', 'jquery-ui-sortable' ),
-				WPWING_WCPI_VERSION,
+				WPWING_WCPDF_VERSION,
 				true
 			);
 
 			wp_localize_script(
-				'wcpi-admin-js',
-				'wpwing_wcpi_object',
+				'wcpdf-admin-js',
+				'wpwing_wcpdf_object',
 				apply_filters(
-					'wpwing_wcpi_admin_localize',
+					'wpwing_wcpdf_admin_localize',
 					array(
 						'ajax_url'       => admin_url( 'admin-ajax.php' ),
-						'ajax_loader'    => WPWING_WCPI_ASSETS_URL . '/images/ajax-loader.gif',
-						'logo_message_1' => esc_html__( 'The logo your uploading is ', 'wpwing-wc-pdf-invoice' ),
-						'logo_message_2' => esc_html__( '. Logo must be no bigger than 300 x 150 pixels', 'wpwing-wc-pdf-invoice' ),
+						'ajax_loader'    => WPWING_WCPDF_ASSETS_URL . '/images/ajax-loader.gif',
+						'logo_message_1' => esc_html__( 'The logo your uploading is ', 'wpwing-wcpdf' ),
+						'logo_message_2' => esc_html__( '. Logo must be no bigger than 300 x 150 pixels', 'wpwing-wcpdf' ),
 						'preview_nonce'  => wp_create_nonce( 'wpwing_preview_document' ),
-						'preview_btn'    => esc_html__( 'Preview Invoice', 'wpwing-wc-pdf-invoice' ),
-						'preview_title'  => esc_html__( 'Invoice Preview', 'wpwing-wc-pdf-invoice' ),
-						'preview_loading' => esc_html__( 'Loading…', 'wpwing-wc-pdf-invoice' ),
+						'preview_btn'    => esc_html__( 'Preview Invoice', 'wpwing-wcpdf' ),
+						'preview_title'  => esc_html__( 'Invoice Preview', 'wpwing-wcpdf' ),
+						'preview_loading' => esc_html__( 'Loading…', 'wpwing-wcpdf' ),
 					)
 				)
 			);
 
-			wp_enqueue_script( 'wcpi-admin-js' );
+			wp_enqueue_script( 'wcpdf-admin-js' );
 		}
 
 		/**
@@ -446,10 +446,10 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		public function get_document_by_type( $order_id, $document_type = '' ) {
 			switch ( $document_type ) {
 				case 'invoice':
-					$document = new WCPI_Invoice( $order_id );
+					$document = new WPWing_WcPdf_Invoice( $order_id );
 					break;
 				case 'packing':
-					$document = new WCPI_Packing( $order_id );
+					$document = new WPWing_WcPdf_Packing( $order_id );
 					break;
 				default:
 					return null;
@@ -493,11 +493,11 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			$document = $this->get_document_by_type( $order_id, $document_type );
 
 			if ( null !== $document ) {
-				$full_path      = WPWING_WCPI_DOCUMENT_SAVE_DIR . $document->save_path;
+				$full_path      = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $document->save_path;
 				$button_behavior = $this->settings->get_option( 'invoice_button_behavior' );
 
 				if ( ! file_exists( $full_path ) ) {
-					wp_die( esc_html__( 'Invoice file not found. Please regenerate the invoice.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'Invoice file not found. Please regenerate the invoice.', 'wpwing-wcpdf' ) );
 				}
 
 				if ( 'open' === $button_behavior ) {
@@ -542,9 +542,9 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 1.0.0
 		 */
 		public function save_document( $document ) {
-			global $wpwing_wcpi_document;
-			$wpwing_wcpi_document = $document;
-			$wpwing_wcpi_document->save();
+			global $wpwing_wcpdf_document;
+			$wpwing_wcpdf_document = $document;
+			$wpwing_wcpdf_document->save();
 		}
 
 		/**
@@ -625,7 +625,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				$this->save_document( $invoice );
 			}
 
-			$path = WPWING_WCPI_DOCUMENT_SAVE_DIR . $invoice->save_path;
+			$path = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $invoice->save_path;
 			if ( file_exists( $path ) ) {
 				$attachments[] = $path;
 			}
@@ -643,8 +643,8 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 		 * @since 2.0.0
 		 */
 		public function add_bulk_actions( $actions ) {
-			$actions['wpwing_generate_invoices'] = __( 'Generate Invoices', 'wpwing-wc-pdf-invoice' );
-			$actions['wpwing_generate_packing']  = __( 'Generate Packing Slips', 'wpwing-wc-pdf-invoice' );
+			$actions['wpwing_generate_invoices'] = __( 'Generate Invoices', 'wpwing-wcpdf' );
+			$actions['wpwing_generate_packing']  = __( 'Generate Packing Slips', 'wpwing-wcpdf' );
 			return $actions;
 		}
 
@@ -703,7 +703,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			foreach ( $columns as $key => $label ) {
 				$new_columns[ $key ] = $label;
 				if ( 'order_status' === $key ) {
-					$new_columns['wpwing_invoice'] = __( 'Invoice', 'wpwing-wc-pdf-invoice' );
+					$new_columns['wpwing_invoice'] = __( 'Invoice', 'wpwing-wcpdf' );
 				}
 			}
 			return $new_columns;
@@ -730,7 +730,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			if ( null !== $invoice && $invoice->exists ) {
 				printf(
 					'<span class="dashicons dashicons-yes-alt" title="%s"></span>',
-					esc_attr__( 'Invoice generated', 'wpwing-wc-pdf-invoice' )
+					esc_attr__( 'Invoice generated', 'wpwing-wcpdf' )
 				);
 			} else {
 				$url = wp_nonce_url(
@@ -740,7 +740,7 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 				printf(
 					'<a href="%s" title="%s"><span class="dashicons dashicons-plus-alt2"></span></a>',
 					esc_url( $url ),
-					esc_attr__( 'Create Invoice', 'wpwing-wc-pdf-invoice' )
+					esc_attr__( 'Create Invoice', 'wpwing-wcpdf' )
 				);
 			}
 		}
@@ -754,27 +754,27 @@ if ( ! class_exists( 'WPWing_WC_Pdf_Invoice' ) ) {
 			check_ajax_referer( 'wpwing_preview_document', 'nonce' );
 
 			if ( ! current_user_can( 'manage_woocommerce' ) ) {
-				wp_send_json_error( __( 'Permission denied.', 'wpwing-wc-pdf-invoice' ) );
+				wp_send_json_error( __( 'Permission denied.', 'wpwing-wcpdf' ) );
 			}
 
 			$document_type = isset( $_POST['document_type'] ) ? sanitize_key( $_POST['document_type'] ) : 'invoice';
 
 			$orders = wc_get_orders( array( 'limit' => 1, 'orderby' => 'date', 'order' => 'DESC' ) );
 			if ( empty( $orders ) ) {
-				wp_send_json_error( __( 'No orders found to preview.', 'wpwing-wc-pdf-invoice' ) );
+				wp_send_json_error( __( 'No orders found to preview.', 'wpwing-wcpdf' ) );
 			}
 
 			$order_id = $orders[0]->get_id();
 			$document = $this->get_document_by_type( $order_id, $document_type );
 
 			if ( null === $document ) {
-				wp_send_json_error( __( 'Invalid document type.', 'wpwing-wc-pdf-invoice' ) );
+				wp_send_json_error( __( 'Invalid document type.', 'wpwing-wcpdf' ) );
 			}
 
 			$document->exists = true;
 
-			global $wpwing_wcpi_document;
-			$wpwing_wcpi_document = $document;
+			global $wpwing_wcpdf_document;
+			$wpwing_wcpdf_document = $document;
 
 			$document->init_template();
 			$document->init_template_generation_actions();

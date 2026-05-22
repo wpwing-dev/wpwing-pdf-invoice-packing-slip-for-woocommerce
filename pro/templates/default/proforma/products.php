@@ -1,6 +1,6 @@
 <?php
-global $wpwing_wcpi_document;
-$show_sku = (bool) $wpwing_wcpi_document->settings->get_option( 'show_product_sku' );
+global $wpwing_wcpdf_document;
+$show_sku = (bool) $wpwing_wcpdf_document->settings->get_option( 'show_product_sku' );
 ?>
 
 <table class="invoice-details">
@@ -17,7 +17,7 @@ $show_sku = (bool) $wpwing_wcpi_document->settings->get_option( 'show_product_sk
 	</thead>
 	<tbody>
 	<?php
-	$order_items = $wpwing_wcpi_document->order->get_items();
+	$order_items = $wpwing_wcpdf_document->order->get_items();
 	foreach ( $order_items as $item_id => $item ) {
 		if ( isset( $item['qty'] ) && $item['qty'] > 0 ) {
 			$price_per_unit = $item['line_subtotal'] / $item['qty'];
@@ -49,10 +49,10 @@ $show_sku = (bool) $wpwing_wcpi_document->settings->get_option( 'show_product_sk
 			<table class="invoice-totals">
 				<tr class="invoice-details-subtotal">
 					<td class="column-product"><?php esc_html_e( 'Subtotal', 'wpwing-pdf-invoice-pro' ); ?></td>
-					<td class="column-total"><?php echo wc_price( $wpwing_wcpi_document->order->get_subtotal() ); ?></td>
+					<td class="column-total"><?php echo wc_price( $wpwing_wcpdf_document->order->get_subtotal() ); ?></td>
 				</tr>
 				<?php if ( 'yes' == get_option( 'woocommerce_calc_taxes' ) ) : ?>
-					<?php foreach ( $wpwing_wcpi_document->order->get_tax_totals() as $code => $tax ) : ?>
+					<?php foreach ( $wpwing_wcpdf_document->order->get_tax_totals() as $code => $tax ) : ?>
 						<tr class="invoice-details-vat">
 							<td class="column-product"><?php echo esc_html( $tax->label ); ?>:</td>
 							<td class="column-total"><?php echo esc_html( $tax->formatted_amount ); ?></td>
@@ -61,7 +61,7 @@ $show_sku = (bool) $wpwing_wcpi_document->settings->get_option( 'show_product_sk
 				<?php endif; ?>
 				<tr class="invoice-details-total">
 					<td class="column-product"><?php esc_html_e( 'Total', 'wpwing-pdf-invoice-pro' ); ?></td>
-					<td class="column-total"><?php echo wc_price( $wpwing_wcpi_document->order->get_total() ); ?></td>
+					<td class="column-total"><?php echo wc_price( $wpwing_wcpdf_document->order->get_total() ); ?></td>
 				</tr>
 			</table>
 		</td>

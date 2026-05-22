@@ -4,61 +4,78 @@ Contributors:       wpwing, voboghure
 Donate link:        https://wpwing.com/
 Tags:               PDF, Invoice, Packing Slip, Packing List, Proforma Invoice, Delivery Notes, Shipping Labels, WooCommerce, WPWing
 Requires at least:  4.8
-Tested up to:       6.9
+Tested up to:       7.0
 Requires PHP:       7.1
-Stable tag:         1.5.0
+Stable tag:         1.5.1
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
-Do you want to print your WooCommerce order invoice or packing slip? Or download them in PDF format? You are in the right place! With WooCommerce you will feel the lack of print invoices or packing lists, which we are happy to fulfill. **PDF Invoice and Packing Slip for WooCommerce** can download your WooCommerce order invoice and packing slip in PDF format for print or email.
+Automatically generate, print, and attach professional PDF invoices and packing slips to WooCommerce emails. Clean, lightweight, and fast.
 
 
 == Description ==
 
-= Must have plugin for WooCommerce with tremendous support =
+Streamline your eCommerce store's fulfillment, billing, and accounting workflows with a clean, lightweight WooCommerce PDF invoicing solution. This plugin automatically generates professional PDF invoices and packing slips, attaches them directly to your standard WooCommerce customer emails, and allows you to securely download or print them directly from your WordPress admin dashboard.
 
-Do you want to print your WooCommerce order invoice or packing slip? Or download them in PDF format? You are in the right place! With WooCommerce you will feel the lack of print invoices or packing lists, which we are happy to fulfill. **PDF Invoice and Packing Slip for WooCommerce** can download your WooCommerce order invoice and packing slip in PDF format for print or email.
+Whether you need to send a legal tax invoice to a buyer, include a printed packing list inside a shipping box, or keep an organized archive of your store's financial records, this plugin automates the entire process on autopilot.
 
-✅ Tested OK with WooCommerce 10.7.0
+Built strictly with performance, security, and modern WordPress standards in mind, it handles document generation seamlessly on your server. It ensures your site remains lightning-fast without bloating your database, overloading your server memory, or slowing down your customer checkout conversion rates.
 
-### 🔥 FEATURES: ###
+✅ Tested OK with WooCommerce 10.7.0+
+🚀 High-Performance Order Storage (HPOS) Compatible
 
-- **Download PDF invoice and packing slip:** Easily generate and download PDF invoices and packing slips from your order admin page.
-- **Supported documents:** Invoice and Packing list.
-- **Customization:** Customize invoices or packing lists by adding your store logo, store name, and more.
-- **Print invoice from the My-Account page:** Allow logged-in customers to print their invoices from the My-Account page.
+### 🔥 KEY FEATURES ###
 
-= About WPWing =
+* 📑 **Automated Email PDF Attachment:** Automatically generate and attach PDF invoices to specific WooCommerce order status emails, including Processing Order, Completed Order, or Customer Invoice / Order Details.
+* 📦 **Efficient Order Management & Bulk Actions:** Save time during busy shipping hours. Quickly download or print multiple invoices and packing slips simultaneously directly from your WooCommerce orders list page.
+* 🎨 **Multiple Beautiful Templates:** Switch between beautifully formatted layouts including our crisp "Default" and modern minimalist designs that print perfectly on standard A4 or Letter sizes.
+* ⚙️ **Fully Customizable Store Branding:** Create a professional look that matches your business identity. Easily upload your store logo, input company address details, insert tax registration information (VAT/GST/Tax ID), and add custom terms or footer notes.
+* 🔢 **Sequential Invoice Numbering:** Keep your business accounting perfectly compliant. Set up custom invoice numbers with personalized prefixes, suffixes, dynamic padding length, and an option for an automatic yearly number reset.
+* 👤 **Secure Customer My-Account Downloads:** Logged-in customers can easily navigate to their account page to view, print, or download past PDF invoices for their personal bookkeeping.
+* 🔒 **Developer-Friendly & Robust Security:** Built with optimized, clean code ensuring theme compatibility. All critical document actions (create, view, cancel) are fully CSRF-protected with secure WordPress nonces.
 
-WPWing is a startup company that creates quality WordPress/WooCommerce plugins/add-ons to solve unique WordPress/WooCommerce problems.
+### 💡 WHY CHOOSE THIS PLUGIN? ###
+Many alternative WooCommerce invoice layout tools suffer from extreme feature bloat, heavy database queries, or outdated user interfaces that confuse shop managers.
+
+This plugin cuts through the noise by focusing purely on doing two essential tasks perfectly: delivering flawless, elegant PDF invoices and generating accurate packing slips—fast. We don't bundle unnecessary scripts or tracking codes. You get a reliable, high-speed automation tool engineered to help you run your business efficiently.
+
+### 🛣️ FUTURE ROADMAP ###
+We are actively building features to make your shop management even smoother. Look out for these upcoming documentation formats in future releases:
+* Proforma Invoice generation
+* Delivery Notes customization
+* Print-ready Shipping Labels
+
+### 🧑‍💻 Dedicated Support
+At WPWing, we are committed to building high-quality, lightweight utility plugins for WordPress and WooCommerce. Our dedicated support team responds rapidly to the support forums to help you resolve any issues instantly.
 
 
 == Installation ==
 
-= Modern Way: =
-1. Go to the WordPress Dashboard "Add New Plugin" section.
-2. Search For "WPWing PDF Invoice and Packing Slip for WooCommerce".
-3. Install, then Activate it.
+### 🛠️ Modern Way (Recommended): ###
+1. Navigate to your WordPress Dashboard and click on **Plugins > Add New**.
+2. Search for *"PDF Invoice and Packing Slip for WooCommerce"*.
+3. Click **Install Now**, then click **Activate**.
 
-= Old Way: =
-1. Upload `wpwing-pdf-invoice-packing-slip-for-woocommerce` to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Follow the [Documentation](https://wpwing.com/docs/)
+### 📁 Traditional Way: ###
+1. Download the plugin zip file and extract it.
+2. Upload the folder `wpwing-pdf-invoice-packing-slip-for-woocommerce` to your `/wp-content/plugins/` directory.
+3. Activate the plugin through the **Plugins** menu in WordPress.
+4. Follow our official [Documentation](https://wpwing.com/docs/) to configure your layout settings.
 
 
 == Frequently Asked Questions ==
 
-= Do I need coding skills to use PDF Invoice and Packing Slip for WooCommerce? =
+= Do I need coding skills to use this plugin? =
+Not at all! This plugin is designed to be plug-and-play. It features a highly intuitive settings dashboard that lets you upload your logo, add business details, and configure your invoices in just a few clicks.
 
-Not at all! **PDF Invoice and Packing Slip for WooCommerce** is simple and super user-friendly.
+= Do I need to edit my current WordPress theme files? =
+No, it works seamlessly out-of-the-box with any standard WordPress theme. You just need to activate the plugin, and the system handles the PDF generation automatically.
 
-= Do I need to edit my current WordPress theme?
+= Is the plugin compatible with WooCommerce HPOS? =
+Yes! The plugin fully supports High-Performance Order Storage (HPOS) to ensure maximum database efficiency and site speed for modern WooCommerce environments.
 
-No, **PDF Invoice and Packing Slip for WooCommerce** works seamlessly with any WordPress theme. You just need to install the plugin and you are ready to create PDF from the WooCommerce order.
-
-= Can I contribute to the code? =
-
-You’re more than welcome! This plugin is hosted on [github](https://github.com/wpwing-dev/wpwing-pdf-invoice-packing-slip-for-woocommerce), where you can create issues or pull requests.
+= Can I contribute to the code or report a bug? =
+You’re more than welcome! This plugin is actively developed and hosted on [GitHub](https://github.com/wpwing-dev/wpwing-pdf-invoice-packing-slip-for-woocommerce), where you can openly create issues or submit pull requests.
 
 
 == Screenshots ==
@@ -71,6 +88,12 @@ You’re more than welcome! This plugin is hosted on [github](https://github.com
 
 
 == Changelog ==
+
+= 1.5.1 - 22/05/2026 =
+
+* Compatibility: Tested and confirmed working with WordPress 7.0.
+* Improved plugin description for clarity.
+* Dev: Renamed all internal hooks, filters, and constants from wpwing_wcpi_ to wpwing_wcpdf_ for better long-term naming. Existing data is migrated automatically — no action needed.
 
 = 1.5.0 - 18/05/2026 =
 

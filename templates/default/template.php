@@ -25,11 +25,11 @@
 		</style>
 		<?php
 			/**
-			 * wpwing_wcpi_template_head hook
+			 * wpwing_wcpdf_template_head hook
 			 *
 			 * @hooked add_template_head - 10 ( add css style )
 			 */
-			do_action( 'wpwing_wcpi_template_head' );
+			do_action( 'wpwing_wcpdf_template_head' );
 		?>
 	</head>
 
@@ -37,11 +37,11 @@
 
 		<?php
 			/**
-			 * wpwing_wcpi_template_content hook
+			 * wpwing_wcpdf_template_content hook
 			 *
 			 * @hooked add_template_content - 10 ( add other content )
 			 */
-			do_action( 'wpwing_wcpi_template_content' );
+			do_action( 'wpwing_wcpdf_template_content' );
 		?>
 
 	</body>

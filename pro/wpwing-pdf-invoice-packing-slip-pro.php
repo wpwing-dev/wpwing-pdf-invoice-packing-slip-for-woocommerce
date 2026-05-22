@@ -21,10 +21,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WPWING_WCPI_PRO_VERSION', '1.0.0' );
-define( 'WPWING_WCPI_PRO_FILE', __FILE__ );
-define( 'WPWING_WCPI_PRO_DIR', plugin_dir_path( __FILE__ ) );
-define( 'WPWING_WCPI_PRO_TEMPLATE_DIR', WPWING_WCPI_PRO_DIR . 'templates/' );
+define( 'WPWING_WCPDF_PRO_VERSION', '1.0.0' );
+define( 'WPWING_WCPDF_PRO_FILE', __FILE__ );
+define( 'WPWING_WCPDF_PRO_DIR', plugin_dir_path( __FILE__ ) );
+define( 'WPWING_WCPDF_PRO_TEMPLATE_DIR', WPWING_WCPDF_PRO_DIR . 'templates/' );
 
 /** Declare HPOS compatibility */
 add_action( 'before_woocommerce_init', function () {
@@ -36,23 +36,23 @@ add_action( 'before_woocommerce_init', function () {
 /**
  * Boot the pro plugin after the free plugin has loaded.
  */
-add_action( 'plugins_loaded', 'wpwing_wcpi_pro_init', 12 );
+add_action( 'plugins_loaded', 'wpwing_wcpdf_pro_init', 12 );
 
-function wpwing_wcpi_pro_init() {
-	if ( ! class_exists( 'WCPI_Document' ) ) {
-		add_action( 'admin_notices', 'wpwing_wcpi_pro_dependency_notice' );
+function wpwing_wcpdf_pro_init() {
+	if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
+		add_action( 'admin_notices', 'wpwing_wcpdf_pro_dependency_notice' );
 		return;
 	}
 
-	require_once WPWING_WCPI_PRO_DIR . 'includes/class.wcpi-pro-document.php';
-	require_once WPWING_WCPI_PRO_DIR . 'includes/class.wcpi-proforma.php';
-	require_once WPWING_WCPI_PRO_DIR . 'includes/class.wcpi-creditnote.php';
-	require_once WPWING_WCPI_PRO_DIR . 'includes/class.wpwing-wcpi-pro.php';
+	require_once WPWING_WCPDF_PRO_DIR . 'includes/class-wcpdf-pro-document.php';
+	require_once WPWING_WCPDF_PRO_DIR . 'includes/class-wcpdf-proforma.php';
+	require_once WPWING_WCPDF_PRO_DIR . 'includes/class-wcpdf-creditnote.php';
+	require_once WPWING_WCPDF_PRO_DIR . 'includes/class-wpwing-wcpdf-pro.php';
 
-	new WPWing_WCPI_Pro();
+	new WPWing_WcPdf_Pro();
 }
 
-function wpwing_wcpi_pro_dependency_notice() {
+function wpwing_wcpdf_pro_dependency_notice() {
 	echo '<div class="notice notice-error"><p>' .
 		esc_html__( 'WPWing PDF Invoice Pro requires the free WPWing PDF Invoice & Packing Slip plugin to be installed and active.', 'wpwing-pdf-invoice-pro' ) .
 		'</p></div>';

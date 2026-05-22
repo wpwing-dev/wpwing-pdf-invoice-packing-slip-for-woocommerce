@@ -2,16 +2,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'WCPI_Packing' ) ) {
+if ( ! class_exists( 'WPWing_WcPdf_Packing' ) ) {
 
 	/**
 	 * Implements features related to a PDF document
 	 *
-	 * @class   WCPI_Packing
+	 * @class   WPWing_WcPdf_Packing
 	 * @package WPWing
 	 * @since   1.0.0
 	 */
-	class WCPI_Packing extends WCPI_Document {
+	class WPWing_WcPdf_Packing extends WPWing_WcPdf_Document {
 
 		/**
 		 * Document type
@@ -72,12 +72,12 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 		 */
 		private function init_document() {
 
-			$this->settings = WPWing_WCPI_Settings::get_instance();
+			$this->settings = WPWing_WcPdf_Settings::get_instance();
 
-			$this->exists = $this->order->get_meta( '_wpwing_wcpi_packing' );
+			$this->exists = $this->order->get_meta( '_wpwing_wcpdf_packing' );
 
 			if ( $this->exists ) {
-				$this->save_path = $this->order->get_meta( '_wpwing_wcpi_packing_path' );
+				$this->save_path = $this->order->get_meta( '_wpwing_wcpdf_packing_path' );
 			}
 
 		}
@@ -89,8 +89,8 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 		 */
 		public function reset() {
 
-			$this->order->delete_meta_data( '_wpwing_wcpi_packing' );
-			$this->order->delete_meta_data( '_wpwing_wcpi_packing_path' );
+			$this->order->delete_meta_data( '_wpwing_wcpdf_packing' );
+			$this->order->delete_meta_data( '_wpwing_wcpdf_packing_path' );
 
 			$this->order->apply_changes();
 			$this->order->save_meta_data();
@@ -113,11 +113,11 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 			$date = getdate( $this->date );
 			$year = $date['year'];
 
-			$filename = apply_filters( 'wpwing_wcpi_packing_filename', "/packing_" . $this->number, $this );
+			$filename = apply_filters( 'wpwing_wcpdf_packing_filename', "/packing_" . $this->number, $this );
 			$this->save_path = $year . $filename . ".pdf";
-			$pdf_path = WPWING_WCPI_DOCUMENT_SAVE_DIR . $this->save_path;
+			$pdf_path = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $this->save_path;
 			$this->exists = true;
-			add_action( 'wpwing_wcpi_before_template_generation', array( $this, 'init_template_generation_actions' ) );
+			add_action( 'wpwing_wcpdf_before_template_generation', array( $this, 'init_template_generation_actions' ) );
 			$this->save_file( $pdf_path );
 
 			if ( ! file_exists( $pdf_path ) ) {
@@ -125,8 +125,8 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 				return;
 			}
 
-			$this->order->update_meta_data( '_wpwing_wcpi_packing', $this->exists );
-			$this->order->update_meta_data( '_wpwing_wcpi_packing_path', $this->save_path );
+			$this->order->update_meta_data( '_wpwing_wcpdf_packing', $this->exists );
+			$this->order->update_meta_data( '_wpwing_wcpdf_packing_path', $this->save_path );
 
 			$this->order->apply_changes();
 			$this->order->save_meta_data();
@@ -141,12 +141,12 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 		 */
 		public function init_template_generation_actions() {
 
-			add_action( 'wpwing_wcpi_packing_template_company_data', array( $this, 'show_packing_template_company_data' ) );
-			add_action( 'wpwing_wcpi_packing_template_company_logo', array( $this, 'show_packing_template_company_logo', ) );
-			add_action( 'wpwing_wcpi_packing_template_customer_data', array( $this, 'show_packing_template_customer_data', ) );
-			add_action( 'wpwing_wcpi_packing_template_order_data', array( $this, 'show_packing_template_order_data', ) );
-			add_action( 'wpwing_wcpi_packing_template_product_list', array( $this, 'show_packing_template_product_list', ) );
-			add_action( 'wpwing_wcpi_packing_template_footer', array( $this, 'show_packing_template_footer' ) );
+			add_action( 'wpwing_wcpdf_packing_template_company_data', array( $this, 'show_packing_template_company_data' ) );
+			add_action( 'wpwing_wcpdf_packing_template_company_logo', array( $this, 'show_packing_template_company_logo', ) );
+			add_action( 'wpwing_wcpdf_packing_template_customer_data', array( $this, 'show_packing_template_customer_data', ) );
+			add_action( 'wpwing_wcpdf_packing_template_order_data', array( $this, 'show_packing_template_order_data', ) );
+			add_action( 'wpwing_wcpdf_packing_template_product_list', array( $this, 'show_packing_template_product_list', ) );
+			add_action( 'wpwing_wcpdf_packing_template_footer', array( $this, 'show_packing_template_footer' ) );
 
 		}
 
@@ -164,7 +164,7 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 				return;
 			}
 
-			echo '<span class="invoice-from-to">' . esc_html__( 'Packing From', 'wpwing-wc-pdf-invoice' ) . '</span>';
+			echo '<span class="invoice-from-to">' . esc_html__( 'Packing From', 'wpwing-wcpdf' ) . '</span>';
 
 			if ( $company_name ) {
 				echo '<div class="company-name">' . esc_html( $company_name ) . '</div>';
@@ -191,13 +191,13 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 					echo '<div>' . esc_html( $country ) . '</div>';
 				}
 				if ( $phone ) {
-					echo '<div>' . esc_html__( 'Tel:', 'wpwing-wc-pdf-invoice' ) . ' ' . esc_html( $phone ) . '</div>';
+					echo '<div>' . esc_html__( 'Tel:', 'wpwing-wcpdf' ) . ' ' . esc_html( $phone ) . '</div>';
 				}
 				if ( $email ) {
-					echo '<div>' . esc_html__( 'Email:', 'wpwing-wc-pdf-invoice' ) . ' ' . esc_html( $email ) . '</div>';
+					echo '<div>' . esc_html__( 'Email:', 'wpwing-wcpdf' ) . ' ' . esc_html( $email ) . '</div>';
 				}
 				if ( $vat ) {
-					echo '<div>' . esc_html__( 'VAT:', 'wpwing-wc-pdf-invoice' ) . ' ' . esc_html( $vat ) . '</div>';
+					echo '<div>' . esc_html__( 'VAT:', 'wpwing-wcpdf' ) . ' ' . esc_html( $vat ) . '</div>';
 				}
 				echo '</div>';
 			}
@@ -219,7 +219,7 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 
 			if ( isset( $company_logo ) ) {
 				echo '<div class="company-logo">
-					<img src="' . apply_filters( 'wpwing_wcpi_company_image_path', esc_url( $company_logo ) ) . '">
+					<img src="' . apply_filters( 'wpwing_wcpdf_company_image_path', esc_url( $company_logo ) ) . '">
 				</div>';
 			}
 
@@ -232,13 +232,13 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 		 */
 		public function show_packing_template_customer_data() {
 
-			global $wpwing_wcpi_document;
+			global $wpwing_wcpdf_document;
 
 			echo '<div class="invoice-to-section" > ';
 
-			if ( $wpwing_wcpi_document->order->get_formatted_billing_address() ) {
-				echo '<span class="invoice-from-to" > ' . __( "Customer", 'wpwing-wc-pdf-invoice' ) . '</span > ';
-				echo '<div class="customer-details">' . wp_kses( $wpwing_wcpi_document->order->get_formatted_billing_address(), array( "br" => array() ) ) . '</div>';
+			if ( $wpwing_wcpdf_document->order->get_formatted_billing_address() ) {
+				echo '<span class="invoice-from-to" > ' . __( "Customer", 'wpwing-wcpdf' ) . '</span > ';
+				echo '<div class="customer-details">' . wp_kses( $wpwing_wcpdf_document->order->get_formatted_billing_address(), array( "br" => array() ) ) . '</div>';
 			}
 
 			echo '</div > ';
@@ -252,21 +252,21 @@ if ( ! class_exists( 'WCPI_Packing' ) ) {
 		 */
 		public function show_packing_template_order_data() {
 
-			global $wpwing_wcpi_document;
+			global $wpwing_wcpdf_document;
 
-			if ( ! isset( $wpwing_wcpi_document ) || ! $wpwing_wcpi_document->exists ) {
+			if ( ! isset( $wpwing_wcpdf_document ) || ! $wpwing_wcpdf_document->exists ) {
 				return;
 			}
 			?>
 			<table>
 				<tr class="invoice-order-number">
-					<td><?php _e( "Order Number", 'wpwing-wc-pdf-invoice' ); ?></td>
-					<td class="right"><?php echo esc_html( $wpwing_wcpi_document->order->get_order_number() ); ?></td>
+					<td><?php _e( "Order Number", 'wpwing-wcpdf' ); ?></td>
+					<td class="right"><?php echo esc_html( $wpwing_wcpdf_document->order->get_order_number() ); ?></td>
 				</tr>
 
 				<tr class="invoice-date">
-					<td><?php _e( "Invoice Date", 'wpwing-wc-pdf-invoice' ); ?></td>
-					<td class="right"><?php echo esc_html( $wpwing_wcpi_document->get_formatted_date() ); ?></td>
+					<td><?php _e( "Invoice Date", 'wpwing-wcpdf' ); ?></td>
+					<td class="right"><?php echo esc_html( $wpwing_wcpdf_document->get_formatted_date() ); ?></td>
 				</tr>
 			</table>
 			<?php

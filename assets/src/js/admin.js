@@ -1,10 +1,10 @@
 jQuery(function($) {
   // Open wp image upload popup
-  $('body').on('click', '.wcpi_upload_image', function(e) {
+  $('body').on('click', '.wcpdf_upload_image', function(e) {
     e.preventDefault();
 
     var button = $(this),
-      wcpi_uploader = wp
+      wcpdf_uploader = wp
         .media({
           title: 'Custom image',
           library: {
@@ -17,7 +17,7 @@ jQuery(function($) {
           multiple: false,
         })
         .on('select', function() {
-          var attachment = wcpi_uploader
+          var attachment = wcpdf_uploader
             .state()
             .get('selection')
             .first()
@@ -118,18 +118,18 @@ jQuery(function($) {
   $('body').on('click', '#invoice_preview_btn-field', function(e) {
     e.preventDefault();
     var $btn = $(this);
-    $btn.prop('disabled', true).text(wpwing_wcpi_object.preview_loading);
+    $btn.prop('disabled', true).text(wpwing_wcpdf_object.preview_loading);
 
     $.ajax({
-      url: wpwing_wcpi_object.ajax_url,
+      url: wpwing_wcpdf_object.ajax_url,
       type: 'POST',
       data: {
         action: 'wpwing_preview_document',
-        nonce: wpwing_wcpi_object.preview_nonce,
+        nonce: wpwing_wcpdf_object.preview_nonce,
         document_type: 'invoice',
       },
       success: function(response) {
-        $btn.prop('disabled', false).text(wpwing_wcpi_object.preview_btn);
+        $btn.prop('disabled', false).text(wpwing_wcpdf_object.preview_btn);
         if (response.success) {
           openPreviewModal(response.data.html);
         } else {
@@ -137,7 +137,7 @@ jQuery(function($) {
         }
       },
       error: function() {
-        $btn.prop('disabled', false).text(wpwing_wcpi_object.preview_btn);
+        $btn.prop('disabled', false).text(wpwing_wcpdf_object.preview_btn);
         alert('Preview failed. Please try again.');
       },
     });
@@ -147,7 +147,7 @@ jQuery(function($) {
     var $overlay = $('<div id="wpwing-preview-overlay"></div>');
     var $modal   = $('<div id="wpwing-preview-modal"></div>');
     var $close   = $('<button id="wpwing-preview-close" type="button">&times;</button>');
-    var $title   = $('<h2></h2>').text(wpwing_wcpi_object.preview_title);
+    var $title   = $('<h2></h2>').text(wpwing_wcpdf_object.preview_title);
     var $iframe  = $('<iframe id="wpwing-preview-frame" frameborder="0"></iframe>');
 
     $modal.append($close).append($title).append($iframe);

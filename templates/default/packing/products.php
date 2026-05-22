@@ -1,16 +1,16 @@
-<?php global $wpwing_wcpi_document; ?>
+<?php global $wpwing_wcpdf_document; ?>
 
 <table class="invoice-details">
 	<thead>
 		<tr>
-			<th class="column-product"><?php _e( 'Product', 'wpwing-wc-pdf-invoice' ); ?></th>
-			<th class="column-quantity"><?php _e( 'Quantity', 'wpwing-wc-pdf-invoice' ); ?></th>
+			<th class="column-product"><?php _e( 'Product', 'wpwing-wcpdf' ); ?></th>
+			<th class="column-quantity"><?php _e( 'Quantity', 'wpwing-wcpdf' ); ?></th>
 		</tr>
 	</thead>
 	<tbody>
 	<?php
 
-	$order_items = $wpwing_wcpi_document->order->get_items();
+	$order_items = $wpwing_wcpdf_document->order->get_items();
 	foreach ( $order_items as $item_id => $item ) {
 		?>
 

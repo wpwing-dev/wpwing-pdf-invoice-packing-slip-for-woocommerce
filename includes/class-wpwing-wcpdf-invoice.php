@@ -2,16 +2,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'WCPI_Invoice' ) ) {
+if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 
 	/**
 	 * Implements features related to a PDF document
 	 *
-	 * @class   WCPI_Invoice
+	 * @class   WPWing_WcPdf_Invoice
 	 * @package WPWing
 	 * @since   1.0.0
 	 */
-	class WCPI_Invoice extends WCPI_Document {
+	class WPWing_WcPdf_Invoice extends WPWing_WcPdf_Document {
 
 		public $document_type = 'invoice';
 
@@ -60,15 +60,15 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 		 */
 		private function init_document() {
 
-			$this->settings = WPWing_WCPI_Settings::get_instance();
+			$this->settings = WPWing_WcPdf_Settings::get_instance();
 
-			$this->exists = $this->order->get_meta( '_wpwing_wcpi_invoiced' );
+			$this->exists = $this->order->get_meta( '_wpwing_wcpdf_invoiced' );
 			if ( $this->exists ) {
-				$this->number = $this->order->get_meta( '_wpwing_wcpi_invoice_number' );
-				$this->prefix = $this->order->get_meta( '_wpwing_wcpi_invoice_prefix' );
-				$this->suffix = $this->order->get_meta( '_wpwing_wcpi_invoice_suffix' );
-				$this->date = $this->order->get_meta( '_wpwing_wcpi_invoice_date' );
-				$this->save_path = $this->order->get_meta( '_wpwing_wcpi_invoice_path' );
+				$this->number = $this->order->get_meta( '_wpwing_wcpdf_invoice_number' );
+				$this->prefix = $this->order->get_meta( '_wpwing_wcpdf_invoice_prefix' );
+				$this->suffix = $this->order->get_meta( '_wpwing_wcpdf_invoice_suffix' );
+				$this->date = $this->order->get_meta( '_wpwing_wcpdf_invoice_date' );
+				$this->save_path = $this->order->get_meta( '_wpwing_wcpdf_invoice_path' );
 			} else {
 				$prefix       = $this->settings->get_option( 'invoice_prefix' );
 				$this->prefix = $prefix ? $prefix : 'prefix';
@@ -96,7 +96,7 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 				$formatted_invoice_number
 			);
 
-			return apply_filters( 'wpwing_wcpi_get_formatted_invoice_number', $formatted_invoice_number, $this->order );
+			return apply_filters( 'wpwing_wcpdf_get_formatted_invoice_number', $formatted_invoice_number, $this->order );
 
 		}
 
@@ -107,12 +107,12 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 		 */
 		public function reset() {
 
-			$this->order->delete_meta_data( '_wpwing_wcpi_invoiced' );
-			$this->order->delete_meta_data( '_wpwing_wcpi_invoice_number' );
-			$this->order->delete_meta_data( '_wpwing_wcpi_invoice_prefix' );
-			$this->order->delete_meta_data( '_wpwing_wcpi_invoice_suffix' );
-			$this->order->delete_meta_data( '_wpwing_wcpi_invoice_date' );
-			$this->order->delete_meta_data( '_wpwing_wcpi_invoice_path' );
+			$this->order->delete_meta_data( '_wpwing_wcpdf_invoiced' );
+			$this->order->delete_meta_data( '_wpwing_wcpdf_invoice_number' );
+			$this->order->delete_meta_data( '_wpwing_wcpdf_invoice_prefix' );
+			$this->order->delete_meta_data( '_wpwing_wcpdf_invoice_suffix' );
+			$this->order->delete_meta_data( '_wpwing_wcpdf_invoice_date' );
+			$this->order->delete_meta_data( '_wpwing_wcpdf_invoice_path' );
 
 			$this->order->apply_changes();
 			$this->order->save_meta_data();
@@ -130,7 +130,7 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 
 			global $wpdb;
 
-			$wpdb->query( $wpdb->prepare( 'SELECT GET_LOCK(%s, 5)', 'wpwing_wcpi_invoice_number' ) );
+			$wpdb->query( $wpdb->prepare( 'SELECT GET_LOCK(%s, 5)', 'wpwing_wcpdf_invoice_number' ) );
 
 			$current = (int) $this->settings->get_option( 'invoice_number' );
 			if ( $current < 1 ) {
@@ -139,7 +139,7 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 
 			$this->settings->set_option( 'invoice_number', $current + 1 );
 
-			$wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', 'wpwing_wcpi_invoice_number' ) );
+			$wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', 'wpwing_wcpdf_invoice_number' ) );
 
 			return $current;
 
@@ -172,15 +172,15 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 				}
 			}
 
-			$invoice_number = apply_filters( 'wpwing_wcpi_new_invoice_number', null, $this->order );
+			$invoice_number = apply_filters( 'wpwing_wcpdf_new_invoice_number', null, $this->order );
 
 			$this->number = $invoice_number ? $invoice_number : $this->get_new_invoice_number();
 
-			$filename = apply_filters( 'wpwing_wcpi_invoice_filename', "/invoice_" . $this->number, $this );
+			$filename = apply_filters( 'wpwing_wcpdf_invoice_filename', "/invoice_" . $this->number, $this );
 			$this->save_path = $year . $filename . ".pdf";
-			$pdf_path = WPWING_WCPI_DOCUMENT_SAVE_DIR . $this->save_path;
+			$pdf_path = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $this->save_path;
 			$this->exists = true;
-			add_action( 'wpwing_wcpi_before_template_generation', array( $this, 'init_template_generation_actions' ) );
+			add_action( 'wpwing_wcpdf_before_template_generation', array( $this, 'init_template_generation_actions' ) );
 			$this->save_file( $pdf_path );
 
 			if ( ! file_exists( $pdf_path ) ) {
@@ -188,12 +188,12 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 				return;
 			}
 
-			$this->order->update_meta_data( '_wpwing_wcpi_invoiced', $this->exists );
-			$this->order->update_meta_data( '_wpwing_wcpi_invoice_number', $this->number );
-			$this->order->update_meta_data( '_wpwing_wcpi_invoice_prefix', $this->prefix );
-			$this->order->update_meta_data( '_wpwing_wcpi_invoice_suffix', $this->suffix );
-			$this->order->update_meta_data( '_wpwing_wcpi_invoice_date', $this->date );
-			$this->order->update_meta_data( '_wpwing_wcpi_invoice_path', $this->save_path );
+			$this->order->update_meta_data( '_wpwing_wcpdf_invoiced', $this->exists );
+			$this->order->update_meta_data( '_wpwing_wcpdf_invoice_number', $this->number );
+			$this->order->update_meta_data( '_wpwing_wcpdf_invoice_prefix', $this->prefix );
+			$this->order->update_meta_data( '_wpwing_wcpdf_invoice_suffix', $this->suffix );
+			$this->order->update_meta_data( '_wpwing_wcpdf_invoice_date', $this->date );
+			$this->order->update_meta_data( '_wpwing_wcpdf_invoice_path', $this->save_path );
 
 			$this->order->apply_changes();
 			$this->order->save_meta_data();
@@ -207,12 +207,12 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 		 */
 		public function init_template_generation_actions() {
 
-			add_action( 'wpwing_wcpi_invoice_template_company_data', array( $this, 'show_invoice_template_company_data' ) );
-			add_action( 'wpwing_wcpi_invoice_template_company_logo', array( $this, 'show_invoice_template_company_logo', ) );
-			add_action( 'wpwing_wcpi_invoice_template_customer_data', array( $this, 'show_invoice_template_customer_data', ) );
-			add_action( 'wpwing_wcpi_invoice_template_order_data', array( $this, 'show_invoice_template_order_data', ) );
-			add_action( 'wpwing_wcpi_invoice_template_product_list', array( $this, 'show_invoice_template_product_list', ) );
-			add_action( 'wpwing_wcpi_invoice_template_footer', array( $this, 'show_invoice_template_footer' ) );
+			add_action( 'wpwing_wcpdf_invoice_template_company_data', array( $this, 'show_invoice_template_company_data' ) );
+			add_action( 'wpwing_wcpdf_invoice_template_company_logo', array( $this, 'show_invoice_template_company_logo', ) );
+			add_action( 'wpwing_wcpdf_invoice_template_customer_data', array( $this, 'show_invoice_template_customer_data', ) );
+			add_action( 'wpwing_wcpdf_invoice_template_order_data', array( $this, 'show_invoice_template_order_data', ) );
+			add_action( 'wpwing_wcpdf_invoice_template_product_list', array( $this, 'show_invoice_template_product_list', ) );
+			add_action( 'wpwing_wcpdf_invoice_template_footer', array( $this, 'show_invoice_template_footer' ) );
 
 		}
 
@@ -230,7 +230,7 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 				return;
 			}
 
-			echo '<span class="invoice-from-to">' . esc_html__( 'Invoice From', 'wpwing-wc-pdf-invoice' ) . '</span>';
+			echo '<span class="invoice-from-to">' . esc_html__( 'Invoice From', 'wpwing-wcpdf' ) . '</span>';
 
 			if ( $company_name ) {
 				echo '<div class="company-name">' . esc_html( $company_name ) . '</div>';
@@ -257,13 +257,13 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 					echo '<div>' . esc_html( $country ) . '</div>';
 				}
 				if ( $phone ) {
-					echo '<div>' . esc_html__( 'Tel:', 'wpwing-wc-pdf-invoice' ) . ' ' . esc_html( $phone ) . '</div>';
+					echo '<div>' . esc_html__( 'Tel:', 'wpwing-wcpdf' ) . ' ' . esc_html( $phone ) . '</div>';
 				}
 				if ( $email ) {
-					echo '<div>' . esc_html__( 'Email:', 'wpwing-wc-pdf-invoice' ) . ' ' . esc_html( $email ) . '</div>';
+					echo '<div>' . esc_html__( 'Email:', 'wpwing-wcpdf' ) . ' ' . esc_html( $email ) . '</div>';
 				}
 				if ( $vat ) {
-					echo '<div>' . esc_html__( 'VAT:', 'wpwing-wc-pdf-invoice' ) . ' ' . esc_html( $vat ) . '</div>';
+					echo '<div>' . esc_html__( 'VAT:', 'wpwing-wcpdf' ) . ' ' . esc_html( $vat ) . '</div>';
 				}
 				echo '</div>';
 			}
@@ -285,7 +285,7 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 
 			if ( isset( $company_logo ) ) {
 				echo '<div class="company-logo">
-					<img src="' . apply_filters( 'wpwing_wcpi_company_image_path', esc_url( $company_logo ) ) . '">
+					<img src="' . apply_filters( 'wpwing_wcpdf_company_image_path', esc_url( $company_logo ) ) . '">
 				</div>';
 			}
 
@@ -298,18 +298,18 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 		 */
 		public function show_invoice_template_customer_data() {
 
-			global $wpwing_wcpi_document;
+			global $wpwing_wcpdf_document;
 
 			echo '<div class="invoice-to-section">';
 
-			if ( $wpwing_wcpi_document->order->get_formatted_billing_address() ) {
-				echo '<span class="invoice-from-to">' . esc_html__( 'Invoice To', 'wpwing-wc-pdf-invoice' ) . '</span>';
-				echo '<div class="customer-details">' . wp_kses( $wpwing_wcpi_document->order->get_formatted_billing_address(), array( 'br' => array() ) ) . '</div>';
+			if ( $wpwing_wcpdf_document->order->get_formatted_billing_address() ) {
+				echo '<span class="invoice-from-to">' . esc_html__( 'Invoice To', 'wpwing-wcpdf' ) . '</span>';
+				echo '<div class="customer-details">' . wp_kses( $wpwing_wcpdf_document->order->get_formatted_billing_address(), array( 'br' => array() ) ) . '</div>';
 			}
 
-			if ( $this->settings->get_option( 'show_shipping_address' ) && $wpwing_wcpi_document->order->get_formatted_shipping_address() ) {
-				echo '<span class="invoice-from-to invoice-ship-to">' . esc_html__( 'Ship To', 'wpwing-wc-pdf-invoice' ) . '</span>';
-				echo '<div class="customer-details">' . wp_kses( $wpwing_wcpi_document->order->get_formatted_shipping_address(), array( 'br' => array() ) ) . '</div>';
+			if ( $this->settings->get_option( 'show_shipping_address' ) && $wpwing_wcpdf_document->order->get_formatted_shipping_address() ) {
+				echo '<span class="invoice-from-to invoice-ship-to">' . esc_html__( 'Ship To', 'wpwing-wcpdf' ) . '</span>';
+				echo '<div class="customer-details">' . wp_kses( $wpwing_wcpdf_document->order->get_formatted_shipping_address(), array( 'br' => array() ) ) . '</div>';
 			}
 
 			echo '</div>';
@@ -323,31 +323,31 @@ if ( ! class_exists( 'WCPI_Invoice' ) ) {
 		 */
 		public function show_invoice_template_order_data() {
 
-			global $wpwing_wcpi_document;
+			global $wpwing_wcpdf_document;
 
-			if ( ! isset( $wpwing_wcpi_document ) || ! $wpwing_wcpi_document->exists ) {
+			if ( ! isset( $wpwing_wcpdf_document ) || ! $wpwing_wcpdf_document->exists ) {
 				return;
 			}
 			?>
 			<table>
 				<tr class="invoice-number">
-					<td><?php _e( "Invoice", 'wpwing-wc-pdf-invoice' ); ?></td>
-					<td class="right"><?php echo esc_html( $wpwing_wcpi_document->get_formatted_invoice_number() ); ?></td>
+					<td><?php _e( "Invoice", 'wpwing-wcpdf' ); ?></td>
+					<td class="right"><?php echo esc_html( $wpwing_wcpdf_document->get_formatted_invoice_number() ); ?></td>
 				</tr>
 
 				<tr class="invoice-order-number">
-					<td><?php _e( "Order", 'wpwing-wc-pdf-invoice' ); ?></td>
-					<td class="right"><?php echo esc_html( $wpwing_wcpi_document->order->get_order_number() ); ?></td>
+					<td><?php _e( "Order", 'wpwing-wcpdf' ); ?></td>
+					<td class="right"><?php echo esc_html( $wpwing_wcpdf_document->order->get_order_number() ); ?></td>
 				</tr>
 
 				<tr class="invoice-date">
-					<td><?php _e( "Invoice date", 'wpwing-wc-pdf-invoice' ); ?></td>
-					<td class="right"><?php echo esc_html( $wpwing_wcpi_document->get_formatted_date() ); ?></td>
+					<td><?php _e( "Invoice date", 'wpwing-wcpdf' ); ?></td>
+					<td class="right"><?php echo esc_html( $wpwing_wcpdf_document->get_formatted_date() ); ?></td>
 				</tr>
 
 				<tr class="invoice-amount">
-					<td><?php _e( "Order Amount", 'wpwing-wc-pdf-invoice' ); ?></td>
-					<td class="right"><?php echo wc_price( $wpwing_wcpi_document->order->get_total() ); ?></td>
+					<td><?php _e( "Order Amount", 'wpwing-wcpdf' ); ?></td>
+					<td class="right"><?php echo wc_price( $wpwing_wcpdf_document->order->get_total() ); ?></td>
 				</tr>
 			</table>
 			<?php

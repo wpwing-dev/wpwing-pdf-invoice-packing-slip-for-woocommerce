@@ -1,25 +1,25 @@
 <?php
-global $wpwing_wcpi_document;
-$show_sku = (bool) $wpwing_wcpi_document->settings->get_option( 'show_product_sku' );
+global $wpwing_wcpdf_document;
+$show_sku = (bool) $wpwing_wcpdf_document->settings->get_option( 'show_product_sku' );
 ?>
 
 <table class="invoice-details">
 	<thead>
 	<tr>
-		<th class="column-product"><?php esc_html_e( 'Product', 'wpwing-wc-pdf-invoice' ); ?></th>
+		<th class="column-product"><?php esc_html_e( 'Product', 'wpwing-wcpdf' ); ?></th>
 		<?php if ( $show_sku ) : ?>
-			<th class="column-sku"><?php esc_html_e( 'SKU', 'wpwing-wc-pdf-invoice' ); ?></th>
+			<th class="column-sku"><?php esc_html_e( 'SKU', 'wpwing-wcpdf' ); ?></th>
 		<?php endif; ?>
-		<th class="column-quantity"><?php esc_html_e( 'Qty', 'wpwing-wc-pdf-invoice' ); ?></th>
-		<th class="column-price"><?php esc_html_e( 'Price', 'wpwing-wc-pdf-invoice' ); ?></th>
-		<th class="column-total"><?php esc_html_e( 'Line total', 'wpwing-wc-pdf-invoice' ); ?></th>
-		<th class="column-tax"><?php esc_html_e( 'Tax', 'wpwing-wc-pdf-invoice' ); ?></th>
+		<th class="column-quantity"><?php esc_html_e( 'Qty', 'wpwing-wcpdf' ); ?></th>
+		<th class="column-price"><?php esc_html_e( 'Price', 'wpwing-wcpdf' ); ?></th>
+		<th class="column-total"><?php esc_html_e( 'Line total', 'wpwing-wcpdf' ); ?></th>
+		<th class="column-tax"><?php esc_html_e( 'Tax', 'wpwing-wcpdf' ); ?></th>
 	</tr>
 	</thead>
 	<tbody>
 	<?php
 
-	$order_items = $wpwing_wcpi_document->order->get_items();
+	$order_items = $wpwing_wcpdf_document->order->get_items();
 	foreach ( $order_items as $item_id => $item ) {
 		if ( isset( $item['qty'] ) ) {
 			$price_per_unit      = $item['line_subtotal'] / $item['qty'];
@@ -45,7 +45,7 @@ $show_sku = (bool) $wpwing_wcpi_document->settings->get_option( 'show_product_sk
 
 	<?php };
 
-	$order_shipping = $wpwing_wcpi_document->order->get_items( 'shipping' );
+	$order_shipping = $wpwing_wcpdf_document->order->get_items( 'shipping' );
 	$total_shipping = 0.00;
 	$total_shipping_tax = 0.00;
 
@@ -58,7 +58,7 @@ $show_sku = (bool) $wpwing_wcpi_document->settings->get_option( 'show_product_sk
 
 		<tr>
 			<td class="column-product">
-				<?php echo ! empty( $item['name'] ) ? esc_html( $item['name'] ) : __( 'Shipping', 'wpwing-wc-pdf-invoice' ); ?>
+				<?php echo ! empty( $item['name'] ) ? esc_html( $item['name'] ) : __( 'Shipping', 'wpwing-wcpdf' ); ?>
 			</td>
 			<?php if ( $show_sku ) : ?>
 				<td class="column-sku"></td>
@@ -87,7 +87,7 @@ $show_sku = (bool) $wpwing_wcpi_document->settings->get_option( 'show_product_sk
 		<?php
 	};
 
-	$order_fees = $wpwing_wcpi_document->order->get_items( 'fee' );
+	$order_fees = $wpwing_wcpdf_document->order->get_items( 'fee' );
 	$total_fee = 0.00;
 	$total_fee_tax = 0.00;
 
@@ -102,7 +102,7 @@ $show_sku = (bool) $wpwing_wcpi_document->settings->get_option( 'show_product_sk
 
 		<tr>
 			<td class="column-product">
-				<?php echo ! empty( $item['name'] ) ? esc_html( $item['name'] ) : __( 'Fee', 'wpwing-wc-pdf-invoice' ); ?>
+				<?php echo ! empty( $item['name'] ) ? esc_html( $item['name'] ) : __( 'Fee', 'wpwing-wcpdf' ); ?>
 			</td>
 			<?php if ( $show_sku ) : ?>
 				<td class="column-sku"></td>
@@ -131,17 +131,17 @@ $show_sku = (bool) $wpwing_wcpi_document->settings->get_option( 'show_product_sk
 		<td class="column2">
 			<table class="invoice-totals">
 				<tr class="invoice-details-subtotal">
-					<td class="column-product"><?php _e( "Subtotal", 'wpwing-wc-pdf-invoice' ); ?></td>
-					<td class="column-total"><?php echo wc_price( $wpwing_wcpi_document->order->get_subtotal() + $total_fee + $total_shipping ); ?></td>
+					<td class="column-product"><?php _e( "Subtotal", 'wpwing-wcpdf' ); ?></td>
+					<td class="column-total"><?php echo wc_price( $wpwing_wcpdf_document->order->get_subtotal() + $total_fee + $total_shipping ); ?></td>
 				</tr>
 
 				<tr>
-					<td class="column-product"><?php _e( "Discount", 'wpwing-wc-pdf-invoice' ); ?></td>
-					<td class="column-total"><?php echo wc_price( $wpwing_wcpi_document->order->get_total_discount() ); ?></td>
+					<td class="column-product"><?php _e( "Discount", 'wpwing-wcpdf' ); ?></td>
+					<td class="column-total"><?php echo wc_price( $wpwing_wcpdf_document->order->get_total_discount() ); ?></td>
 				</tr>
 
 				<?php if ( 'yes' == get_option( 'woocommerce_calc_taxes' ) ) : ?>
-					<?php foreach ( $wpwing_wcpi_document->order->get_tax_totals() as $code => $tax ) : ?>
+					<?php foreach ( $wpwing_wcpdf_document->order->get_tax_totals() as $code => $tax ) : ?>
 						<tr class="invoice-details-vat">
 							<td class="column-product"><?php echo esc_html( $tax->label ); ?>:</td>
 							<td class="column-total"><?php echo esc_html( $tax->formatted_amount ); ?></td>
@@ -150,8 +150,8 @@ $show_sku = (bool) $wpwing_wcpi_document->settings->get_option( 'show_product_sk
 				<?php endif; ?>
 
 				<tr class="invoice-details-total">
-					<td class="column-product"><?php _e( "Total", 'wpwing-wc-pdf-invoice' ); ?></td>
-					<td class="column-total"><?php echo wc_price( $wpwing_wcpi_document->order->get_total() ); ?></td>
+					<td class="column-product"><?php _e( "Total", 'wpwing-wcpdf' ); ?></td>
+					<td class="column-total"><?php echo wc_price( $wpwing_wcpdf_document->order->get_total() ); ?></td>
 				</tr>
 			</table>
 		</td>

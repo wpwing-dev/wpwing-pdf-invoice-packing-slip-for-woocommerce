@@ -3,19 +3,19 @@
 /**
  * Plugin Name:           PDF Invoice and Packing Slip for WooCommerce
  * Plugin URI:            https://wpwing.com/
- * Description:           Download your WooCommerce order invoice and packing slip as PDF format for print or email.
- * Version:               1.5.0
+ * Description:           Automatically generate, print, and attach professional PDF invoices and packing slips to WooCommerce emails. Clean, lightweight, and fast.
+ * Version:               1.5.1
  * Author:                WPWing
  * Author URI:            https://wpwing.com/
  * Requires PHP:          7.1
  * Requires at least:     4.8
- * Tested up to:          6.9
+ * Tested up to:          7.0
  * WC requires at least:  4.5
  * WC tested up to:       10.7.0
  * WC HPOS Compatible:    Yes
  * License:               GPL-3.0-or-later
  * License URI:           https://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain:           wpwing-wc-pdf-invoice
+ * Text Domain:           wpwing-wcpdf
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -23,27 +23,27 @@ defined( 'ABSPATH' ) || exit;
 $wp_upload_dir = wp_upload_dir();
 
 // Define constants
-defined( 'WPWING_WCPI_DOCUMENT_SAVE_DIR' ) || define( 'WPWING_WCPI_DOCUMENT_SAVE_DIR', $wp_upload_dir['basedir'] . '/wpwing-pdf-invoices/' );
+defined( 'WPWING_WCPDF_DOCUMENT_SAVE_DIR' ) || define( 'WPWING_WCPDF_DOCUMENT_SAVE_DIR', $wp_upload_dir['basedir'] . '/wpwing-pdf-invoices/' );
 
-defined( 'WPWING_WCPI_VERSION' ) || define( 'WPWING_WCPI_VERSION', '1.5.0' );
+defined( 'WPWING_WCPDF_VERSION' ) || define( 'WPWING_WCPDF_VERSION', '1.5.1' );
 
-defined( 'WPWING_WCPI_FILE' ) || define( 'WPWING_WCPI_FILE', __FILE__ );
+defined( 'WPWING_WCPDF_FILE' ) || define( 'WPWING_WCPDF_FILE', __FILE__ );
 
-defined( 'WPWING_WCPI_DIR' ) || define( 'WPWING_WCPI_DIR', plugin_dir_path( __FILE__ ) );
+defined( 'WPWING_WCPDF_DIR' ) || define( 'WPWING_WCPDF_DIR', plugin_dir_path( __FILE__ ) );
 
-defined( 'WPWING_WCPI_DIR_NAME' ) || define( 'WPWING_WCPI_DIR_NAME', dirname( plugin_basename( __FILE__ ) ) );
+defined( 'WPWING_WCPDF_DIR_NAME' ) || define( 'WPWING_WCPDF_DIR_NAME', dirname( plugin_basename( __FILE__ ) ) );
 
-defined( 'WPWING_WCPI_BASE_NAME' ) || define( 'WPWING_WCPI_BASE_NAME', plugin_basename( __FILE__ ) );
+defined( 'WPWING_WCPDF_BASE_NAME' ) || define( 'WPWING_WCPDF_BASE_NAME', plugin_basename( __FILE__ ) );
 
-defined( 'WPWING_WCPI_URL' ) || define( 'WPWING_WCPI_URL', plugins_url( '/', __FILE__ ) );
+defined( 'WPWING_WCPDF_URL' ) || define( 'WPWING_WCPDF_URL', plugins_url( '/', __FILE__ ) );
 
-defined( 'WPWING_WCPI_ASSETS_URL' ) || define( 'WPWING_WCPI_ASSETS_URL', WPWING_WCPI_URL . 'assets' );
+defined( 'WPWING_WCPDF_ASSETS_URL' ) || define( 'WPWING_WCPDF_ASSETS_URL', WPWING_WCPDF_URL . 'assets' );
 
-defined( 'WPWING_WCPI_TEMPLATE_DIR' ) || define( 'WPWING_WCPI_TEMPLATE_DIR', WPWING_WCPI_DIR . 'templates/' );
+defined( 'WPWING_WCPDF_TEMPLATE_DIR' ) || define( 'WPWING_WCPDF_TEMPLATE_DIR', WPWING_WCPDF_DIR . 'templates/' );
 
-defined( 'WPWING_WCPI_INC_DIR' ) || define( 'WPWING_WCPI_INC_DIR', WPWING_WCPI_DIR . 'includes/' );
+defined( 'WPWING_WCPDF_INC_DIR' ) || define( 'WPWING_WCPDF_INC_DIR', WPWING_WCPDF_DIR . 'includes/' );
 
-defined( 'WPWING_WCPI_VENDOR_DIR' ) || define( 'WPWING_WCPI_VENDOR_DIR', WPWING_WCPI_DIR . 'vendor/' );
+defined( 'WPWING_WCPDF_VENDOR_DIR' ) || define( 'WPWING_WCPDF_VENDOR_DIR', WPWING_WCPDF_DIR . 'vendor/' );
 
 /** Implement HPOS compatibility */
 add_action( 'before_woocommerce_init', function() {
@@ -61,14 +61,14 @@ add_action( 'before_woocommerce_init', function() {
  *
  * @since 1.0.0
  */
-function wpwing_wcpi_wc_error_admin_notice() {
+function wpwing_wcpdf_wc_error_admin_notice() {
 	echo '<div class="error notice">';
 	echo '<p>';
-	_e( '<strong>Error:</strong>', 'wpwing-wc-pdf-invoice' );
-	_e( 'The <em>PDF Invoice and Packing Slip for WooCommerce</em> plugin won\'t execute because the following required plugin is not active: <em>WooCommerce</em>. <br>Please activate this <a href="plugins.php">plugin</a> first.', 'wpwing-wc-pdf-invoice' );
+	_e( '<strong>Error:</strong>', 'wpwing-wcpdf' );
+	_e( 'The <em>PDF Invoice and Packing Slip for WooCommerce</em> plugin won\'t execute because the following required plugin is not active: <em>WooCommerce</em>. <br>Please activate this <a href="plugins.php">plugin</a> first.', 'wpwing-wcpdf' );
 	echo '</p>';
 	echo '</div>';
-	echo '<div class="updated notice is-dismissible"><p>' . __( 'The <em>WPWing PDF Invoice and Packing Slip for WooCommerce</em> plugin deactivated.', 'wpwing-wc-pdf-invoice' ) . '</p></div>';
+	echo '<div class="updated notice is-dismissible"><p>' . __( 'The <em>WPWing PDF Invoice and Packing Slip for WooCommerce</em> plugin deactivated.', 'wpwing-wcpdf' ) . '</p></div>';
 }
 
 /**
@@ -76,16 +76,16 @@ function wpwing_wcpi_wc_error_admin_notice() {
  *
  * @since 1.0.0
  */
-if (  ! function_exists( 'wpwing_wcpi_protect_folder' ) ) {
-	function wpwing_wcpi_protect_folder() {
+if (  ! function_exists( 'wpwing_wcpdf_protect_folder' ) ) {
+	function wpwing_wcpdf_protect_folder() {
 		$files = [
 			[
-				'base'    => WPWING_WCPI_DOCUMENT_SAVE_DIR,
+				'base'    => WPWING_WCPDF_DOCUMENT_SAVE_DIR,
 				'file'    => 'index.html',
 				'content' => '',
 			],
 			[
-				'base'    => WPWING_WCPI_DOCUMENT_SAVE_DIR,
+				'base'    => WPWING_WCPDF_DOCUMENT_SAVE_DIR,
 				'file'    => '.htaccess',
 				'content' => 'deny from all',
 			],
@@ -103,8 +103,8 @@ if (  ! function_exists( 'wpwing_wcpi_protect_folder' ) ) {
 			}
 		}
 
-		// Updating the option not to execute the function 'wpwing_wcpi_protect_folder' again
-		update_option( 'wpwing_wcpi_check_folder_already_protected', true );
+		// Updating the option not to execute the function 'wpwing_wcpdf_protect_folder' again
+		update_option( 'wpwing_wcpdf_check_folder_already_protected', true );
 	}
 }
 
@@ -113,29 +113,32 @@ if (  ! function_exists( 'wpwing_wcpi_protect_folder' ) ) {
  *
  * @since 1.0.0
  */
-function wpwing_wcpi_init() {
-	load_plugin_textdomain( 'wpwing-wc-pdf-invoice', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+function wpwing_wcpdf_init() {
+	load_plugin_textdomain( 'wpwing-wcpdf', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
-	require_once WPWING_WCPI_INC_DIR . 'class.wpwing-wc-pdf-invoice.php';
-	require_once WPWING_WCPI_INC_DIR . 'class.wcpi-document.php';
-	require_once WPWING_WCPI_INC_DIR . 'class.wcpi-invoice.php';
-	require_once WPWING_WCPI_INC_DIR . 'class.wcpi-packing.php';
-	require_once WPWING_WCPI_INC_DIR . 'class-wpwing-wcpi-settings.php';
+	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-migration.php';
+	WPWing_WcPdf_Migration::maybe_run();
 
-	global $WPWing_WCPI_Instance;
-	$WPWing_WCPI_Instance = new WPWing_WC_Pdf_Invoice();
+	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-plugin.php';
+	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-document.php';
+	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-invoice.php';
+	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-packing.php';
+	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-settings.php';
+
+	global $wpwing_wcpdf;
+	$wpwing_wcpdf = new WPWing_WcPdf_Plugin();
 }
 
-add_action( 'wpwing_wcpi_init', 'wpwing_wcpi_init' );
+add_action( 'wpwing_wcpdf_init', 'wpwing_wcpdf_init' );
 
 /**
  * Kick-start the plugin
  *
  * @since 1.0.0
  */
-function wpwing_wcpi_install() {
+function wpwing_wcpdf_install() {
 	if (  ! function_exists( 'WC' ) ) {
-		add_action( 'admin_notices', 'wpwing_wcpi_wc_error_admin_notice' );
+		add_action( 'admin_notices', 'wpwing_wcpdf_wc_error_admin_notice' );
 
 		// Call A Hook for Deactivate our plugin
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -143,15 +146,15 @@ function wpwing_wcpi_install() {
 
 		return;
 	} else {
-		do_action( 'wpwing_wcpi_init' );
+		do_action( 'wpwing_wcpdf_init' );
 	}
 
-	if (  ! get_option( 'wpwing_wcpi_check_folder_already_protected' ) ) {
-		wpwing_wcpi_protect_folder();
+	if (  ! get_option( 'wpwing_wcpdf_check_folder_already_protected' ) ) {
+		wpwing_wcpdf_protect_folder();
 	}
 }
 
-add_action( 'plugins_loaded', 'wpwing_wcpi_install', 11 );
+add_action( 'plugins_loaded', 'wpwing_wcpdf_install', 11 );
 
 /**
  * For test and debug, log function to view any data in wp-content/debug.log

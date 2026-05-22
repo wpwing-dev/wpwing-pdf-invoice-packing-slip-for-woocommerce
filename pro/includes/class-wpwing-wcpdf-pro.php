@@ -2,7 +2,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'WPWing_WCPI_Pro' ) ) {
+if ( ! class_exists( 'WPWing_WcPdf_Pro' ) ) {
 
 	/**
 	 * Pro plugin controller.
@@ -12,7 +12,7 @@ if ( ! class_exists( 'WPWing_WCPI_Pro' ) ) {
 	 *  - Proforma invoice metabox + actions (Phase 6.2)
 	 *  - Auto credit note on WooCommerce refund (Phase 6.3)
 	 */
-	class WPWing_WCPI_Pro {
+	class WPWing_WcPdf_Pro {
 
 		public function __construct() {
 			// Access control runs before free plugin's init_plugin_actions (priority 10).
@@ -114,7 +114,7 @@ if ( ! class_exists( 'WPWing_WCPI_Pro' ) ) {
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_reset_proforma_' . $order_id ) ) {
 					wp_die( esc_html__( 'Security check failed.', 'wpwing-pdf-invoice-pro' ) );
 				}
-				$proforma = new WCPI_Proforma( $order_id );
+				$proforma = new WPWing_WcPdf_Proforma( $order_id );
 				$proforma->reset();
 				$notice = 'proforma_cancelled';
 
@@ -135,11 +135,11 @@ if ( ! class_exists( 'WPWing_WCPI_Pro' ) ) {
 		 * @param int $order_id Order ID.
 		 */
 		private function save_proforma( $order_id ) {
-			$proforma = new WCPI_Proforma( $order_id );
+			$proforma = new WPWing_WcPdf_Proforma( $order_id );
 			if ( $proforma->is_valid && ! $proforma->exists ) {
-				global $wpwing_wcpi_document;
-				$wpwing_wcpi_document = $proforma;
-				$wpwing_wcpi_document->save();
+				global $wpwing_wcpdf_document;
+				$wpwing_wcpdf_document = $proforma;
+				$wpwing_wcpdf_document->save();
 			}
 		}
 
@@ -149,13 +149,13 @@ if ( ! class_exists( 'WPWing_WCPI_Pro' ) ) {
 		 * @param int $order_id Order ID.
 		 */
 		private function view_proforma( $order_id ) {
-			$proforma = new WCPI_Proforma( $order_id );
+			$proforma = new WPWing_WcPdf_Proforma( $order_id );
 			if ( ! $proforma->is_valid || ! $proforma->exists ) {
 				return;
 			}
 
-			$full_path       = WPWING_WCPI_DOCUMENT_SAVE_DIR . $proforma->save_path;
-			$button_behavior = WPWing_WCPI_Settings::get_instance()->get_option( 'invoice_button_behavior' );
+			$full_path       = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $proforma->save_path;
+			$button_behavior = WPWing_WcPdf_Settings::get_instance()->get_option( 'invoice_button_behavior' );
 
 			if ( 'open' === $button_behavior ) {
 				header( 'Content-type: application/pdf' );
@@ -196,11 +196,11 @@ if ( ! class_exists( 'WPWing_WCPI_Pro' ) ) {
 		 */
 		public function show_proforma_metabox( $post ) {
 			$order_id = $post->ID;
-			$proforma = new WCPI_Proforma( $order_id );
+			$proforma = new WPWing_WcPdf_Proforma( $order_id );
 			?>
 			<div class="invoice-information">
 				<?php if ( $proforma->is_valid && $proforma->exists ) : ?>
-					<div class="wpwing-wcpi-meta-actions">
+					<div class="wpwing-wcpdf-meta-actions">
 						<a class="button tips"
 							href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-view-proforma', $order_id ), 'wpwing_view_proforma_' . $order_id ) ); ?>"
 							target="_blank">
@@ -235,11 +235,11 @@ if ( ! class_exists( 'WPWing_WCPI_Pro' ) ) {
 		 * @param int $refund_id WooCommerce refund ID.
 		 */
 		public function handle_order_refunded( $order_id, $refund_id ) {
-			$creditnote = new WCPI_CreditNote( $order_id, $refund_id );
+			$creditnote = new WPWing_WcPdf_CreditNote( $order_id, $refund_id );
 			if ( $creditnote->is_valid && ! $creditnote->exists ) {
-				global $wpwing_wcpi_document;
-				$wpwing_wcpi_document = $creditnote;
-				$wpwing_wcpi_document->save();
+				global $wpwing_wcpdf_document;
+				$wpwing_wcpdf_document = $creditnote;
+				$wpwing_wcpdf_document->save();
 			}
 		}
 

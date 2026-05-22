@@ -3,7 +3,7 @@
 }
 
 // Metabox — summary line (only when invoice exists)
-.wpwing-wcpi-summary {
+.wpwing-wcpdf-summary {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -13,7 +13,7 @@
     border-bottom: 1px solid #f0f0f0;
     font-size: 12px;
 
-    .wpwing-wcpi-sep { color: #c3c4c7; }
+    .wpwing-wcpdf-sep { color: #c3c4c7; }
 
     strong {
         font-family: monospace;
@@ -25,7 +25,7 @@
 }
 
 // Metabox — document rows (Invoice / Packing Slip)
-.wpwing-wcpi-doc-row {
+.wpwing-wcpdf-doc-row {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -33,7 +33,7 @@
 
     & + & { border-top: 1px solid #f0f0f0; }
 
-    .wpwing-wcpi-doc-icon {
+    .wpwing-wcpdf-doc-icon {
         color: #646970;
         font-size: 18px;
         width: 18px;
@@ -41,14 +41,14 @@
         flex-shrink: 0;
     }
 
-    .wpwing-wcpi-doc-label {
+    .wpwing-wcpdf-doc-label {
         font-size: 12px;
         font-weight: 600;
         white-space: nowrap;
         flex-shrink: 0;
     }
 
-    .wpwing-wcpi-doc-actions {
+    .wpwing-wcpdf-doc-actions {
         display: flex;
         gap: 4px;
         margin-left: auto;
@@ -82,8 +82,8 @@
 }
 
 // Orders list — icon buttons base style (square, text hidden)
-.widefat .column-order_actions a.button.wpwing_wcpi_buttons,
-.widefat .column-wc_actions a.button.wpwing_wcpi_buttons {
+.widefat .column-order_actions a.button.wpwing_wcpdf_buttons,
+.widefat .column-wc_actions a.button.wpwing_wcpdf_buttons {
     display: inline-block;
     text-indent: -9999px;
     position: relative;
@@ -92,14 +92,14 @@
     width: 2em;
 }
 
-.widefat .column-order_actions a.button.wpwing_wcpi_buttons:after,
-.widefat .column-wc_actions a.button.wpwing_wcpi_buttons:after {
+.widefat .column-order_actions a.button.wpwing_wcpdf_buttons:after,
+.widefat .column-wc_actions a.button.wpwing_wcpdf_buttons:after {
     display: none;
 }
 
 // Orders list — Create button (dashicons-plus-alt replaces invoice_add.png)
-.widefat .column-order_actions a.button.wpwing_wcpi_create_invoice,
-.widefat .column-wc_actions a.button.wpwing_wcpi_create_invoice {
+.widefat .column-order_actions a.button.wpwing_wcpdf_create_invoice,
+.widefat .column-wc_actions a.button.wpwing_wcpdf_create_invoice {
     &::before {
         font-family: dashicons;
         content: "\f132";
@@ -114,8 +114,8 @@
 }
 
 // Orders list — View button (dashicons-visibility replaces invoice_view.png)
-.widefat .column-order_actions a.button.wpwing_wcpi_view_invoice,
-.widefat .column-wc_actions a.button.wpwing_wcpi_view_invoice {
+.widefat .column-order_actions a.button.wpwing_wcpdf_view_invoice,
+.widefat .column-wc_actions a.button.wpwing_wcpdf_view_invoice {
     &::before {
         font-family: dashicons;
         content: "\f177";

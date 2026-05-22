@@ -1,6 +1,6 @@
 <?php
-global $wpwing_wcpi_document;
-$refund = $wpwing_wcpi_document->refund;
+global $wpwing_wcpdf_document;
+$refund = $wpwing_wcpdf_document->refund;
 ?>
 
 <table class="invoice-details">

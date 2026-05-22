@@ -7,16 +7,16 @@ defined( 'ABSPATH' ) || exit;
 // 3. store defaults: init priority 3
 // 4. get defaults / do whatever you want to do
 
-if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
+if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
-	class WPWing_WCPI_Settings_API {
+	class WPWing_WcPdf_Settings_API {
 
-		private $setting_name = 'wpwing_wcpi_settings';
+		private $setting_name = 'wpwing_wcpdf_settings';
 		private $setting_reset_name = 'reset';
 		private $show_pro_name = 'pro';
-		private $transient_setting_name = '_temp_wpwing_wcpi_options';
-		private $cache_key = 'wpwing_wcpi_options';
-		private $theme_feature_name = 'wpwing-wc-pdf-invoice';
+		private $transient_setting_name = '_temp_wpwing_wcpdf_options';
+		private $cache_key = 'wpwing_wcpdf_options';
+		private $theme_feature_name = 'wpwing-wcpdf';
 		private $slug;
 		// private $plugin_class;
 		private $defaults = [];
@@ -79,14 +79,14 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		public function __construct() {
 
-			$this->settings_name = apply_filters( 'wpwing_wcpi_settings_name', $this->setting_name );
-			$this->setting_reset_name = apply_filters( 'wpwing_wcpi_settings_reset_name', $this->setting_reset_name );
+			$this->settings_name = apply_filters( 'wpwing_wcpdf_settings_name', $this->setting_name );
+			$this->setting_reset_name = apply_filters( 'wpwing_wcpdf_settings_reset_name', $this->setting_reset_name );
 
-			$this->slug = sprintf( '%s-settings', sanitize_key( WPWING_WCPI_DIR_NAME ) );
+			$this->slug = sprintf( '%s-settings', sanitize_key( WPWING_WCPDF_DIR_NAME ) );
 			// license_key
-			$this->fields = apply_filters( 'wpwing_wcpi_settings', $this->fields );
+			$this->fields = apply_filters( 'wpwing_wcpdf_settings', $this->fields );
 			$this->reserved_key = sprintf( '%s_reserved', esc_html( $this->settings_name ) );
-			$this->reserved_fields = apply_filters( 'wpwing_wcpi_reserved_fields', [] );
+			$this->reserved_fields = apply_filters( 'wpwing_wcpdf_reserved_fields', [] );
 
 			add_action( 'admin_menu', array( $this, 'add_menu' ) );
 
@@ -101,15 +101,15 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			add_action( "update_option_{$this->settings_name}", array( $this, 'after_update' ), 10, 3 );
 
 
-			add_filter( 'plugin_action_links_' . WPWING_WCPI_BASE_NAME, array( $this, 'plugin_action_links' ) );
+			add_filter( 'plugin_action_links_' . WPWING_WCPDF_BASE_NAME, array( $this, 'plugin_action_links' ) );
 
-			if ( apply_filters( 'show_wpwing_wcpi_settings_link_on_admin_bar', false ) ):
+			if ( apply_filters( 'show_wpwing_wcpdf_settings_link_on_admin_bar', false ) ):
 				add_action( 'wp_before_admin_bar_render', array( $this, 'add_admin_bar' ), 999 );
 			endif;
 
 			add_action( 'admin_footer', array( $this, 'admin_inline_js' ) );
 
-			do_action( 'wpwing_wcpi_setting_api_init', $this );
+			do_action( 'wpwing_wcpdf_setting_api_init', $this );
 
 		}
 
@@ -190,8 +190,8 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 				return '';
 			}
 
-			$page_title = esc_html__( 'PDF Invoice for WooCommerce Settings', 'wpwing-wc-pdf-invoice' );
-			$menu_title = esc_html__( 'Invoice Settings', 'wpwing-wc-pdf-invoice' );
+			$page_title = esc_html__( 'PDF Invoice for WooCommerce Settings', 'wpwing-wcpdf' );
+			$menu_title = esc_html__( 'Invoice Settings', 'wpwing-wcpdf' );
 			add_menu_page( $page_title, $menu_title, 'manage_woocommerce', $this->slug, array( $this, 'settings_form' ), 'dashicons-pdf', 31 );
 
 		}
@@ -205,7 +205,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			global $wp_admin_bar;
 
 			$url        = admin_url( sprintf( 'admin.php?page=%s', esc_html( $this->slug ) ) );
-			$menu_title = esc_html__( 'Invoice Settings', 'wpwing-wc-pdf-invoice' );
+			$menu_title = esc_html__( 'Invoice Settings', 'wpwing-wcpdf' );
 
 			$args = array(
 				'id'    => $this->settings_name,
@@ -219,14 +219,14 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			if ( ! is_admin() && class_exists( 'WooCommerce' ) && ( is_singular( 'product' ) || is_shop() ) ) {
 				$wp_admin_bar->add_menu( array(
-					'id'     => 'wpwing-wcpi-clear-transient',
-					'title'  => esc_html__( 'Clear transient', 'wpwing-wc-pdf-invoice' ),
+					'id'     => 'wpwing-wcpdf-clear-transient',
+					'title'  => esc_html__( 'Clear transient', 'wpwing-wcpdf' ),
 					'href'   => esc_url( remove_query_arg( array(
 						'variation_id',
 						'remove_item',
 						'add-to-cart',
 						'added-to-cart'
-					), add_query_arg( 'wpwing_wcpi_clear_transient', '' ) ) ),
+					), add_query_arg( 'wpwing_wcpdf_clear_transient', '' ) ) ),
 					'parent' => $this->settings_name,
 					'meta'   => array(
 						'class' => sprintf( '%s-admin-toolbar-cache', esc_html( $this->slug ) )
@@ -234,7 +234,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 				) );
 			}
 
-			do_action( 'wpwing_wcpi_admin_bar_menu', $wp_admin_bar, $this->settings_name );
+			do_action( 'wpwing_wcpdf_admin_bar_menu', $wp_admin_bar, $this->settings_name );
 
 		}
 
@@ -245,7 +245,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			}
 
 			$url          = admin_url( sprintf( 'admin.php?page=%s', esc_html( $this->slug ) ) );
-			$plugin_links = array( sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Settings', 'wpwing-wc-pdf-invoice' ) ) );
+			$plugin_links = array( sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Settings', 'wpwing-wcpdf' ) ) );
 
 			return array_merge( $plugin_links, $links );
 
@@ -272,15 +272,15 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		public function set_defaults() {
 
 			foreach ( $this->fields as $tab_key => $tab ) {
-				$tab = apply_filters( 'wpwing_wcpi_settings_tab', $tab );
+				$tab = apply_filters( 'wpwing_wcpdf_settings_tab', $tab );
 
 				foreach ( $tab['sections'] as $section_key => $section ) {
 
-					$section = apply_filters( 'wpwing_wcpi_settings_section', $section, $tab );
+					$section = apply_filters( 'wpwing_wcpdf_settings_section', $section, $tab );
 
 					$section['id'] = ! isset( $section['id'] ) ? $tab['id'] . '-section' : $section['id'];
 
-					$section['fields'] = apply_filters( 'wpwing_wcpi_settings_fields', $section['fields'], $section, $tab );
+					$section['fields'] = apply_filters( 'wpwing_wcpdf_settings_fields', $section['fields'], $section, $tab );
 
 					foreach ( $section['fields'] as $field ) {
 						if ( isset( $field['pro'] ) ) {
@@ -422,10 +422,10 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			if ( $this->is_reset_all() ) {
 				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_reset_settings' ) ) {
-					wp_die( esc_html__( 'Security check failed.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
 				}
 				if ( ! current_user_can( 'manage_woocommerce' ) ) {
-					wp_die( esc_html__( 'You do not have permission to reset settings.', 'wpwing-wc-pdf-invoice' ) );
+					wp_die( esc_html__( 'You do not have permission to reset settings.', 'wpwing-wcpdf' ) );
 				}
 				$this->delete_settings();
 				wp_redirect( $this->settings_url() );
@@ -435,11 +435,11 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 			foreach ( $this->fields as $tab_key => $tab ) {
 
-				$tab = apply_filters( 'wpwing_wcpi_settings_tab', $tab );
+				$tab = apply_filters( 'wpwing_wcpdf_settings_tab', $tab );
 
 				foreach ( $tab['sections'] as $section_key => $section ) {
 
-					$section = apply_filters( 'wpwing_wcpi_settings_section', $section, $tab );
+					$section = apply_filters( 'wpwing_wcpdf_settings_section', $section, $tab );
 
 					$section['id'] = ! isset( $section['id'] ) ? $tab['id'] . '-section-' . $section_key : $section['id'];
 
@@ -452,7 +452,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 						}
 					}, $tab['id'] . $section['id'] );
 
-					$section['fields'] = apply_filters( 'wpwing_wcpi_settings_fields', $section['fields'], $section, $tab );
+					$section['fields'] = apply_filters( 'wpwing_wcpdf_settings_fields', $section['fields'], $section, $tab );
 
 					foreach ( $section['fields'] as $field ) {
 
@@ -538,7 +538,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 					break;
 			}
 
-			do_action( 'wpwing_wcpi_settings_field_callback', $field );
+			do_action( 'wpwing_wcpdf_settings_field_callback', $field );
 
 		}
 
@@ -549,7 +549,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		 */
 		public function radio_field_callback( $args ) {
 
-			$options = apply_filters( "wpwing_wcpi_settings_{$args[ 'id' ]}_radio_options", $args['options'] );
+			$options = apply_filters( "wpwing_wcpdf_settings_{$args[ 'id' ]}_radio_options", $args['options'] );
 			$value   = esc_attr( $this->get_option( $args['id'] ) );
 
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
@@ -589,7 +589,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		 */
 		public function select_field_callback( $args ) {
 
-			$options = apply_filters( "wpwing_wcpi_settings_{$args[ 'id' ]}_select_options", $args['options'] );
+			$options = apply_filters( "wpwing_wcpdf_settings_{$args[ 'id' ]}_select_options", $args['options'] );
 			$value = esc_attr( $this->get_option( $args['id'] ) );
 			$options = array_map( function ( $key, $option ) use ( $value ) {
 				return "<option value='{$key}'" . selected( $key, $value, false ) . ">{$option}</option>";
@@ -632,7 +632,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 		 */
 		public function multiselect_field_callback( $args ) {
 
-			$options     = apply_filters( "wpwing_wcpi_settings_{$args['id']}_multiselect_options", $args['options'] );
+			$options     = apply_filters( "wpwing_wcpdf_settings_{$args['id']}_multiselect_options", $args['options'] );
 			$saved_value = $this->get_option( $args['id'] );
 			$value       = is_array( $saved_value ) ? $saved_value : array();
 			$size        = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
@@ -651,7 +651,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 				esc_html( $this->settings_name ),
 				esc_attr( $attrs )
 			);
-			$html .= '<p class="description">' . esc_html__( 'Hold Ctrl (Windows) or Cmd (Mac) to select multiple options.', 'wpwing-wc-pdf-invoice' ) . '</p>';
+			$html .= '<p class="description">' . esc_html__( 'Hold Ctrl (Windows) or Cmd (Mac) to select multiple options.', 'wpwing-wcpdf' ) . '</p>';
 			$html .= $this->get_field_description( $args );
 
 			echo wp_kses( $html, $this->allowed_html );
@@ -671,7 +671,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 
 			$html = sprintf( '<input %5$s type="text" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s" value="%3$s" readonly />', esc_html( $size ), esc_attr( $args['id'] ), esc_html( $value ), esc_html( $this->settings_name ), esc_attr( $attrs ), esc_html( $args['placeholder'] ) );
-			$html .= '&nbsp;&nbsp;<a href="#" class="wcpi_upload_image">Upload Logo</a>';
+			$html .= '&nbsp;&nbsp;<a href="#" class="wcpdf_upload_image">Upload Logo</a>';
 			$html .= $this->get_field_description( $args );
 
 			echo wp_kses( $html, $this->allowed_html );
@@ -769,7 +769,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 							?>
 
 							<div id="<?php echo esc_attr( $tab['id'] ); ?>"
-								class="settings-tab wpwing-wcpi-setting-tab"
+								class="settings-tab wpwing-wcpdf-setting-tab"
 								style="<?php echo ! $is_active ? 'display: none' : ''; ?>">
 								<?php foreach ( $tab['sections'] as $section ):
 									$this->do_settings_sections( $tab['id'] . $section['id'] );
@@ -782,9 +782,9 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 					$this->last_tab_input();
 					// submit_button();
 					?>
-					<p class="submit wpwing-wcpi-button-wrapper">
-						<input type="submit" id="submit" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'wpwing-wc-pdf-invoice' ) ?>">
-						<a onclick="return confirm('<?php esc_attr_e( 'Are you sure to reset current settings?', 'wpwing-wc-pdf-invoice' ) ?>')" class="reset" href="<?php echo esc_url( $this->reset_url() ); ?>"><?php esc_html_e( 'Reset all', 'wpwing-wc-pdf-invoice' ) ?></a>
+					<p class="submit wpwing-wcpdf-button-wrapper">
+						<input type="submit" id="submit" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'wpwing-wcpdf' ) ?>">
+						<a onclick="return confirm('<?php esc_attr_e( 'Are you sure to reset current settings?', 'wpwing-wcpdf' ) ?>')" class="reset" href="<?php echo esc_url( $this->reset_url() ); ?>"><?php esc_html_e( 'Reset all', 'wpwing-wcpdf' ) ?></a>
 					</p>
 
 				</form>
@@ -839,7 +839,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 			?>
 			<h2 class="nav-tab-wrapper wp-clearfix">
 				<?php foreach ( $this->fields as $tabs ): ?>
-					<a data-target="<?php echo esc_attr( $tabs['id'] ); ?>" <?php echo esc_attr( $this->get_options_tab_pro_attr( $tabs ) ); ?> class="wpwing-wcpi-setting-nav-tab nav-tab <?php echo esc_attr( $this->get_options_tab_css_classes( $tabs ) ); ?> " href="#<?php echo esc_attr( $tabs['id'] ); ?>"><?php echo esc_html( $tabs['title'] ); ?></a>
+					<a data-target="<?php echo esc_attr( $tabs['id'] ); ?>" <?php echo esc_attr( $this->get_options_tab_pro_attr( $tabs ) ); ?> class="wpwing-wcpdf-setting-nav-tab nav-tab <?php echo esc_attr( $this->get_options_tab_css_classes( $tabs ) ); ?> " href="#<?php echo esc_attr( $tabs['id'] ); ?>"><?php echo esc_html( $tabs['title'] ); ?></a>
 				<?php endforeach; ?>
 			</h2>
 			<?php
@@ -848,8 +848,8 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 
 		private function get_options_tab_pro_attr( $tabs ) {
 
-			// $attrs[] = ( isset( $tabs[ 'is_pro' ] ) && $tabs[ 'is_pro' ] ) ? sprintf( 'data-pro-text="%s"', apply_filters( 'wpwing_wcpi_settings_tab_pro_text', 'Pro' ) ) : false;
-			$attrs[] = ( isset( $tabs['is_new'] ) && $tabs['is_new'] ) ? sprintf( 'data-new-text="%s"', apply_filters( 'wpwing_wcpi_settings_tab_new_text', 'New' ) ) : false;
+			// $attrs[] = ( isset( $tabs[ 'is_pro' ] ) && $tabs[ 'is_pro' ] ) ? sprintf( 'data-pro-text="%s"', apply_filters( 'wpwing_wcpdf_settings_tab_pro_text', 'Pro' ) ) : false;
+			$attrs[] = ( isset( $tabs['is_new'] ) && $tabs['is_new'] ) ? sprintf( 'data-new-text="%s"', apply_filters( 'wpwing_wcpdf_settings_tab_new_text', 'New' ) ) : false;
 
 			return implode( ' ', $attrs );
 
@@ -955,7 +955,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 				$b_array[ '#' . $k . '-field' ] = $v;
 			}
 
-			return 'data-wpwing-wcpi-depends="[' . esc_attr( wp_json_encode( $b_array ) ) . ']"';
+			return 'data-wpwing-wcpdf-depends="[' . esc_attr( wp_json_encode( $b_array ) ) . ']"';
 
 		}
 
@@ -980,7 +980,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 				$dependency = ! empty( $field['args']['require'] ) ? $this->build_dependency( $field['args']['require'] ) : '';
 
 				$is_new   = ( isset( $field['args']['is_new'] ) && $field['args']['is_new'] );
-				$new_html = $is_new ? '<span class="wpwing-wcpi-new-feature-tick">' . esc_html__( 'NEW', 'wpwing-wc-pdf-invoice' ) . '</span>' : '';
+				$new_html = $is_new ? '<span class="wpwing-wcpdf-new-feature-tick">' . esc_html__( 'NEW', 'wpwing-wcpdf' ) . '</span>' : '';
 
 				printf( '<tr id="%s" %s %s>', esc_attr( $wrapper_id ), esc_attr( $custom_attributes ), esc_attr( $dependency ) );
 
@@ -992,7 +992,7 @@ if ( ! class_exists( 'WPWing_WCPI_Settings_API' ) ) {
 				}
 				echo '</th>';
 
-				echo '<td class="wpwing-wcpi-settings-field-content">';
+				echo '<td class="wpwing-wcpdf-settings-field-content">';
 				call_user_func( $field['callback'], $field['args'] );
 				echo '</td>';
 

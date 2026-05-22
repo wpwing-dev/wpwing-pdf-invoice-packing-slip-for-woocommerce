@@ -2,16 +2,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'WCPI_ProDocument' ) ) {
+if ( ! class_exists( 'WPWing_WcPdf_ProDocument' ) ) {
 
 	/**
 	 * Abstract base for all pro document types.
 	 * Overrides get_theme_dir() to use the pro plugin's template directory,
 	 * and provides shared rendering helpers used by Proforma and CreditNote.
 	 */
-	abstract class WCPI_ProDocument extends WCPI_Document {
+	abstract class WPWing_WcPdf_ProDocument extends WPWing_WcPdf_Document {
 
-		/** @var WPWing_WCPI_Settings */
+		/** @var WPWing_WcPdf_Settings */
 		public $settings;
 
 		/**
@@ -22,16 +22,16 @@ if ( ! class_exists( 'WCPI_ProDocument' ) ) {
 		 * @return string Absolute path with trailing slash.
 		 */
 		public function get_theme_dir() {
-			$settings  = WPWing_WCPI_Settings::get_instance();
+			$settings  = WPWing_WcPdf_Settings::get_instance();
 			$theme     = $settings->get_option( 'invoice_template' );
 			$theme     = $theme ? $theme : 'default';
-			$theme_dir = WPWING_WCPI_PRO_TEMPLATE_DIR . trailingslashit( $theme );
+			$theme_dir = WPWING_WCPDF_PRO_TEMPLATE_DIR . trailingslashit( $theme );
 
 			if ( ! is_dir( $theme_dir ) ) {
-				$theme_dir = WPWING_WCPI_PRO_TEMPLATE_DIR . 'default/';
+				$theme_dir = WPWING_WCPDF_PRO_TEMPLATE_DIR . 'default/';
 			}
 
-			return apply_filters( 'wpwing_wcpi_pdf_pro_theme_dir', $theme_dir, $this->document_type );
+			return apply_filters( 'wpwing_wcpdf_pdf_pro_theme_dir', $theme_dir, $this->document_type );
 		}
 
 		/**
@@ -96,7 +96,7 @@ if ( ! class_exists( 'WCPI_ProDocument' ) ) {
 				return;
 			}
 
-			echo '<div class="company-logo"><img src="' . apply_filters( 'wpwing_wcpi_company_image_path', esc_url( $company_logo ) ) . '"></div>';
+			echo '<div class="company-logo"><img src="' . apply_filters( 'wpwing_wcpdf_company_image_path', esc_url( $company_logo ) ) . '"></div>';
 		}
 
 		/**
@@ -105,12 +105,12 @@ if ( ! class_exists( 'WCPI_ProDocument' ) ) {
 		 * @param string $label Label shown above the address.
 		 */
 		protected function render_billing_address( $label ) {
-			global $wpwing_wcpi_document;
+			global $wpwing_wcpdf_document;
 
 			echo '<div class="invoice-to-section">';
-			if ( $wpwing_wcpi_document->order->get_formatted_billing_address() ) {
+			if ( $wpwing_wcpdf_document->order->get_formatted_billing_address() ) {
 				echo '<span class="invoice-from-to">' . esc_html( $label ) . '</span>';
-				echo '<div class="customer-details">' . wp_kses( $wpwing_wcpi_document->order->get_formatted_billing_address(), array( 'br' => array() ) ) . '</div>';
+				echo '<div class="customer-details">' . wp_kses( $wpwing_wcpdf_document->order->get_formatted_billing_address(), array( 'br' => array() ) ) . '</div>';
 			}
 			echo '</div>';
 		}

@@ -5,16 +5,16 @@ defined( 'ABSPATH' ) || exit;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-if ( ! class_exists( 'WCPI_Document' ) ) {
+if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 
 	/**
 	 * Abstract features related to a PDF document
 	 *
-	 * @class   WCPI_Document
+	 * @class   WPWing_WcPdf_Document
 	 * @package WPWing
 	 * @since   1.0.0
 	 */
-	abstract class WCPI_Document {
+	abstract class WPWing_WcPdf_Document {
 
 		/**
 		 * @var string Current document type
@@ -37,7 +37,7 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 		public $is_valid = false;
 
 		/**
-		 * @var WPWing_WCPI_Settings Settings instance, set by child classes.
+		 * @var WPWing_WcPdf_Settings Settings instance, set by child classes.
 		 */
 		protected $settings;
 
@@ -67,16 +67,16 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 		 */
 		public function get_theme_dir() {
 
-			$settings   = WPWing_WCPI_Settings::get_instance();
+			$settings   = WPWing_WcPdf_Settings::get_instance();
 			$option_key = 'invoice' === $this->document_type ? 'invoice_template' : 'packing_template';
 			$theme      = $settings->get_option( $option_key );
-			$theme_dir  = WPWING_WCPI_TEMPLATE_DIR . trailingslashit( $theme ? $theme : 'default' );
+			$theme_dir  = WPWING_WCPDF_TEMPLATE_DIR . trailingslashit( $theme ? $theme : 'default' );
 
 			if ( ! is_dir( $theme_dir ) ) {
-				$theme_dir = WPWING_WCPI_TEMPLATE_DIR . 'default/';
+				$theme_dir = WPWING_WCPDF_TEMPLATE_DIR . 'default/';
 			}
 
-			return apply_filters( 'wpwing_wcpi_pdf_theme_dir', $theme_dir, $this->document_type );
+			return apply_filters( 'wpwing_wcpdf_pdf_theme_dir', $theme_dir, $this->document_type );
 
 		}
 
@@ -115,14 +115,14 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 
 			$theme_dir = $this->get_theme_dir();
 
-			do_action( 'wpwing_wcpi_before_template_generation' );
+			do_action( 'wpwing_wcpdf_before_template_generation' );
 
 			ob_start();
 			wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
 			$html = ob_get_contents();
 			ob_end_clean();
 
-			require_once( WPWING_WCPI_VENDOR_DIR . 'autoload.php' );
+			require_once( WPWING_WCPDF_VENDOR_DIR . 'autoload.php' );
 
 			// Use a writable font cache so Dompdf generates complete .ufm metrics
 			// from the full TTF glyph table, covering all currency symbols (Taka,
@@ -135,12 +135,12 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 			$options->setFontDir( $font_cache );
 			$options->setFontCache( $font_cache );
 
-			$paper_size = WPWing_WCPI_Settings::get_instance()->get_option( 'paper_size' );
+			$paper_size = WPWing_WcPdf_Settings::get_instance()->get_option( 'paper_size' );
 			$dompdf     = new Dompdf( $options );
 
 			// One-time font registration — skipped on every subsequent PDF.
 			if ( ! file_exists( $font_cache . 'fonts_ready' ) ) {
-				$src     = WPWING_WCPI_VENDOR_DIR . 'dompdf/dompdf/lib/fonts/';
+				$src     = WPWING_WCPDF_VENDOR_DIR . 'dompdf/dompdf/lib/fonts/';
 				$metrics = $dompdf->getFontMetrics();
 				$metrics->registerFont( array( 'family' => 'DejaVu Sans', 'weight' => 'normal', 'style' => 'normal' ),  'file://' . $src . 'DejaVuSans.ttf' );
 				$metrics->registerFont( array( 'family' => 'DejaVu Sans', 'weight' => 'bold',   'style' => 'normal' ),  'file://' . $src . 'DejaVuSans-Bold.ttf' );
@@ -167,7 +167,7 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 		 */
 		public function get_formatted_date() {
 
-      $format = apply_filters( 'wpwing_wcpi_invoice_date_format', $this->settings->get_option( 'invoice_date_format' ) );
+      $format = apply_filters( 'wpwing_wcpdf_invoice_date_format', $this->settings->get_option( 'invoice_date_format' ) );
 			if ( ! $format) {
 				$format = 'd/m/Y';
 			}
@@ -184,8 +184,8 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 		 */
 		public function init_template() {
 
-			add_action( 'wpwing_wcpi_template_head', array( $this, 'add_template_head' ) );
-			add_action( 'wpwing_wcpi_template_content', array( $this, 'add_template_content' ) );
+			add_action( 'wpwing_wcpdf_template_head', array( $this, 'add_template_head' ) );
+			add_action( 'wpwing_wcpdf_template_content', array( $this, 'add_template_content' ) );
 
 		}
 
@@ -196,15 +196,15 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 		 */
 		public function flush_template() {
 
-			remove_all_filters( 'wpwing_wcpi_' . $this->document_type . '_template_head' );
-			remove_all_filters( 'wpwing_wcpi_' . $this->document_type . '_template_content' );
+			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_head' );
+			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_content' );
 
-			remove_all_filters( 'wpwing_wcpi_' . $this->document_type . '_template_company_data' );
-			remove_all_filters( 'wpwing_wcpi_' . $this->document_type . '_template_company_logo' );
-			remove_all_filters( 'wpwing_wcpi_' . $this->document_type . '_template_customer_data' );
-			remove_all_filters( 'wpwing_wcpi_' . $this->document_type . '_template_order_data' );
-			remove_all_filters( 'wpwing_wcpi_' . $this->document_type . '_template_product_list' );
-			remove_all_filters( 'wpwing_wcpi_' . $this->document_type . '_template_footer' );
+			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_company_data' );
+			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_company_logo' );
+			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_customer_data' );
+			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_order_data' );
+			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_product_list' );
+			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_footer' );
 
 		}
 
@@ -240,13 +240,13 @@ if ( ! class_exists( 'WCPI_Document' ) ) {
 		 */
 		public function add_template_content() {
 
-			global $wpwing_wcpi_document;
+			global $wpwing_wcpdf_document;
 			$theme_dir = $this->get_theme_dir();
 			$template_filename = $this->document_type . '/index.php';
 			$template_path = $theme_dir . $template_filename;
 
 			if ( file_exists( $template_path ) ) {
-				wc_get_template( $template_filename, array( $wpwing_wcpi_document ), $theme_dir, $theme_dir );
+				wc_get_template( $template_filename, array( $wpwing_wcpdf_document ), $theme_dir, $theme_dir );
 			}
 
 		}

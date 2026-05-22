@@ -22,10 +22,10 @@
 				font-family: DejaVu Sans, sans-serif;
 			}
 		</style>
-		<?php do_action( 'wpwing_wcpi_template_head' ); ?>
+		<?php do_action( 'wpwing_wcpdf_template_head' ); ?>
 	</head>
 
 	<body>
-		<?php do_action( 'wpwing_wcpi_template_content' ); ?>
+		<?php do_action( 'wpwing_wcpdf_template_content' ); ?>
 	</body>
 </html>

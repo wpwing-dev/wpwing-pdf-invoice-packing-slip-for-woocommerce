@@ -27,7 +27,7 @@ lint: ## Run PHP_CodeSniffer with WordPress standards
 .PHONY: lint
 
 pot: ## Regenerate the .pot translation file
-	wp i18n make-pot . languages/wpwing-wc-pdf-invoice.pot \
+	wp i18n make-pot . languages/wpwing-wcpdf.pot \
 		--exclude=vendor,node_modules,dist
 .PHONY: pot
 
@@ -85,7 +85,7 @@ zip-pro: clean-build-pro ## Build pro addon zip into dist/
 version-pro: ## Bump pro version strings — usage: make version-pro V=1.0.1
 	@[ -n "$(V)" ] || (echo "Usage: make version-pro V=1.0.1" && exit 1)
 	sed -i "s/Version: .*/Version: $(V)/" $(PRO_SRC)/$(PRO_SLUG).php
-	sed -i "s/define( 'WPWING_WCPI_PRO_VERSION', '.*' )/define( 'WPWING_WCPI_PRO_VERSION', '$(V)' )/" $(PRO_SRC)/$(PRO_SLUG).php
+	sed -i "s/define( 'WPWING_WCPDF_PRO_VERSION', '.*' )/define( 'WPWING_WCPDF_PRO_VERSION', '$(V)' )/" $(PRO_SRC)/$(PRO_SLUG).php
 	@echo "Pro version bumped to $(V)"
 .PHONY: version-pro
 
@@ -107,7 +107,7 @@ check: ## Verify version strings are consistent across all files
 	errors=0; \
 	grep -q "\"version\": \"$$V\"" package.json          || { echo "  FAIL: version in package.json"; errors=1; }; \
 	grep -qP "Stable tag:\s+$$V" readme.txt               || { echo "  FAIL: Stable tag in readme.txt"; errors=1; }; \
-	grep -q "WPWING_WCPI_VERSION', '$$V'" $(PLUGIN_SLUG).php || { echo "  FAIL: WPWING_WCPI_VERSION constant"; errors=1; }; \
+	grep -q "WPWING_WCPDF_VERSION', '$$V'" $(PLUGIN_SLUG).php || { echo "  FAIL: WPWING_WCPDF_VERSION constant"; errors=1; }; \
 	[ $$errors -eq 0 ] && echo "  All version strings match $$V ✓" || exit 1
 .PHONY: check
 
