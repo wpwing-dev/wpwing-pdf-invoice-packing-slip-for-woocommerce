@@ -89,6 +89,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			$this->reserved_fields = apply_filters( 'wpwing_wcpdf_reserved_fields', [] );
 
 			add_action( 'admin_menu', array( $this, 'add_menu' ) );
+			add_action( 'admin_init', array( $this, 'redirect_parent_menu' ), 15 );
 
 			add_action( 'init', array( $this, 'set_defaults' ), 8 );
 
@@ -190,10 +191,39 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 				return '';
 			}
 
+			// Register the shared WPWing parent menu only if no other WPWing plugin
+			// has already done so (guard pattern shared across all WPWing plugins).
+			if ( '' === menu_page_url( 'wpwing', false ) ) {
+				add_menu_page(
+					__( 'WPWing', 'wpwing-wcpdf' ),
+					__( 'WPWing', 'wpwing-wcpdf' ),
+					'manage_woocommerce',
+					'wpwing',
+					'__return_null',
+					'dashicons-heart',
+					58
+				);
+			}
+
 			$page_title = esc_html__( 'PDF Invoice for WooCommerce Settings', 'wpwing-wcpdf' );
 			$menu_title = esc_html__( 'Invoice Settings', 'wpwing-wcpdf' );
-			add_menu_page( $page_title, $menu_title, 'manage_woocommerce', $this->slug, array( $this, 'settings_form' ), 'dashicons-pdf', 31 );
+			add_submenu_page( 'wpwing', $page_title, $menu_title, 'manage_woocommerce', $this->slug, array( $this, 'settings_form' ) );
 
+		}
+
+		/**
+		 * Redirect the bare WPWing parent menu to Invoice Settings.
+		 *
+		 * Fires on admin_init (priority 15) so wp_safe_redirect() works before
+		 * headers are sent. When wishlist-waitlist is also active its redirect
+		 * fires at priority 10 and calls exit first, so there is no conflict.
+		 */
+		public function redirect_parent_menu() {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_GET['page'] ) && 'wpwing' === $_GET['page'] ) {
+				wp_safe_redirect( admin_url( 'admin.php?page=' . $this->slug ) );
+				exit;
+			}
 		}
 
 		public function add_admin_bar() {
