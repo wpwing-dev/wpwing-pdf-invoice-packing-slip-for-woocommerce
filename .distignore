@@ -1,6 +1,8 @@
 .git/
 .gitignore
 .distignore
+.github/
+CLAUDE.md
 Makefile
 node_modules/
 vendor/
