@@ -85,18 +85,38 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 		 */
 		public function get_formatted_invoice_number() {
 
-			$formatted_invoice_number = $this->settings->get_option( 'invoice_number_format' );
-			if ( ! $formatted_invoice_number ) {
-				$formatted_invoice_number = '[prefix]/[number]/[suffix]';
+			$format = $this->settings->get_option( 'invoice_number_format' );
+			if ( ! $format ) {
+				$format = '{number}';
 			}
 
-			$formatted_invoice_number = str_replace(
-				array( '[prefix]', '[suffix]', '[number]' ),
-				array( $this->prefix, $this->suffix, $this->number ),
-				$formatted_invoice_number
+			// Resolve date for {year}/{month}/{day} tokens from invoice date, order date, or now.
+			$timestamp = 0;
+			if ( ! empty( $this->date ) ) {
+				$timestamp = is_numeric( $this->date ) ? (int) $this->date : strtotime( $this->date );
+			}
+			if ( ! $timestamp && $this->order ) {
+				$order_date = $this->order->get_date_created();
+				if ( $order_date ) {
+					$timestamp = $order_date->getTimestamp();
+				}
+			}
+			if ( ! $timestamp ) {
+				$timestamp = time();
+			}
+
+			$search  = array( '{number}', '{year}', '{month}', '{day}', '[number]', '[prefix]', '[suffix]' );
+			$replace = array(
+				$this->number,
+				wp_date( 'Y', $timestamp ),
+				wp_date( 'm', $timestamp ),
+				wp_date( 'd', $timestamp ),
+				$this->number,   // legacy [number]
+				$this->prefix,   // legacy [prefix]
+				$this->suffix,   // legacy [suffix]
 			);
 
-			return apply_filters( 'wpwing_wcpdf_get_formatted_invoice_number', $formatted_invoice_number, $this->order );
+			return apply_filters( 'wpwing_wcpdf_get_formatted_invoice_number', str_replace( $search, $replace, $format ), $this->order );
 
 		}
 

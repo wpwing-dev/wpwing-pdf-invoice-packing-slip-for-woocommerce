@@ -83,25 +83,12 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 							'placeholder' => 'Invoice number',
 						),
 						array(
-							'id'          => 'invoice_prefix',
-							'type'        => 'text',
-							'title'       => esc_html__( 'Invoice prefix:', 'wpwing-wcpdf' ),
-							'desc'        => 'Set a text to be used as prefix in invoice number. Leave it blank if no prefix has to be used.',
-							'placeholder' => 'Invoice prefix',
-						),
-						array(
-							'id'          => 'invoice_suffix',
-							'type'        => 'text',
-							'title'       => esc_html__( 'Invoice suffix:', 'wpwing-wcpdf' ),
-							'desc'        => 'Set a text to be used as suffix in invoice number. Leave it blank if no suffix has to be used.',
-							'placeholder' => 'Invoice suffix',
-						),
-						array(
 							'id'          => 'invoice_number_format',
 							'type'        => 'text',
 							'title'       => esc_html__( 'Invoice number format:', 'wpwing-wcpdf' ),
-							'desc'        => 'Set format for invoice number. Use [number], [prefix] and [suffix] as placeholders.',
-							'placeholder' => '[prefix]/[number]/[suffix]',
+							'desc'        => 'Tokens: {number} = serial, {year} = full year, {month} = 2-digit month, {day} = 2-digit day. Example: INV-{number}/{year}{month} → INV-1/202605',
+							'placeholder' => '{number}',
+							'default'     => '{number}',
 						),
 						array(
 							'id'          => 'invoice_date_format',

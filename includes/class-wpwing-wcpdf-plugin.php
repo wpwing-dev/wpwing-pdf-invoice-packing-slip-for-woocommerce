@@ -169,6 +169,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 		 * @since 1.0.0
 		 */
 		public function init_plugin_actions() {
+			$this->maybe_migrate_invoice_number_format();
 			$notice = '';
 
 			if ( isset( $_GET['wpwing-create-invoice'] ) ) {
@@ -798,6 +799,39 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 			$document->flush_template();
 
 			wp_send_json_success( array( 'html' => $html ) );
+		}
+
+		/**
+		 * One-time migration: convert old [prefix]/[number]/[suffix] format to new {number}/{year}/{month} tokens.
+		 */
+		private function maybe_migrate_invoice_number_format() {
+			if ( get_option( 'wpwing_wcpdf_format_migrated_v2' ) ) {
+				return;
+			}
+
+			$settings = $this->settings;
+			$format   = $settings->get_option( 'invoice_number_format' );
+
+			if ( $format && ( strpos( $format, '[prefix]' ) !== false || strpos( $format, '[suffix]' ) !== false || strpos( $format, '[number]' ) !== false ) ) {
+				$prefix = $settings->get_option( 'invoice_prefix' ) ?: '';
+				$suffix = $settings->get_option( 'invoice_suffix' ) ?: '';
+
+				$new_format = str_replace(
+					array( '[prefix]', '[suffix]', '[number]' ),
+					array( $prefix, $suffix, '{number}' ),
+					$format
+				);
+
+				// Remove separators left behind by an empty prefix or suffix.
+				$new_format = preg_replace( '/^[\/\-_]+|[\/\-_]+$/', '', $new_format );
+				$new_format = preg_replace( '/([\/\-_])\1+/', '$1', $new_format );
+
+				$settings->set_option( 'invoice_number_format', trim( $new_format ) );
+			} elseif ( ! $format ) {
+				$settings->set_option( 'invoice_number_format', '{number}' );
+			}
+
+			update_option( 'wpwing_wcpdf_format_migrated_v2', true );
 		}
 
 	}
