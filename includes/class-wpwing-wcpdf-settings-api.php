@@ -781,43 +781,60 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
 				<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
-				<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>" enctype="multipart/form-data">
-					<?php
-					settings_errors();
-					settings_fields( $this->settings_name );
-					?>
+				<div class="wpwing-settings-layout">
 
-					<?php $this->options_tabs(); ?>
-
-					<div id="settings-tabs">
-						<?php foreach ( $this->fields as $tab ):
-
-							if ( ! isset( $tab['active'] ) ) {
-								$tab['active'] = false;
-							}
-							$is_active = ( $this->get_last_active_tab() == $tab['id'] );
+					<div class="wpwing-settings-left">
+						<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>" enctype="multipart/form-data">
+							<?php
+							settings_errors();
+							settings_fields( $this->settings_name );
 							?>
 
-							<div id="<?php echo esc_attr( $tab['id'] ); ?>"
-								class="settings-tab wpwing-wcpdf-setting-tab"
-								style="<?php echo ! $is_active ? 'display: none' : ''; ?>">
-								<?php foreach ( $tab['sections'] as $section ):
-									$this->do_settings_sections( $tab['id'] . $section['id'] );
-								endforeach; ?>
+							<?php $this->options_tabs(); ?>
+
+							<div id="settings-tabs">
+								<?php foreach ( $this->fields as $tab ):
+
+									if ( ! isset( $tab['active'] ) ) {
+										$tab['active'] = false;
+									}
+									$is_active = ( $this->get_last_active_tab() == $tab['id'] );
+									?>
+
+									<div id="<?php echo esc_attr( $tab['id'] ); ?>"
+										class="settings-tab wpwing-wcpdf-setting-tab"
+										style="<?php echo ! $is_active ? 'display: none' : ''; ?>">
+										<?php foreach ( $tab['sections'] as $section ):
+											$this->do_settings_sections( $tab['id'] . $section['id'] );
+										endforeach; ?>
+									</div>
+
+								<?php endforeach; ?>
 							</div>
+							<?php
+							$this->last_tab_input();
+							// submit_button();
+							?>
+							<p class="submit wpwing-wcpdf-button-wrapper">
+								<input type="submit" id="submit" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'wpwing-wcpdf' ) ?>">
+								<a onclick="return confirm('<?php esc_attr_e( 'Are you sure to reset current settings?', 'wpwing-wcpdf' ) ?>')" class="reset" href="<?php echo esc_url( $this->reset_url() ); ?>"><?php esc_html_e( 'Reset all', 'wpwing-wcpdf' ) ?></a>
+							</p>
 
-						<?php endforeach; ?>
-					</div>
-					<?php
-					$this->last_tab_input();
-					// submit_button();
-					?>
-					<p class="submit wpwing-wcpdf-button-wrapper">
-						<input type="submit" id="submit" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'wpwing-wcpdf' ) ?>">
-						<a onclick="return confirm('<?php esc_attr_e( 'Are you sure to reset current settings?', 'wpwing-wcpdf' ) ?>')" class="reset" href="<?php echo esc_url( $this->reset_url() ); ?>"><?php esc_html_e( 'Reset all', 'wpwing-wcpdf' ) ?></a>
-					</p>
+						</form>
+					</div><!-- .wpwing-settings-left -->
 
-				</form>
+					<div id="wpwing-preview-panel" class="wpwing-settings-right" style="display:none">
+						<div class="wpwing-preview-header">
+							<h2><?php esc_html_e( 'Invoice Preview', 'wpwing-wcpdf' ); ?></h2>
+							<button id="wpwing-preview-close" type="button">&times;</button>
+						</div>
+						<iframe id="wpwing-preview-frame" frameborder="0"></iframe>
+						<div id="wpwing-preview-placeholder">
+							<p><?php esc_html_e( 'Click "Preview Invoice" to load a preview.', 'wpwing-wcpdf' ); ?></p>
+						</div>
+					</div><!-- #wpwing-preview-panel -->
+
+				</div><!-- .wpwing-settings-layout -->
 			</div>
 			<?php
 

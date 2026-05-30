@@ -371,8 +371,9 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 			if ( ! $screen ) {
 				return false;
 			}
-			$order_screen = function_exists( 'wc_get_page_screen_id' ) ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
-			$allowed      = array( 'wpwing-pdf-invoice', $order_screen, 'woocommerce_page_wc-orders' );
+			$order_screen    = function_exists( 'wc_get_page_screen_id' ) ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+			$settings_screen = 'wpwing_page_' . sprintf( '%s-settings', sanitize_key( WPWING_WCPDF_DIR_NAME ) );
+			$allowed         = array( 'wpwing-pdf-invoice', $settings_screen, $order_screen, 'woocommerce_page_wc-orders' );
 			return in_array( $screen->id, $allowed, true );
 		}
 
@@ -758,6 +759,15 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 			}
 
 			$document_type = isset( $_POST['document_type'] ) ? sanitize_key( $_POST['document_type'] ) : 'invoice';
+
+			// Temporarily override saved settings with live (unsaved) form values for the preview.
+			if ( ! empty( $_POST['preview_overrides'] ) && is_array( $_POST['preview_overrides'] ) ) {
+				$overrides        = array_map( 'sanitize_text_field', wp_unslash( $_POST['preview_overrides'] ) );
+				$option_name      = apply_filters( 'wpwing_wcpdf_settings_name', 'wpwing_wcpdf_settings' );
+				add_filter( "option_{$option_name}", function( $value ) use ( $overrides ) {
+					return array_merge( (array) $value, $overrides );
+				}, 999 );
+			}
 
 			$orders = wc_get_orders( array( 'limit' => 1, 'orderby' => 'date', 'order' => 'DESC' ) );
 			if ( empty( $orders ) ) {

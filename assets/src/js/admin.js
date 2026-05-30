@@ -114,11 +114,40 @@ jQuery(function($) {
     }
   });
 
+  // Hide/restore preview panel when switching tabs
+  var previewLoaded = false;
+  $('body').on('click', '.wpwing-wcpdf-setting-nav-tab', function() {
+    var target = $(this).data('target');
+    if (target === 'wpwing_pdf_template' && previewLoaded) {
+      $('.wpwing-settings-right').show();
+    } else {
+      $('.wpwing-settings-right').hide();
+    }
+  });
+
   // Invoice preview button
   $('body').on('click', '#invoice_preview_btn-field', function(e) {
     e.preventDefault();
     var $btn = $(this);
     $btn.prop('disabled', true).text(wpwing_wcpdf_object.preview_loading);
+
+    // Collect live (unsaved) form values to preview them without saving
+    var overrides = {};
+    $('.wpwing-settings-left form').find('input, select, textarea').each(function() {
+      var $el = $(this);
+      var name = $el.attr('name');
+      if (!name) return;
+      var match = name.match(/\[([^\]]+)\]$/);
+      if (!match) return;
+      var key = match[1];
+      if ($el.is(':checkbox')) {
+        overrides[key] = $el.is(':checked') ? ($el.val() || '1') : '';
+      } else if ($el.is(':radio')) {
+        if ($el.is(':checked')) overrides[key] = $el.val();
+      } else {
+        overrides[key] = $el.val();
+      }
+    });
 
     $.ajax({
       url: wpwing_wcpdf_object.ajax_url,
@@ -127,11 +156,12 @@ jQuery(function($) {
         action: 'wpwing_preview_document',
         nonce: wpwing_wcpdf_object.preview_nonce,
         document_type: 'invoice',
+        preview_overrides: overrides,
       },
       success: function(response) {
         $btn.prop('disabled', false).text(wpwing_wcpdf_object.preview_btn);
         if (response.success) {
-          openPreviewModal(response.data.html);
+          showInlinePreview(response.data.html);
         } else {
           alert(response.data);
         }
@@ -143,30 +173,29 @@ jQuery(function($) {
     });
   });
 
-  function openPreviewModal(html) {
-    var $overlay = $('<div id="wpwing-preview-overlay"></div>');
-    var $modal   = $('<div id="wpwing-preview-modal"></div>');
-    var $close   = $('<button id="wpwing-preview-close" type="button">&times;</button>');
-    var $title   = $('<h2></h2>').text(wpwing_wcpdf_object.preview_title);
-    var $iframe  = $('<iframe id="wpwing-preview-frame" frameborder="0"></iframe>');
-
-    $modal.append($close).append($title).append($iframe);
-    $overlay.append($modal);
-    $('body').append($overlay);
-
-    var iframeDoc = $iframe[0].contentDocument || $iframe[0].contentWindow.document;
+  function showInlinePreview(html) {
+    var $panel = $('.wpwing-settings-right');
+    var $frame = $('#wpwing-preview-frame');
+    var iframeDoc = $frame[0].contentDocument || $frame[0].contentWindow.document;
     iframeDoc.open();
     iframeDoc.write(html);
     iframeDoc.close();
-
-    $overlay.on('click', '#wpwing-preview-close', function() {
-      $overlay.remove();
-    });
-    $overlay.on('click', function(e) {
-      if ($(e.target).is($overlay)) {
-        $overlay.remove();
-      }
-    });
+    $panel.show();
+    $('#wpwing-preview-placeholder').hide();
+    $frame.show();
+    previewLoaded = true;
   }
+
+  $('#wpwing-preview-close').on('click', function() {
+    var $frame = $('#wpwing-preview-frame');
+    $frame.hide();
+    var iframeDoc = $frame[0].contentDocument || $frame[0].contentWindow.document;
+    iframeDoc.open();
+    iframeDoc.write('');
+    iframeDoc.close();
+    $('#wpwing-preview-placeholder').show();
+    $('.wpwing-settings-right').hide();
+    previewLoaded = false;
+  });
 
 });
