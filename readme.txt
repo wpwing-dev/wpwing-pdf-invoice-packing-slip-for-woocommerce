@@ -6,7 +6,7 @@ Tags:               PDF, Invoice, Packing Slip, Packing List, Proforma Invoice, 
 Requires at least:  4.8
 Tested up to:       7.0
 Requires PHP:       7.1
-Stable tag:         1.5.1
+Stable tag:         1.6.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -21,7 +21,7 @@ Whether you need to send a legal tax invoice to a buyer, include a printed packi
 
 Built strictly with performance, security, and modern WordPress standards in mind, it handles document generation seamlessly on your server. It ensures your site remains lightning-fast without bloating your database, overloading your server memory, or slowing down your customer checkout conversion rates.
 
-✅ Tested OK with WooCommerce 10.7.0+
+✅ Tested OK with WooCommerce 10.8.1+
 🚀 High-Performance Order Storage (HPOS) Compatible
 
 ### 🔥 KEY FEATURES ###
@@ -88,6 +88,17 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 
 == Changelog ==
+
+= 1.6.0 - 30/05/2026 =
+
+* New: Live invoice preview panel - see exactly how your invoice looks while you're adjusting settings, without saving first.
+* New: Smarter invoice numbering - use simple tokens like {number}, {year}, and {month} to build your own format (e.g. INV-{number}/{year}{month}). Existing formats are upgraded automatically.
+* Fix: PDFs no longer crash on orders that were created without a date (e.g. via import or migration tools).
+* Fix: Packing slip incorrectly showed "Invoice Date" — now correctly shows "Packing Date".
+* Fix: Company logo is now properly sized and right-aligned on both invoice and packing slip templates.
+* Fix: Long addresses and notes no longer cause unwanted scrollbars inside the invoice preview.
+* Improvement: The invoice preview panel stays hidden until you need it, keeping the settings page clean.
+* Compatibility: Tested and confirmed working with WooCommerce 10.8.1.
 
 = 1.5.1 - 22/05/2026 =
 

@@ -119,8 +119,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 
 			ob_start();
 			wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
-			$html = ob_get_contents();
-			ob_end_clean();
+			$html = ob_get_clean();
 
 			require_once( WPWING_WCPDF_VENDOR_DIR . 'autoload.php' );
 
@@ -171,7 +170,15 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 			if ( ! $format) {
 				$format = 'd/m/Y';
 			}
-			$date = $this->order->get_meta( '_completed_date' ) ? wp_date( $format, strtotime( $this->order->get_meta( '_completed_date' ) ) ) : wp_date( $format, $this->order->get_date_created()->getTimestamp() );
+			$completed = $this->order->get_meta( '_completed_date' );
+			$created    = $this->order->get_date_created();
+			if ( $completed ) {
+				$date = wp_date( $format, strtotime( $completed ) );
+			} elseif ( $created ) {
+				$date = wp_date( $format, $created->getTimestamp() );
+			} else {
+				$date = wp_date( $format );
+			}
 
 			return $date;
 
@@ -221,8 +228,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 			if ( file_exists( $template_path ) ) {
 				ob_start();
 				wc_get_template( $template_filename, null, $theme_dir, $theme_dir );
-				$content = ob_get_contents();
-				ob_end_clean();
+				$content = ob_get_clean();
 
 				if ( $content ) {
 					echo '<style type="text/css">';
@@ -250,5 +256,132 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 			}
 
 		}
+
+		// -------------------------------------------------------------------------
+		// Template section rendering — shared across all document types
+		// -------------------------------------------------------------------------
+
+		/**
+		 * Returns the localised "From" heading shown in the company header block.
+		 * Each document type provides its own label (e.g. "Invoice From").
+		 */
+		abstract protected function get_from_label();
+
+		/**
+		 * Registers the six template-section hooks for this document type.
+		 * Hook names are built dynamically from $this->document_type so both
+		 * 'invoice' and 'packing' resolve correctly without duplication.
+		 *
+		 * @since 2.0.0
+		 */
+		public function init_template_generation_actions() {
+
+			$type = $this->document_type;
+			add_action( "wpwing_wcpdf_{$type}_template_company_data",  array( $this, 'render_template_company_data' ) );
+			add_action( "wpwing_wcpdf_{$type}_template_company_logo",  array( $this, 'render_template_company_logo' ) );
+			add_action( "wpwing_wcpdf_{$type}_template_customer_data", array( $this, 'render_template_customer_data' ) );
+			add_action( "wpwing_wcpdf_{$type}_template_order_data",    array( $this, 'render_template_order_data' ) );
+			add_action( "wpwing_wcpdf_{$type}_template_product_list",  array( $this, 'render_template_product_list' ) );
+			add_action( "wpwing_wcpdf_{$type}_template_footer",        array( $this, 'render_template_footer' ) );
+
+		}
+
+		/**
+		 * Render the company sender block (name + contact details).
+		 */
+		public function render_template_company_data() {
+
+			$company_name = $this->settings->get_option( 'company_name_checkbox' ) ? $this->settings->get_option( 'company_name_text' ) : null;
+			$show_details = (bool) $this->settings->get_option( 'company_details_checkbox' );
+
+			if ( ! $company_name && ! $show_details ) {
+				return;
+			}
+
+			echo '<span class="invoice-from-to">' . esc_html( $this->get_from_label() ) . '</span>';
+
+			if ( $company_name ) {
+				echo '<div class="company-name">' . esc_html( $company_name ) . '</div>';
+			}
+
+			if ( $show_details ) {
+				$address = $this->settings->get_option( 'company_address' );
+				$city    = $this->settings->get_option( 'company_city' );
+				$zip     = $this->settings->get_option( 'company_zip' );
+				$country = $this->settings->get_option( 'company_country' );
+				$phone   = $this->settings->get_option( 'company_phone' );
+				$email   = $this->settings->get_option( 'company_email' );
+				$vat     = $this->settings->get_option( 'company_vat' );
+
+				echo '<div class="company-details">';
+				if ( $address )                       { echo '<div>' . esc_html( $address ) . '</div>'; }
+				$city_line = trim( $zip . ' ' . $city );
+				if ( $city_line )                     { echo '<div>' . esc_html( $city_line ) . '</div>'; }
+				if ( $country )                       { echo '<div>' . esc_html( $country ) . '</div>'; }
+				if ( $phone )  { echo '<div>' . esc_html__( 'Tel:', 'wpwing-wcpdf' ) . ' ' . esc_html( $phone ) . '</div>'; }
+				if ( $email )  { echo '<div>' . esc_html__( 'Email:', 'wpwing-wcpdf' ) . ' ' . esc_html( $email ) . '</div>'; }
+				if ( $vat )    { echo '<div>' . esc_html__( 'VAT:', 'wpwing-wcpdf' ) . ' ' . esc_html( $vat ) . '</div>'; }
+				echo '</div>';
+			}
+
+		}
+
+		/**
+		 * Render the company logo.
+		 */
+		public function render_template_company_logo() {
+
+			$company_logo = $this->settings->get_option( 'company_logo_checkbox' ) ? $this->settings->get_option( 'company_logo_upload' ) : null;
+
+			if ( ! $company_logo ) {
+				return;
+			}
+
+			echo '<div class="company-logo"><img src="' . apply_filters( 'wpwing_wcpdf_company_image_path', esc_url( $company_logo ) ) . '"></div>';
+
+		}
+
+		/**
+		 * Render the product list for this document type.
+		 * Path resolves to templates/{theme}/{document_type}/products.php.
+		 */
+		public function render_template_product_list() {
+
+			$file = $this->get_theme_dir() . $this->document_type . '/products.php';
+			if ( file_exists( $file ) ) {
+				include $file;
+			}
+
+		}
+
+		/**
+		 * Render footer notes and text.
+		 * Path resolves to templates/{theme}/{document_type}/footer.php.
+		 */
+		public function render_template_footer() {
+
+			$theme_dir = $this->get_theme_dir();
+			$notes     = $this->settings->get_option( 'company_notes_checkbox' ) ? $this->settings->get_option( 'company_notes_text' ) : null;
+			$footer    = $this->settings->get_option( 'company_footer_checkbox' ) ? $this->settings->get_option( 'company_footer_text' ) : null;
+
+			$file = $theme_dir . $this->document_type . '/footer.php';
+			if ( file_exists( $file ) ) {
+				include $file;
+			}
+
+		}
+
+		/**
+		 * Render the customer/recipient address block.
+		 * Implemented differently per document type.
+		 */
+		abstract public function render_template_customer_data();
+
+		/**
+		 * Render the document metadata table (number, date, amounts, etc.).
+		 * Implemented differently per document type.
+		 */
+		abstract public function render_template_order_data();
+
 	}
 }

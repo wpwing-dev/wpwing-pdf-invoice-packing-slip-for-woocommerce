@@ -170,79 +170,49 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 		 */
 		public function init_plugin_actions() {
 			$this->maybe_migrate_invoice_number_format();
+
+			// Each entry: GET param key => [ doc type, operation, admin-only, notice key ]
+			$document_actions = array(
+				'wpwing-create-invoice' => array( 'invoice', 'create', true,  'invoice_created'   ),
+				'wpwing-view-invoice'   => array( 'invoice', 'view',   false, ''                  ),
+				'wpwing-reset-invoice'  => array( 'invoice', 'reset',  true,  'invoice_cancelled' ),
+				'wpwing-create-packing' => array( 'packing', 'create', true,  'packing_created'   ),
+				'wpwing-view-packing'   => array( 'packing', 'view',   false, ''                  ),
+				'wpwing-reset-packing'  => array( 'packing', 'reset',  true,  'packing_cancelled' ),
+			);
+
 			$notice = '';
 
-			if ( isset( $_GET['wpwing-create-invoice'] ) ) {
-				$order_id = intval( $_GET['wpwing-create-invoice'] );
-				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_create_invoice_' . $order_id ) ) {
+			foreach ( $document_actions as $param => list( $doc_type, $op, $admin_only, $action_notice ) ) {
+				if ( ! isset( $_GET[ $param ] ) ) {
+					continue;
+				}
+
+				$order_id  = intval( $_GET[ $param ] );
+				$nonce_key = "wpwing_{$op}_{$doc_type}_{$order_id}";
+
+				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), $nonce_key ) ) {
 					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
 				}
-				if ( ! $this->user_can_manage_order( $order_id, true ) ) {
-					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wcpdf' ) );
-				}
-				$this->create_document( $order_id, 'invoice' );
-				$notice = 'invoice_created';
 
-			} elseif ( isset( $_GET['wpwing-view-invoice'] ) ) {
-				$order_id = intval( $_GET['wpwing-view-invoice'] );
-				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_view_invoice_' . $order_id ) ) {
-					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
+				if ( ! $this->user_can_manage_order( $order_id, $admin_only ) ) {
+					$msg = $admin_only
+						? esc_html__( 'You do not have permission to perform this action.', 'wpwing-wcpdf' )
+						: esc_html__( 'You do not have permission to view this document.', 'wpwing-wcpdf' );
+					wp_die( $msg );
 				}
-				if ( ! $this->user_can_manage_order( $order_id ) ) {
-					wp_die( esc_html__( 'You do not have permission to view this document.', 'wpwing-wcpdf' ) );
-				}
-				$this->view_document( $order_id, 'invoice' );
-				return;
 
-			} elseif ( isset( $_GET['wpwing-reset-invoice'] ) ) {
-				$order_id = intval( $_GET['wpwing-reset-invoice'] );
-				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_reset_invoice_' . $order_id ) ) {
-					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
+				if ( 'view' === $op ) {
+					$this->view_document( $order_id, $doc_type );
+					return;
 				}
-				if ( ! $this->user_can_manage_order( $order_id, true ) ) {
-					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wcpdf' ) );
-				}
-				$this->reset_document( $order_id, 'invoice' );
-				$notice = 'invoice_cancelled';
 
-			} elseif ( isset( $_GET['wpwing-create-packing'] ) ) {
-				$order_id = intval( $_GET['wpwing-create-packing'] );
-				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_create_packing_' . $order_id ) ) {
-					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
-				}
-				if ( ! $this->user_can_manage_order( $order_id, true ) ) {
-					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wcpdf' ) );
-				}
-				$this->create_document( $order_id, 'packing' );
-				$notice = 'packing_created';
-
-			} elseif ( isset( $_GET['wpwing-view-packing'] ) ) {
-				$order_id = intval( $_GET['wpwing-view-packing'] );
-				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_view_packing_' . $order_id ) ) {
-					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
-				}
-				if ( ! $this->user_can_manage_order( $order_id ) ) {
-					wp_die( esc_html__( 'You do not have permission to view this document.', 'wpwing-wcpdf' ) );
-				}
-				$this->view_document( $order_id, 'packing' );
-				return;
-
-			} elseif ( isset( $_GET['wpwing-reset-packing'] ) ) {
-				$order_id = intval( $_GET['wpwing-reset-packing'] );
-				if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'wpwing_reset_packing_' . $order_id ) ) {
-					wp_die( esc_html__( 'Security check failed.', 'wpwing-wcpdf' ) );
-				}
-				if ( ! $this->user_can_manage_order( $order_id, true ) ) {
-					wp_die( esc_html__( 'You do not have permission to perform this action.', 'wpwing-wcpdf' ) );
-				}
-				$this->reset_document( $order_id, 'packing' );
-				$notice = 'packing_cancelled';
-
-			} else {
-				return;
+				$this->{$op . '_document'}( $order_id, $doc_type );
+				$notice = $action_notice;
+				break;
 			}
 
-			if ( is_admin() && isset( $_SERVER['HTTP_REFERER'] ) ) {
+			if ( $notice && is_admin() && isset( $_SERVER['HTTP_REFERER'] ) ) {
 				$location = add_query_arg( 'wpwing_notice', $notice, sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
 				wp_safe_redirect( $location );
 				exit();

@@ -528,221 +528,99 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 		}
 
 		/**
-		 * Create form field depends on argument type
+		 * Render a settings field. Dispatches on $args['type'] and builds the
+		 * appropriate HTML inline — no separate per-type methods needed.
 		 *
-		 * @since 1.0.0
+		 * @since 1.0.0 (unified in 2.1.0)
 		 */
-		public function field_callback( $field ) {
+		public function field_callback( $args ) {
 
-			switch ( $field['type'] ) {
+			$id    = $args['id'];
+			$type  = $args['type'];
+			$name  = $this->settings_name;
+			$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
+			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
+			$desc  = $this->get_field_description( $args );
+			$html  = '';
+
+			switch ( $type ) {
+
 				case 'radio':
-					$this->radio_field_callback( $field );
+					$options = apply_filters( "wpwing_wcpdf_settings_{$id}_radio_options", $args['options'] );
+					$value   = esc_attr( $this->get_option( $id ) );
+					$html    = '<fieldset>';
+					$html   .= implode( '<br />', array_map( function( $key, $option ) use ( $attrs, $id, $name, $value ) {
+						return sprintf(
+							'<label><input %s type="radio" name="%s[%s]" value="%s" %s/> %s</label>',
+							esc_attr( $attrs ), esc_html( $name ), esc_attr( $id ),
+							esc_html( $key ), checked( $value, $key, false ), esc_html( $option )
+						);
+					}, array_keys( $options ), $options ) );
+					$html   .= $desc . '</fieldset>';
 					break;
 
 				case 'checkbox':
-					$this->checkbox_field_callback( $field );
+					$value = wc_string_to_bool( $this->get_option( $id ) );
+					$html  = sprintf(
+						'<fieldset><label><input %s type="checkbox" id="%s-field" name="%s[%s]" value="1" %s /> %s</label></fieldset>',
+						esc_attr( $attrs ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ),
+						checked( $value, true, false ), esc_html( $args['desc'] )
+					);
 					break;
 
 				case 'select':
-					$this->select_field_callback( $field );
+					$options  = apply_filters( "wpwing_wcpdf_settings_{$id}_select_options", $args['options'] );
+					$value    = esc_attr( $this->get_option( $id ) );
+					$opt_html = implode( '', array_map( function( $key, $label ) use ( $value ) {
+						return sprintf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $key, $value, false ), esc_html( $label ) );
+					}, array_keys( $options ), $options ) );
+					$html     = sprintf( '<select %s class="%s-text" id="%s-field" name="%s[%s]">%s</select>', esc_attr( $attrs ), esc_html( $size ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ), $opt_html );
+					$html    .= $desc;
 					break;
 
 				case 'multiselect':
-					$this->multiselect_field_callback( $field );
+					$options  = apply_filters( "wpwing_wcpdf_settings_{$id}_multiselect_options", $args['options'] );
+					$saved    = $this->get_option( $id );
+					$value    = is_array( $saved ) ? $saved : array();
+					$opt_html = implode( '', array_map( function( $key, $label ) use ( $value ) {
+						$sel = in_array( $key, $value, true ) ? ' selected="selected"' : '';
+						return '<option value="' . esc_attr( $key ) . '"' . $sel . '>' . esc_html( $label ) . '</option>';
+					}, array_keys( $options ), $options ) );
+					$html     = sprintf( '<select %s multiple="multiple" size="6" class="%s-text" id="%s-field" name="%s[%s][]">%s</select>', esc_attr( $attrs ), esc_html( $size ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ), $opt_html );
+					$html    .= '<p class="description">' . esc_html__( 'Hold Ctrl (Windows) or Cmd (Mac) to select multiple options.', 'wpwing-wcpdf' ) . '</p>';
+					$html    .= $desc;
 					break;
 
 				case 'button':
-					$this->button_field_callback( $field );
+					$class = isset( $args['class'] ) ? $args['class'] : '';
+					$html  = sprintf( '<button type="button" id="%s-field" class="button %s">%s</button>', esc_attr( $id ), esc_attr( $class ), esc_html( $args['label'] ) );
+					$html .= $desc;
 					break;
 
 				case 'upload':
-					$this->upload_field_callback( $field );
+					$value = esc_attr( $this->get_option( $id ) );
+					$html  = sprintf( '<input %s type="text" class="%s-text" id="%s-field" name="%s[%s]" placeholder="%s" value="%s" readonly />', esc_attr( $attrs ), esc_html( $size ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ), esc_html( $args['placeholder'] ), esc_html( $value ) );
+					$html .= '&nbsp;&nbsp;<a href="#" class="wcpdf_upload_image">Upload Logo</a>';
+					$html .= $desc;
 					break;
 
 				case 'textarea':
-					$this->textarea_field_callback( $field );
+					$value = esc_attr( $this->get_option( $id ) );
+					$html  = sprintf( '<textarea %s class="%s-text" id="%s-field" name="%s[%s]" placeholder="%s">%s</textarea>', esc_attr( $attrs ), esc_html( $size ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ), esc_html( $args['placeholder'] ), esc_html( $value ) );
+					$html .= $desc;
 					break;
 
-				default:
-					$this->text_field_callback( $field );
+				default: // text
+					$value = $this->get_option( $id );
+					$ph    = isset( $args['placeholder'] ) ? $args['placeholder'] : '';
+					$html  = sprintf( '<input %s type="text" class="%s-text" id="%s-field" name="%s[%s]" placeholder="%s" value="%s" />', esc_attr( $attrs ), esc_html( $size ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ), esc_html( $ph ), esc_attr( $value ) );
+					$html .= $desc;
 					break;
+
 			}
 
-			do_action( 'wpwing_wcpdf_settings_field_callback', $field );
-
-		}
-
-		/**
-		 * Radio field
-		 *
-		 * @since 1.0.0
-		 */
-		public function radio_field_callback( $args ) {
-
-			$options = apply_filters( "wpwing_wcpdf_settings_{$args[ 'id' ]}_radio_options", $args['options'] );
-			$value   = esc_attr( $this->get_option( $args['id'] ) );
-
-			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
-
-			$html = '<fieldset>';
-			$html .= implode( '<br />', array_map( function ( $key, $option ) use ( $attrs, $args, $value ) {
-				return sprintf( '<label><input %1$s type="radio"  name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label>', esc_attr( $attrs ), esc_attr( $args['id'] ), esc_html( $key ), esc_html( $this->settings_name ), checked( $value, $key, false ), esc_html( $option ) );
-			}, array_keys( $options ), $options ) );
-			$html .= $this->get_field_description( $args );
-			$html .= '</fieldset>';
-
 			echo wp_kses( $html, $this->allowed_html );
-
-		}
-
-		/**
-		 * Checkbox field
-		 *
-		 * @since 1.0.0
-		 */
-		public function checkbox_field_callback( $args ) {
-
-			$value = wc_string_to_bool( $this->get_option( $args['id'] ) );
-
-			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
-
-			$html = sprintf( '<fieldset><label><input %1$s type="checkbox" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s /> %6$s</label></fieldset>', esc_attr( $attrs ), esc_attr( $args['id'] ), true, esc_html( $this->settings_name ), checked( $value, true, false ), esc_html( $args['desc'] ) );
-
-			echo wp_kses( $html, $this->allowed_html );
-
-		}
-
-		/**
-		 * Select field
-		 *
-		 * @since 1.0.0
-		 */
-		public function select_field_callback( $args ) {
-
-			$options = apply_filters( "wpwing_wcpdf_settings_{$args[ 'id' ]}_select_options", $args['options'] );
-			$value = esc_attr( $this->get_option( $args['id'] ) );
-			$options = array_map( function ( $key, $option ) use ( $value ) {
-				return "<option value='{$key}'" . selected( $key, $value, false ) . ">{$option}</option>";
-			}, array_keys( $options ), $options );
-			$size = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
-
-			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
-
-			$html = sprintf( '<select %5$s class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]">%3$s</select>', esc_html( $size ), esc_attr( $args['id'] ), implode( '', $options ), esc_html( $this->settings_name ), esc_attr( $attrs ) );
-			$html .= $this->get_field_description( $args );
-
-			echo wp_kses( $html, $this->allowed_html );
-
-		}
-
-		/**
-		 * Button field — renders a clickable button (no saved value).
-		 *
-		 * @since 2.0.0
-		 */
-		public function button_field_callback( $args ) {
-
-			$class = isset( $args['class'] ) ? $args['class'] : '';
-			$html  = sprintf(
-				'<button type="button" id="%s-field" class="button %s">%s</button>',
-				esc_attr( $args['id'] ),
-				esc_attr( $class ),
-				esc_html( $args['label'] )
-			);
-			$html .= $this->get_field_description( $args );
-
-			echo wp_kses( $html, $this->allowed_html );
-
-		}
-
-		/**
-		 * Multi-select field
-		 *
-		 * @since 2.0.0
-		 */
-		public function multiselect_field_callback( $args ) {
-
-			$options     = apply_filters( "wpwing_wcpdf_settings_{$args['id']}_multiselect_options", $args['options'] );
-			$saved_value = $this->get_option( $args['id'] );
-			$value       = is_array( $saved_value ) ? $saved_value : array();
-			$size        = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
-			$attrs       = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
-
-			$option_html = implode( '', array_map( function ( $key, $option ) use ( $value ) {
-				$selected = in_array( $key, $value, true ) ? ' selected="selected"' : '';
-				return '<option value="' . esc_attr( $key ) . '"' . $selected . '>' . esc_html( $option ) . '</option>';
-			}, array_keys( $options ), $options ) );
-
-			$html  = sprintf(
-				'<select %5$s multiple="multiple" size="6" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s][]">%3$s</select>',
-				esc_html( $size ),
-				esc_attr( $args['id'] ),
-				$option_html,
-				esc_html( $this->settings_name ),
-				esc_attr( $attrs )
-			);
-			$html .= '<p class="description">' . esc_html__( 'Hold Ctrl (Windows) or Cmd (Mac) to select multiple options.', 'wpwing-wcpdf' ) . '</p>';
-			$html .= $this->get_field_description( $args );
-
-			echo wp_kses( $html, $this->allowed_html );
-
-		}
-
-		/**
-		 * Upload field
-		 *
-		 * @since 1.0.0
-		 */
-		public function upload_field_callback( $args ) {
-
-			$value = esc_attr( $this->get_option( $args['id'] ) );
-			$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
-
-			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
-
-			$html = sprintf( '<input %5$s type="text" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s" value="%3$s" readonly />', esc_html( $size ), esc_attr( $args['id'] ), esc_html( $value ), esc_html( $this->settings_name ), esc_attr( $attrs ), esc_html( $args['placeholder'] ) );
-			$html .= '&nbsp;&nbsp;<a href="#" class="wcpdf_upload_image">Upload Logo</a>';
-			$html .= $this->get_field_description( $args );
-
-			echo wp_kses( $html, $this->allowed_html );
-
-		}
-
-		/**
-		 * Textarea field
-		 *
-		 * @since 1.0.0
-		 */
-		public function textarea_field_callback( $args ) {
-
-			$value = esc_attr( $this->get_option( $args['id'] ) );
-			$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
-
-			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
-
-			$html = sprintf( '<textarea %5$s class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s">%3$s</textarea>', esc_html( $size ), esc_attr( $args['id'] ), esc_html( $value ), esc_html( $this->settings_name ), esc_attr( $attrs ), esc_html( $args['placeholder'] ) );
-			$html .= $this->get_field_description( $args );
-
-			echo wp_kses( $html, $this->allowed_html );
-
-		}
-
-		/**
-		 * Text field
-		 *
-		 * @since 1.0.0
-		 */
-		public function text_field_callback( $args ) {
-
-			$value = $this->get_option( $args['id'] );
-			$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
-
-			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
-
-			$html = sprintf( '<input %5$s type="text" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" placeholder="%6$s" value="%3$s"/>', esc_html( $size ), esc_attr( $args['id'] ), esc_attr( $value ), esc_html( $this->settings_name ), esc_attr( $attrs ), esc_html( $args['placeholder'] ) );
-			$html .= $this->get_field_description( $args );
-
-			echo wp_kses( $html, $this->allowed_html );
+			do_action( 'wpwing_wcpdf_settings_field_callback', $args );
 
 		}
 
@@ -886,19 +764,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			?>
 			<h2 class="nav-tab-wrapper wp-clearfix">
 				<?php foreach ( $this->fields as $tabs ): ?>
-					<a data-target="<?php echo esc_attr( $tabs['id'] ); ?>" <?php echo esc_attr( $this->get_options_tab_pro_attr( $tabs ) ); ?> class="wpwing-wcpdf-setting-nav-tab nav-tab <?php echo esc_attr( $this->get_options_tab_css_classes( $tabs ) ); ?> " href="#<?php echo esc_attr( $tabs['id'] ); ?>"><?php echo esc_html( $tabs['title'] ); ?></a>
+					<a data-target="<?php echo esc_attr( $tabs['id'] ); ?>" class="wpwing-wcpdf-setting-nav-tab nav-tab <?php echo esc_attr( $this->get_options_tab_css_classes( $tabs ) ); ?>" href="#<?php echo esc_attr( $tabs['id'] ); ?>"><?php echo esc_html( $tabs['title'] ); ?></a>
 				<?php endforeach; ?>
 			</h2>
 			<?php
-
-		}
-
-		private function get_options_tab_pro_attr( $tabs ) {
-
-			// $attrs[] = ( isset( $tabs[ 'is_pro' ] ) && $tabs[ 'is_pro' ] ) ? sprintf( 'data-pro-text="%s"', apply_filters( 'wpwing_wcpdf_settings_tab_pro_text', 'Pro' ) ) : false;
-			$attrs[] = ( isset( $tabs['is_new'] ) && $tabs['is_new'] ) ? sprintf( 'data-new-text="%s"', apply_filters( 'wpwing_wcpdf_settings_tab_new_text', 'New' ) ) : false;
-
-			return implode( ' ', $attrs );
 
 		}
 
@@ -968,34 +837,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
 		}
 
-		public function array2html_attr( $attributes, $do_not_add = array() ) {
-
-			$attributes = wp_parse_args( $attributes, array() );
-
-			if ( ! empty( $do_not_add ) and is_array( $do_not_add ) ) {
-				foreach ( $do_not_add as $att_name ) {
-					unset( $attributes[ $att_name ] );
-				}
-			}
-
-			$attributes_array = array();
-
-			foreach ( $attributes as $key => $value ) {
-
-				if ( is_bool( $attributes[ $key ] ) and $attributes[ $key ] === true ) {
-					return $attributes[ $key ] ? $key : '';
-				} elseif ( is_bool( $attributes[ $key ] ) and $attributes[ $key ] === false ) {
-					$attributes_array[] = '';
-				} else {
-					$attributes_array[] = $key . '="' . $value . '"';
-				}
-			}
-
-			return implode( ' ', $attributes_array );
-
-		}
-
-		private function build_dependency( $require_array ) {
+private function build_dependency( $require_array ) {
 
 			$b_array = array();
 			foreach ( $require_array as $k => $v ) {
@@ -1021,15 +863,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
 			foreach ( (array) $wp_settings_fields[ $page ][ $section ] as $field ) {
 
-				$custom_attributes = $this->array2html_attr( isset( $field['args']['attributes'] ) ? $field['args']['attributes'] : array() );
-
 				$wrapper_id = ! empty( $field['args']['id'] ) ? esc_attr( $field['args']['id'] ) . '-wrapper' : '';
 				$dependency = ! empty( $field['args']['require'] ) ? $this->build_dependency( $field['args']['require'] ) : '';
 
 				$is_new   = ( isset( $field['args']['is_new'] ) && $field['args']['is_new'] );
 				$new_html = $is_new ? '<span class="wpwing-wcpdf-new-feature-tick">' . esc_html__( 'NEW', 'wpwing-wcpdf' ) . '</span>' : '';
 
-				printf( '<tr id="%s" %s %s>', esc_attr( $wrapper_id ), esc_attr( $custom_attributes ), esc_attr( $dependency ) );
+				printf( '<tr id="%s" %s>', esc_attr( $wrapper_id ), esc_attr( $dependency ) );
 
 				echo '<th scope="row" class="pb-wc-settings-label">';
 				if ( ! empty( $field['args']['label_for'] ) ) {
