@@ -234,3 +234,13 @@ footer {
     bottom: 0;
     color: #555555;
 }
+
+.customer-note {
+    margin: 12px 0;
+    padding: 10px 14px;
+    background-color: #e8edf2;
+    border-left: 3px solid #1a3a5c;
+    font-size: 12px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}

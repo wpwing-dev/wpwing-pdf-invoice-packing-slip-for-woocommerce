@@ -25,7 +25,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
 		private $fields = [];
 		private $allowed_html = [
-			'fieldset' => [],
+			'fieldset' => [ 'class' => [] ],
 			'label' => [],
 			'input' => [
 				'type' => [],
@@ -275,7 +275,11 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			}
 
 			$url          = admin_url( sprintf( 'admin.php?page=%s', esc_html( $this->slug ) ) );
-			$plugin_links = array( sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Settings', 'wpwing-wcpdf' ) ) );
+			$docs_url     = plugins_url( 'docs/', WPWING_WCPDF_FILE );
+			$plugin_links = array(
+				sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Settings', 'wpwing-wcpdf' ) ),
+				sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( $docs_url ), esc_html__( 'Documentation', 'wpwing-wcpdf' ) ),
+			);
 
 			return array_merge( $plugin_links, $links );
 
@@ -317,6 +321,9 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 							continue;
 						}
 						$field['default'] = isset( $field['default'] ) ? $field['default'] : null;
+						if ( 'checkboxgroup' === $field['type'] && is_null( $field['default'] ) ) {
+							$field['default'] = array();
+						}
 						$this->set_default( $field['id'], $field['type'], $field['default'] );
 					}
 				}
@@ -397,7 +404,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 				if ( ! isset( $options[ $id ] ) ) {
 					if ( 'checkbox' === $type ) {
 						$options[ $id ] = 0;
-					} elseif ( 'multiselect' === $type ) {
+					} elseif ( 'multiselect' === $type || 'checkboxgroup' === $type ) {
 						$options[ $id ] = array();
 					}
 					continue;
@@ -422,6 +429,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 						$options[ $id ] = absint( $options[ $id ] ) ? 1 : 0;
 						break;
 					case 'multiselect':
+					case 'checkboxgroup':
 						$options[ $id ] = array_map( 'sanitize_key', (array) $options[ $id ] );
 						break;
 				}
@@ -498,7 +506,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
 						// $this->set_default( $field[ 'id' ], $field[ 'default' ] );
 
-						if ( $field['type'] == 'checkbox' || $field['type'] == 'radio' ) {
+						if ( $field['type'] == 'checkbox' || $field['type'] == 'radio' || $field['type'] == 'checkboxgroup' ) {
 							unset( $field['label_for'] );
 						}
 
@@ -589,6 +597,21 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 					$html     = sprintf( '<select %s multiple="multiple" size="6" class="%s-text" id="%s-field" name="%s[%s][]">%s</select>', esc_attr( $attrs ), esc_html( $size ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ), $opt_html );
 					$html    .= '<p class="description">' . esc_html__( 'Hold Ctrl (Windows) or Cmd (Mac) to select multiple options.', 'wpwing-wcpdf' ) . '</p>';
 					$html    .= $desc;
+					break;
+
+				case 'checkboxgroup':
+					$options = apply_filters( "wpwing_wcpdf_settings_{$id}_checkboxgroup_options", $args['options'] );
+					$saved   = $this->get_option( $id );
+					$value   = is_array( $saved ) ? $saved : array();
+					$items   = implode( '', array_map( function( $key, $label ) use ( $id, $name, $value ) {
+						$checked = in_array( $key, $value, true ) ? ' checked="checked"' : '';
+						return sprintf(
+							'<label><input type="checkbox" name="%s[%s][]" value="%s"%s /> %s</label>',
+							esc_html( $name ), esc_attr( $id ), esc_attr( $key ), $checked, esc_html( $label )
+						);
+					}, array_keys( $options ), $options ) );
+					$html    = '<fieldset class="wpwing-checkboxgroup">' . $items . '</fieldset>';
+					$html   .= $desc;
 					break;
 
 				case 'button':

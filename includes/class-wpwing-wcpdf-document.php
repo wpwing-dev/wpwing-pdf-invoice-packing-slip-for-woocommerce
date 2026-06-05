@@ -92,14 +92,26 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 				wp_mkdir_p( $dir );
 			}
 
-			$pdf_content = $this->generate_template();
+			try {
+				$pdf_content = $this->generate_template();
+			} catch ( \Exception $e ) {
+				wc_get_logger()->error(
+					sprintf( 'WPWing PDF Invoice: PDF generation failed - %s', $e->getMessage() ),
+					array( 'source' => 'wpwing-pdf-invoice' )
+				);
+				set_transient( 'wpwing_wcpdf_pdf_error_' . get_current_user_id(), $e->getMessage(), 60 );
+				return;
+			}
+
 			$bytes = file_put_contents( $file_path, $pdf_content );
 
 			if ( false === $bytes ) {
+				$msg = sprintf( 'Failed to write PDF file: %s', basename( $file_path ) );
 				wc_get_logger()->error(
-					sprintf( 'WPWing PDF Invoice: failed to write PDF to %s', $file_path ),
+					sprintf( 'WPWing PDF Invoice: %s', $msg ),
 					array( 'source' => 'wpwing-pdf-invoice' )
 				);
+				set_transient( 'wpwing_wcpdf_pdf_error_' . get_current_user_id(), $msg, 60 );
 			}
 
 		}

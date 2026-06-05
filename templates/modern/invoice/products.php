@@ -1,6 +1,8 @@
 <?php
 global $wpwing_wcpdf_document;
-$show_sku = (bool) $wpwing_wcpdf_document->settings->get_option( 'show_product_sku' );
+$show_sku           = (bool) $wpwing_wcpdf_document->settings->get_option( 'show_product_sku' );
+$show_tax_breakdown = (bool) $wpwing_wcpdf_document->settings->get_option( 'show_tax_breakdown' );
+$show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show_customer_note' );
 ?>
 
 <table class="invoice-details">
@@ -141,12 +143,19 @@ $show_sku = (bool) $wpwing_wcpdf_document->settings->get_option( 'show_product_s
 				</tr>
 
 				<?php if ( 'yes' == get_option( 'woocommerce_calc_taxes' ) ) : ?>
-					<?php foreach ( $wpwing_wcpdf_document->order->get_tax_totals() as $code => $tax ) : ?>
+					<?php if ( $show_tax_breakdown ) : ?>
+						<?php foreach ( $wpwing_wcpdf_document->order->get_tax_totals() as $code => $tax ) : ?>
+							<tr class="invoice-details-vat">
+								<td class="column-product"><?php echo esc_html( $tax->label ); ?>:</td>
+								<td class="column-total"><?php echo esc_html( $tax->formatted_amount ); ?></td>
+							</tr>
+						<?php endforeach; ?>
+					<?php else : ?>
 						<tr class="invoice-details-vat">
-							<td class="column-product"><?php echo esc_html( $tax->label ); ?>:</td>
-							<td class="column-total"><?php echo esc_html( $tax->formatted_amount ); ?></td>
+							<td class="column-product"><?php esc_html_e( 'Tax', 'wpwing-wcpdf' ); ?>:</td>
+							<td class="column-total"><?php echo wc_price( $wpwing_wcpdf_document->order->get_total_tax() ); ?></td>
 						</tr>
-					<?php endforeach; ?>
+					<?php endif; ?>
 				<?php endif; ?>
 
 				<tr class="invoice-details-total">
@@ -158,3 +167,12 @@ $show_sku = (bool) $wpwing_wcpdf_document->settings->get_option( 'show_product_s
 	</tr>
 
 </table>
+
+<?php
+$customer_note = $show_customer_note ? $wpwing_wcpdf_document->order->get_customer_note() : '';
+if ( $customer_note ) : ?>
+<div class="customer-note">
+	<strong><?php esc_html_e( 'Customer note:', 'wpwing-wcpdf' ); ?></strong>
+	<?php echo wp_kses( nl2br( $customer_note ), array( 'br' => array() ) ); ?>
+</div>
+<?php endif; ?>

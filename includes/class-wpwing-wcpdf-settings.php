@@ -152,7 +152,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 							),
 							array(
 								'id'      => 'invoice_auto_statuses',
-								'type'    => 'multiselect',
+								'type'    => 'checkboxgroup',
 								'title'   => esc_html__( 'Auto-generate invoice on status:', 'wpwing-wcpdf' ),
 								'desc'    => esc_html__( 'Invoice is created automatically when an order reaches one of these statuses. Only created once per order.', 'wpwing-wcpdf' ),
 								'options' => $order_statuses,
@@ -160,7 +160,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 							),
 							array(
 								'id'      => 'packing_auto_statuses',
-								'type'    => 'multiselect',
+								'type'    => 'checkboxgroup',
 								'title'   => esc_html__( 'Auto-generate packing slip on status:', 'wpwing-wcpdf' ),
 								'desc'    => esc_html__( 'Packing slip is created automatically when an order reaches one of these statuses. Only created once per order.', 'wpwing-wcpdf' ),
 								'options' => $order_statuses,
@@ -168,7 +168,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 							),
 							array(
 								'id'      => 'invoice_attach_to_emails',
-								'type'    => 'multiselect',
+								'type'    => 'checkboxgroup',
 								'title'   => esc_html__( 'Attach invoice PDF to emails:', 'wpwing-wcpdf' ),
 								'desc'    => esc_html__( 'Invoice PDF is attached to the selected WooCommerce emails. Invoice is auto-created if it does not exist yet.', 'wpwing-wcpdf' ),
 								'options' => $email_options,
@@ -335,6 +335,20 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 								'title'   => esc_html__( 'Show product SKU on invoice:', 'wpwing-wcpdf' ),
 								'desc'    => 'Yes',
 								'default' => false,
+							),
+							array(
+								'id'      => 'show_customer_note',
+								'type'    => 'checkbox',
+								'title'   => esc_html__( 'Show customer order note on invoice:', 'wpwing-wcpdf' ),
+								'desc'    => 'Yes',
+								'default' => false,
+							),
+							array(
+								'id'      => 'show_tax_breakdown',
+								'type'    => 'checkbox',
+								'title'   => esc_html__( 'Show tax breakdown in totals:', 'wpwing-wcpdf' ),
+								'desc'    => 'Yes - show each tax class as a separate line',
+								'default' => true,
 							),
 						) ),
 					),

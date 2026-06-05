@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Invoice and Packing Slip for WooCommerce — Documentation</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand:   #0d6efd;
+    --brand-d: #0a58ca;
+    --text:    #1e1e1e;
+    --muted:   #555;
+    --border:  #ddd;
+    --bg:      #f9f9f9;
+    --code-bg: #eef4ff;
+    --nav-w:   260px;
+    --radius:  6px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  .layout { display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ─────────────────────────────────────────────── */
+  nav {
+    width: var(--nav-w);
+    flex-shrink: 0;
+    background: #fff;
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 0 0 2rem;
+  }
+
+  .nav-logo {
+    display: block;
+    padding: 1.25rem 1.25rem 1rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--brand);
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+
+  nav ul { list-style: none; padding: 0.5rem 0; }
+
+  nav ul li a {
+    display: block;
+    padding: 0.35rem 1.25rem;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    border-left: 3px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  nav ul li a:hover,
+  nav ul li a.active {
+    color: var(--brand);
+    border-left-color: var(--brand);
+    background: var(--code-bg);
+  }
+
+  nav .nav-section {
+    padding: 1rem 1.25rem 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #aaa;
+  }
+
+  /* ── Main content ────────────────────────────────────────── */
+  main {
+    flex: 1;
+    max-width: 860px;
+    padding: 2.5rem 3rem;
+  }
+
+  /* ── Hero ────────────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-d) 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 2rem 2.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .hero h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .hero p  { color: rgba(255,255,255,0.88); font-size: 0.95rem; margin-bottom: 0; }
+  .hero .badges { margin-top: 0.9rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .badge {
+    background: rgba(255,255,255,0.18);
+    border-radius: 100px;
+    padding: 0.2rem 0.7rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  /* ── Sections ────────────────────────────────────────────── */
+  section { margin-bottom: 3rem; }
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text);
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--brand);
+    margin-bottom: 1.25rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  p { margin-bottom: 0.75rem; color: var(--muted); }
+
+  ul, ol { margin: 0 0 0.75rem 1.4rem; color: var(--muted); }
+  li { margin-bottom: 0.3rem; }
+
+  /* ── Steps ───────────────────────────────────────────────── */
+  .steps { counter-reset: step; padding: 0; list-style: none; margin: 0 0 0.75rem; }
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+    align-items: flex-start;
+  }
+  .steps li::before {
+    content: counter(step);
+    flex-shrink: 0;
+    width: 1.7rem;
+    height: 1.7rem;
+    background: var(--brand);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-top: 0.1rem;
+  }
+
+  /* ── Feature grid ────────────────────────────────────────── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  .feature-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+  }
+  .feature-card h4 {
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    color: var(--brand);
+  }
+  .feature-card p { font-size: 0.85rem; margin: 0; }
+
+  /* ── Callout ─────────────────────────────────────────────── */
+  .callout {
+    background: var(--code-bg);
+    border-left: 4px solid var(--brand);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 0.85rem 1.1rem;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  .callout strong { color: var(--text); }
+
+  /* ── Code ────────────────────────────────────────────────── */
+  code {
+    background: var(--code-bg);
+    border: 1px solid #c9dbff;
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.85em;
+    color: var(--brand-d);
+  }
+
+  /* ── Settings table ──────────────────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    margin: 0.75rem 0 1rem;
+  }
+  th {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    padding: 0.55rem 0.85rem;
+    text-align: left;
+    font-weight: 700;
+    color: var(--text);
+  }
+  td {
+    border: 1px solid var(--border);
+    padding: 0.55rem 0.85rem;
+    vertical-align: top;
+    color: var(--muted);
+  }
+  tr:nth-child(even) td { background: #fdfdfd; }
+
+  /* ── FAQ ─────────────────────────────────────────────────── */
+  details {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem 1.1rem;
+    margin-bottom: 0.6rem;
+    overflow: hidden;
+    transition: border-color 0.25s ease;
+  }
+  details[open] { border-color: var(--brand); }
+  summary {
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: "+";
+    font-size: 1.1rem;
+    color: var(--brand);
+    flex-shrink: 0;
+    margin-left: 1rem;
+  }
+  details[open] summary::after { content: "−"; }
+  details p { margin-top: 0.75rem; font-size: 0.875rem; }
+
+  /* ── Responsive ──────────────────────────────────────────── */
+  @media (max-width: 720px) {
+    nav { display: none; }
+    main { padding: 1.5rem 1.25rem; }
+    .feature-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── Sidebar nav ── -->
+  <nav>
+    <a class="nav-logo" href="#top">&#128196; PDF Invoice for WooCommerce</a>
+
+    <p class="nav-section">Getting Started</p>
+    <ul>
+      <li><a href="#quick-start">Quick Start</a></li>
+    </ul>
+
+    <p class="nav-section">Settings</p>
+    <ul>
+      <li><a href="#general-settings">General Settings</a></li>
+      <li><a href="#template-settings">Template Settings</a></li>
+    </ul>
+
+    <p class="nav-section">Documents</p>
+    <ul>
+      <li><a href="#invoice">Invoice</a></li>
+      <li><a href="#packing-slip">Packing Slip</a></li>
+    </ul>
+
+    <p class="nav-section">Automation</p>
+    <ul>
+      <li><a href="#auto-generation">Auto-Generation</a></li>
+      <li><a href="#email-attachments">Email Attachments</a></li>
+    </ul>
+
+    <p class="nav-section">More</p>
+    <ul>
+      <li><a href="#invoice-numbers">Invoice Numbers</a></li>
+      <li><a href="#bulk-actions">Bulk Actions</a></li>
+      <li><a href="#customer-account">Customer Account</a></li>
+    </ul>
+
+    <p class="nav-section">Help</p>
+    <ul>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Main content ── -->
+  <main id="top">
+
+    <!-- Hero -->
+    <div class="hero">
+      <h1>PDF Invoice and Packing Slip for WooCommerce</h1>
+      <p>Generate professional PDF invoices and packing slips for every WooCommerce order — automatically, in bulk, or on demand.</p>
+      <div class="badges">
+        <span class="badge">WooCommerce 4.5+</span>
+        <span class="badge">WordPress 4.8+</span>
+        <span class="badge">HPOS Compatible</span>
+        <span class="badge">PHP 7.1+</span>
+      </div>
+    </div>
+
+    <!-- Quick Start -->
+    <section id="quick-start">
+      <h2>Quick Start</h2>
+      <p>Get your first invoice generated in under a minute.</p>
+      <ol class="steps">
+        <li>Install and activate the plugin. <strong>WooCommerce must already be active</strong> — the plugin will not load without it.</li>
+        <li>Go to <strong>WPWing &rarr; Invoice Settings</strong> in the WordPress admin menu.</li>
+        <li>Open the <strong>Template</strong> tab. Upload your company logo and fill in your company name, address, and VAT/Tax ID.</li>
+        <li>Open the <strong>General</strong> tab. Under <em>Auto-generate invoice on status</em>, tick the order statuses that should trigger automatic invoice creation — for example <em>Processing</em>.</li>
+        <li>Open any existing order. The <strong>PDF Invoice by WPWing</strong> metabox appears in the right sidebar. Click <strong>Create</strong> next to Invoice.</li>
+        <li>Click <strong>View</strong> to confirm the PDF renders correctly. Done.</li>
+      </ol>
+      <div class="callout">
+        <strong>Auto-generation is optional.</strong> You can always create invoices manually from the order page or in bulk from the Orders list — auto-generation is a convenience, not a requirement.
+      </div>
+    </section>
+
+    <!-- General Settings -->
+    <section id="general-settings">
+      <h2>General Settings</h2>
+      <p>Found at <strong>WPWing &rarr; Invoice Settings &rarr; General</strong> tab.</p>
+      <table>
+        <thead>
+          <tr><th>Setting</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Next invoice number</strong></td>
+            <td>1</td>
+            <td>The serial number assigned to the next invoice. Increase this if you are migrating from another plugin or need to align with an external accounting system.</td>
+          </tr>
+          <tr>
+            <td><strong>Invoice number format</strong></td>
+            <td><code>{number}</code></td>
+            <td>Tokens: <code>{number}</code> = serial, <code>{year}</code> = 4-digit year, <code>{month}</code> = 2-digit month, <code>{day}</code> = 2-digit day. Example: <code>INV-{number}/{year}</code> produces <code>INV-42/2026</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Invoice date format</strong></td>
+            <td><code>d/m/Y</code></td>
+            <td>Any valid PHP date format string. This controls how the date appears on the invoice itself.</td>
+          </tr>
+          <tr>
+            <td><strong>Reset invoice number yearly</strong></td>
+            <td>Off</td>
+            <td>When on, the serial counter resets to 1 on January 1 each year. Useful for compliance in some countries.</td>
+          </tr>
+          <tr>
+            <td><strong>PDF button behaviour</strong></td>
+            <td>Download PDF</td>
+            <td><em>Download PDF</em> triggers a browser file download. <em>Open in Browser</em> renders the PDF inline in a new tab.</td>
+          </tr>
+          <tr>
+            <td><strong>Paper size</strong></td>
+            <td>A4</td>
+            <td>Sets the physical page dimensions of every generated PDF. Choose A4 (210 &times; 297 mm) or Letter (216 &times; 279 mm).</td>
+          </tr>
+          <tr>
+            <td><strong>Disable invoice for free orders</strong></td>
+            <td>Off</td>
+            <td>When on, invoices are never created for orders with a zero grand total. Applies to both manual and automatic creation.</td>
+          </tr>
+          <tr>
+            <td><strong>Auto-generate invoice on status</strong></td>
+            <td>None</td>
+            <td>Tick the order statuses that should trigger automatic invoice creation (e.g. <em>Processing</em>, <em>Completed</em>). An invoice is created only once per order — subsequent status changes to a ticked status are ignored.</td>
+          </tr>
+          <tr>
+            <td><strong>Auto-generate packing slip on status</strong></td>
+            <td>None</td>
+            <td>Same as above but for packing slips.</td>
+          </tr>
+          <tr>
+            <td><strong>Attach invoice PDF to emails</strong></td>
+            <td>None</td>
+            <td>The invoice PDF is attached to the selected WooCommerce transactional emails. If no invoice exists yet it is automatically generated at send time. Options: Processing Order, Completed Order, Customer Invoice / Order Details, Order On-Hold.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Template Settings -->
+    <section id="template-settings">
+      <h2>Template Settings</h2>
+      <p>Found at <strong>WPWing &rarr; Invoice Settings &rarr; Template</strong> tab. Click <strong>Preview Invoice</strong> at any time to see how your current (unsaved) choices will look — the preview uses your most recent order.</p>
+      <table>
+        <thead>
+          <tr><th>Setting</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Invoice template</strong></td>
+            <td>Default</td>
+            <td>Choose between <em>Default</em> (clean white layout) and <em>Modern</em> (dark navy accents). Both templates are print-ready.</td>
+          </tr>
+          <tr>
+            <td><strong>Packing slip template</strong></td>
+            <td>Default</td>
+            <td>Same choice applied independently to packing slips.</td>
+          </tr>
+          <tr>
+            <td><strong>Show company name</strong></td>
+            <td>Off</td>
+            <td>Displays your company name in the invoice header. Reveals the <em>Company name</em> text field when enabled.</td>
+          </tr>
+          <tr>
+            <td><strong>Show company logo</strong></td>
+            <td>Off</td>
+            <td>Displays an image in the top-right of the invoice header. Use the <em>Upload Logo</em> button to choose from the Media Library. Recommended size: no wider than 200 px and no taller than 100 px.</td>
+          </tr>
+          <tr>
+            <td><strong>Show company details</strong></td>
+            <td>Off</td>
+            <td>Reveals address, city, ZIP, country, phone, email, and VAT/Tax ID fields. Leave any field blank to omit it from the invoice.</td>
+          </tr>
+          <tr>
+            <td><strong>Show notes</strong></td>
+            <td>Off</td>
+            <td>Adds a shaded notes box to every invoice — useful for payment terms, bank details, or a thank-you message.</td>
+          </tr>
+          <tr>
+            <td><strong>Show footer</strong></td>
+            <td>Off</td>
+            <td>Adds a footer line at the bottom of every invoice page.</td>
+          </tr>
+          <tr>
+            <td><strong>Show shipping address</strong></td>
+            <td>Off</td>
+            <td>Prints the shipping address alongside the billing address when the two differ.</td>
+          </tr>
+          <tr>
+            <td><strong>Show product SKU</strong></td>
+            <td>Off</td>
+            <td>Adds a SKU column to the product line-items table.</td>
+          </tr>
+          <tr>
+            <td><strong>Show customer order note</strong></td>
+            <td>Off</td>
+            <td>Prints the note the customer entered at checkout in a shaded box below the product table.</td>
+          </tr>
+          <tr>
+            <td><strong>Show tax breakdown</strong></td>
+            <td>On</td>
+            <td>When on, each tax class (e.g. <em>GST 10%</em>, <em>PST 7%</em>) appears as its own row in the invoice totals. When off, a single combined <em>Tax</em> row is shown instead.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Invoice -->
+    <section id="invoice">
+      <h2>Invoice</h2>
+      <p>An invoice is a legally-numbered document recording the sale. It contains your company details, the customer's billing address, a product line-items table with quantities and prices, tax and discount lines, and the order total.</p>
+
+      <h3>Creating an invoice</h3>
+      <p>Open any order in WooCommerce. In the <strong>PDF Invoice by WPWing</strong> metabox on the right, click <strong>Create</strong> next to Invoice. The PDF is generated immediately and stored in the uploads folder.</p>
+
+      <h3>Viewing and downloading</h3>
+      <p>Once an invoice exists, click <strong>View</strong> in the metabox. Whether it downloads or opens inline depends on the <em>PDF button behaviour</em> setting.</p>
+
+      <h3>Cancelling an invoice</h3>
+      <p>Click <strong>Cancel</strong> (red button) in the metabox. This deletes the stored PDF and removes the invoice metadata from the order. The order itself is not affected — only the invoice document is removed. You can create a new invoice for the same order afterwards.</p>
+
+      <div class="callout">
+        <strong>Invoice numbers are permanent.</strong> Once an invoice number is assigned it will not be reused, even if the invoice is cancelled. This ensures your invoice sequence has no gaps that could raise questions during an audit.
+      </div>
+    </section>
+
+    <!-- Packing Slip -->
+    <section id="packing-slip">
+      <h2>Packing Slip</h2>
+      <p>A packing slip is an internal fulfilment document. It lists the items in the order and the shipping address — no prices, taxes, or totals. It is intended to travel with the shipment so the recipient can verify the contents.</p>
+
+      <h3>Creating, viewing, and cancelling</h3>
+      <p>The workflow is identical to invoices: use the <strong>Create</strong>, <strong>View</strong>, and <strong>Cancel</strong> buttons in the <strong>PDF Invoice by WPWing</strong> metabox, in the Packing Slip row.</p>
+
+      <div class="callout">
+        <strong>Packing slips use the order number, not the invoice number.</strong> If you cancel and recreate a packing slip, the same order number is reused. Packing slips are not subject to the same sequential-numbering rules as invoices.
+      </div>
+    </section>
+
+    <!-- Auto-Generation -->
+    <section id="auto-generation">
+      <h2>Auto-Generation</h2>
+      <p>When an order transitions to a status you have ticked in the General Settings, the plugin automatically creates the corresponding document — no manual action required.</p>
+
+      <h3>How it works</h3>
+      <ul>
+        <li>The check fires on the <code>woocommerce_order_status_changed</code> action.</li>
+        <li>If an invoice (or packing slip) already exists for the order, a new one is <strong>not</strong> created — auto-generation is idempotent.</li>
+        <li>If <em>Disable invoice for free orders</em> is on, free orders are skipped even if the status matches.</li>
+        <li>Auto-generation and email attachment can both be active at the same time. Only one invoice is ever created per order regardless of how many triggers fire.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Recommended status: Processing.</strong> Most stores choose <em>Processing</em> as the trigger because it fires as soon as payment is confirmed, giving the customer an invoice at the earliest possible moment.
+      </div>
+    </section>
+
+    <!-- Email Attachments -->
+    <section id="email-attachments">
+      <h2>Email Attachments</h2>
+      <p>The plugin can attach the invoice PDF automatically to outgoing WooCommerce transactional emails. Enable this under <em>Attach invoice PDF to emails</em> in the General tab.</p>
+
+      <table>
+        <thead>
+          <tr><th>Email</th><th>Sent when</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Processing Order</strong></td>
+            <td>Order status changes to <em>Processing</em> (payment confirmed)</td>
+          </tr>
+          <tr>
+            <td><strong>Completed Order</strong></td>
+            <td>Order status changes to <em>Completed</em></td>
+          </tr>
+          <tr>
+            <td><strong>Customer Invoice / Order Details</strong></td>
+            <td>Manually sent from the order edit page, or triggered by a status change for certain payment gateways</td>
+          </tr>
+          <tr>
+            <td><strong>Order On-Hold</strong></td>
+            <td>Order status changes to <em>On-Hold</em> (e.g. bank transfer awaiting payment)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>No invoice yet?</strong> If the order does not have an invoice at the time the email is sent, the plugin creates one automatically before attaching it. The invoice number and date will reflect the moment of generation.
+      </div>
+    </section>
+
+    <!-- Invoice Numbers -->
+    <section id="invoice-numbers">
+      <h2>Invoice Numbers</h2>
+      <p>Invoice numbers follow a configurable format using tokens. You set the format under <em>Invoice number format</em> in the General tab.</p>
+
+      <h3>Available tokens</h3>
+      <table>
+        <thead>
+          <tr><th>Token</th><th>Replaced with</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>{number}</code></td><td>Sequential serial number</td><td><code>42</code></td></tr>
+          <tr><td><code>{year}</code></td><td>4-digit year of invoice date</td><td><code>2026</code></td></tr>
+          <tr><td><code>{month}</code></td><td>2-digit month of invoice date</td><td><code>06</code></td></tr>
+          <tr><td><code>{day}</code></td><td>2-digit day of invoice date</td><td><code>15</code></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Format examples</h3>
+      <table>
+        <thead>
+          <tr><th>Format string</th><th>Result (invoice 42, June 2026)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>{number}</code></td><td><code>42</code></td></tr>
+          <tr><td><code>INV-{number}</code></td><td><code>INV-42</code></td></tr>
+          <tr><td><code>{year}-{number}</code></td><td><code>2026-42</code></td></tr>
+          <tr><td><code>INV-{number}/{year}{month}</code></td><td><code>INV-42/202606</code></td></tr>
+          <tr><td><code>{year}/{month}/{number}</code></td><td><code>2026/06/42</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Concurrent safety.</strong> Invoice numbers are assigned using a MySQL advisory lock (<code>GET_LOCK</code>) so two simultaneous orders can never receive the same number, even on busy stores.
+      </div>
+    </section>
+
+    <!-- Bulk Actions -->
+    <section id="bulk-actions">
+      <h2>Bulk Actions</h2>
+      <p>You can generate invoices or packing slips for many orders at once from the <strong>WooCommerce &rarr; Orders</strong> list — useful when migrating from another plugin or backfilling documents for existing orders.</p>
+
+      <ol class="steps">
+        <li>Go to <strong>WooCommerce &rarr; Orders</strong>.</li>
+        <li>Select the orders you want to process using the checkboxes on the left.</li>
+        <li>Open the <strong>Bulk actions</strong> dropdown and choose <em>Generate Invoices</em> or <em>Generate Packing Slips</em>.</li>
+        <li>Click <strong>Apply</strong>. A summary notice will tell you how many documents were created and how many were skipped (because a document already existed).</li>
+      </ol>
+
+      <div class="callout">
+        <strong>50-order limit per run.</strong> To prevent timeouts, each bulk action processes a maximum of 50 orders at a time. If you selected more, run the action again — orders that already have a document are automatically skipped, so repeated runs are safe.
+      </div>
+    </section>
+
+    <!-- Customer Account -->
+    <section id="customer-account">
+      <h2>Customer Account</h2>
+      <p>Customers can download their own invoices directly from their account, without needing to contact you.</p>
+
+      <h3>Where the link appears</h3>
+      <p>An <strong>Invoice</strong> button appears in the order actions column of the <em>My Account &rarr; Orders</em> table — but only for orders that already have an invoice. If no invoice has been generated yet, no button is shown.</p>
+
+      <h3>Access control</h3>
+      <p>Customers can only view invoices for their own orders. Attempting to access another customer's invoice URL will fail the ownership check. The <em>PDF button behaviour</em> setting (download vs. open) applies to customer downloads too.</p>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <h2>FAQ</h2>
+
+      <details>
+        <summary>Does the plugin work with WooCommerce HPOS (High-Performance Order Storage)?</summary>
+        <p>Yes. The plugin is fully compatible with HPOS. All document metadata is stored using WooCommerce's order meta API, so it works correctly whether orders are stored in the traditional <code>wp_posts</code> table or in the newer HPOS custom tables. Bulk actions and the invoice status column on the Orders list work on both screens.</p>
+      </details>
+
+      <details>
+        <summary>Can I customise the invoice template?</summary>
+        <p>Yes. Copy the template folder from <code>wp-content/plugins/wpwing-pdf-invoice-packing-slip-for-woocommerce/templates/{template-name}/</code> into your theme at <code>wp-content/themes/{your-theme}/wpwing-wcpdf/{template-name}/</code>. Edit the copied files freely. Plugin updates will never overwrite theme-level templates.</p>
+      </details>
+
+      <details>
+        <summary>Where are the PDF files stored?</summary>
+        <p>PDFs are saved to <code>wp-content/uploads/wpwing-pdf-invoices/</code>, organised by year and month. An <code>.htaccess</code> file (Apache) is written automatically on activation to prevent direct URL access. To serve a PDF you must use the plugin's View action, which checks permissions before streaming the file.</p>
+      </details>
+
+      <details>
+        <summary>Why did my invoice number jump by more than 1?</summary>
+        <p>This usually happens when both auto-generation on status and email attachment are active for the same order. Even though only one invoice is created per order, the number counter increments once for each attempted generation. Check your settings and ensure only one trigger is active for the same status if gapless numbering is required.</p>
+      </details>
+
+      <details>
+        <summary>The PDF is blank or shows garbled characters — what do I do?</summary>
+        <p>This is typically a font cache problem. Delete the folder <code>wp-content/uploads/wpwing-pdf-fonts/</code> via FTP or your hosting file manager, then regenerate the invoice. The fonts will be re-registered on the next generation. If the problem persists, check that your server's PHP memory limit is at least 128 MB.</p>
+      </details>
+
+      <details>
+        <summary>Can I reset all plugin settings?</summary>
+        <p>Yes. At the bottom of the settings page there is a <strong>Reset all</strong> link. Click it and confirm the prompt. This deletes all saved settings — invoice number, company details, templates, and all other options. The stored PDF files and invoice metadata on orders are not affected.</p>
+      </details>
+
+      <details>
+        <summary>How do I stop invoices being attached to a specific email type?</summary>
+        <p>Go to <strong>WPWing &rarr; Invoice Settings &rarr; General</strong> tab, find <em>Attach invoice PDF to emails</em>, and uncheck the email type you want to exclude. Save changes. Future emails of that type will no longer include the PDF attachment.</p>
+      </details>
+
+      <details>
+        <summary>Can I use a different invoice numbering sequence per year?</summary>
+        <p>Enable <em>Reset invoice number yearly</em> in the General tab. On January 1 each year the serial counter automatically resets to 1. You can combine this with a year token in the format — for example <code>{year}-{number}</code> — so each year's invoices are clearly identifiable: <code>2025-199</code>, <code>2026-1</code>, <code>2026-2</code>, etc.</p>
+      </details>
+
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Highlight the active nav link based on scroll position.
+  (function () {
+    var links = document.querySelectorAll('nav a[href^="#"]');
+    var sections = Array.from(links).map(function (a) {
+      return document.querySelector(a.getAttribute('href'));
+    });
+
+    function onScroll() {
+      var scrollY = window.scrollY + 80;
+      var active = sections[0];
+      sections.forEach(function (s) {
+        if (s && s.offsetTop <= scrollY) active = s;
+      });
+      links.forEach(function (a) {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + active.id);
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+
+  // Smooth open/close animation for <details> FAQ items.
+  (function () {
+    var DURATION = 260;
+    var EASING   = 'ease-out';
+
+    document.querySelectorAll('details').forEach(function (el) {
+      var summary   = el.querySelector('summary');
+      var closedH   = 0;
+      var animation = null;
+
+      summary.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        if (animation) { animation.cancel(); animation = null; }
+
+        if (el.open) {
+          animation = el.animate(
+            [{ height: el.offsetHeight + 'px' }, { height: closedH + 'px' }],
+            { duration: DURATION, easing: EASING }
+          );
+          animation.onfinish = function () {
+            el.open = false;
+            el.style.height = '';
+            animation = null;
+          };
+        } else {
+          closedH  = el.offsetHeight;
+          el.open  = true;
+          var openH = el.offsetHeight;
+          animation = el.animate(
+            [{ height: closedH + 'px' }, { height: openH + 'px' }],
+            { duration: DURATION, easing: EASING }
+          );
+          animation.onfinish = function () {
+            el.style.height = '';
+            animation = null;
+          };
+        }
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

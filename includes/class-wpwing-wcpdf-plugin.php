@@ -99,6 +99,17 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 		 * @since 2.0.0
 		 */
 		public function show_admin_notices() {
+
+			$pdf_error = get_transient( 'wpwing_wcpdf_pdf_error_' . get_current_user_id() );
+			if ( $pdf_error ) {
+				delete_transient( 'wpwing_wcpdf_pdf_error_' . get_current_user_id() );
+				printf(
+					'<div class="notice notice-error is-dismissible"><p><strong>%s</strong> %s</p></div>',
+					esc_html__( 'PDF generation failed:', 'wpwing-wcpdf' ),
+					esc_html( $pdf_error )
+				);
+			}
+
 			// phpcs:disable WordPress.Security.NonceVerification.Recommended
 			if ( isset( $_GET['wpwing_notice'] ) ) {
 				$notice = sanitize_key( $_GET['wpwing_notice'] );
