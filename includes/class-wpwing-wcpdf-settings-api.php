@@ -103,6 +103,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
 
 			add_filter( 'plugin_action_links_' . WPWING_WCPDF_BASE_NAME, array( $this, 'plugin_action_links' ) );
+			add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 2 );
 
 			if ( apply_filters( 'show_wpwing_wcpdf_settings_link_on_admin_bar', false ) ):
 				add_action( 'wp_before_admin_bar_render', array( $this, 'add_admin_bar' ), 999 );
@@ -275,13 +276,22 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			}
 
 			$url          = admin_url( sprintf( 'admin.php?page=%s', esc_html( $this->slug ) ) );
-			$docs_url     = plugins_url( 'docs/', WPWING_WCPDF_FILE );
-			$plugin_links = array(
-				sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Settings', 'wpwing-wcpdf' ) ),
-				sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( $docs_url ), esc_html__( 'Documentation', 'wpwing-wcpdf' ) ),
-			);
+			$plugin_links = array( sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Settings', 'wpwing-wcpdf' ) ) );
 
 			return array_merge( $plugin_links, $links );
+
+		}
+
+		public function plugin_row_meta( $links, $plugin_file ) {
+
+			if ( WPWING_WCPDF_BASE_NAME !== $plugin_file ) {
+				return $links;
+			}
+
+			$docs_url = plugins_url( 'docs/', WPWING_WCPDF_FILE );
+			$links[]  = sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( $docs_url ), esc_html__( 'Documentation', 'wpwing-wcpdf' ) );
+
+			return $links;
 
 		}
 

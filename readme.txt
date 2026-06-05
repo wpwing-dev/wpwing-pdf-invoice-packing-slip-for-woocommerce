@@ -6,7 +6,7 @@ Tags:               PDF, Invoice, Packing Slip, Packing List, Proforma Invoice, 
 Requires at least:  4.8
 Tested up to:       7.0
 Requires PHP:       7.1
-Stable tag:         1.6.0
+Stable tag: 1.7.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -88,6 +88,14 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 
 == Changelog ==
+
+= 1.7.0 - 06/06/2026 =
+
+* New: Added an option to show the customer's note (entered at checkout) on the invoice.
+* New: Added an option to control tax display in invoice totals - show each tax class as a separate line, or collapse them into a single tax total.
+* New: Added a Documentation page accessible directly from the Plugins list.
+* Improvement: Auto-generate status and email attachment settings now use checkboxes instead of a multi-select list - much easier to pick and toggle options.
+* Fix: When a PDF fails to generate, an admin notice now appears so you always know something went wrong.
 
 = 1.6.0 - 30/05/2026 =
 
