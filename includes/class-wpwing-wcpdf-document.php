@@ -279,6 +279,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 		 */
 		abstract protected function get_from_label();
 
+		abstract public function save();
+
+		abstract public function reset();
+
 		/**
 		 * Registers the six template-section hooks for this document type.
 		 * Hook names are built dynamically from $this->document_type so both
