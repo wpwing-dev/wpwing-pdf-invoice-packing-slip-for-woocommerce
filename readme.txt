@@ -2,7 +2,7 @@
 
 Contributors:       wpwing, voboghure
 Donate link:        https://wpwing.com/
-Tags:               PDF, Invoice, Packing Slip, Packing List, Proforma Invoice, Delivery Notes, Shipping Labels, WooCommerce, WPWing
+Tags:               PDF, Invoice, Packing Slip, Packing List, WooCommerce
 Requires at least:  4.8
 Tested up to:       7.0
 Requires PHP:       7.1
