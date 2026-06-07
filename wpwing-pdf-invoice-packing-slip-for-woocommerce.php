@@ -4,7 +4,7 @@
  * Plugin Name:           PDF Invoice and Packing Slip for WooCommerce
  * Plugin URI:            https://wpwing.com/
  * Description:           Automatically generate, print, and attach professional PDF invoices and packing slips to WooCommerce emails. Clean, lightweight, and fast.
- * Version: 1.7.0
+ * Version:               1.7.0
  * Author:                WPWing
  * Author URI:            https://wpwing.com/
  * Requires PHP:          7.1
