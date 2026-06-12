@@ -117,6 +117,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 								'placeholder' => 'd/m/Y',
 							),
 							array(
+								'id'          => 'invoice_due_date_days',
+								'type'        => 'number',
+								'title'       => esc_html__( 'Payment due within (days):', 'wpwing-wcpdf' ),
+								'desc'        => 'Days from order date until payment is due. Leave empty or 0 to hide the due date.',
+								'placeholder' => '0',
+								'default'     => 0,
+							),
+							array(
 								'id'      => 'invoice_number_reset_yearly',
 								'type'    => 'checkbox',
 								'title'   => esc_html__( 'Reset invoice number yearly:', 'wpwing-wcpdf' ),

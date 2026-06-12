@@ -66,12 +66,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 
 			// Each entry: GET param key => [ doc type, operation, admin-only, notice key ]
 			$document_actions = array(
-				'wpwing-create-invoice' => array( 'invoice', 'create', true,  'invoice_created'   ),
-				'wpwing-view-invoice'   => array( 'invoice', 'view',   false, ''                  ),
-				'wpwing-reset-invoice'  => array( 'invoice', 'reset',  true,  'invoice_cancelled' ),
-				'wpwing-create-packing' => array( 'packing', 'create', true,  'packing_created'   ),
-				'wpwing-view-packing'   => array( 'packing', 'view',   false, ''                  ),
-				'wpwing-reset-packing'  => array( 'packing', 'reset',  true,  'packing_cancelled' ),
+				'wpwing-create-invoice'       => array( 'invoice', 'create',       true,  'invoice_created'   ),
+				'wpwing-view-invoice'         => array( 'invoice', 'view',         false, ''                  ),
+				'wpwing-reset-invoice'        => array( 'invoice', 'reset',        true,  'invoice_cancelled' ),
+				'wpwing-preview-html-invoice' => array( 'invoice', 'preview_html', true,  ''                  ),
+				'wpwing-create-packing'       => array( 'packing', 'create',       true,  'packing_created'   ),
+				'wpwing-view-packing'         => array( 'packing', 'view',         false, ''                  ),
+				'wpwing-reset-packing'        => array( 'packing', 'reset',        true,  'packing_cancelled' ),
+				'wpwing-preview-html-packing' => array( 'packing', 'preview_html', true,  ''                  ),
 			);
 
 			$notice = '';
@@ -95,8 +97,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 					wp_die( $msg );
 				}
 
-				if ( 'view' === $op ) {
-					$this->view_document( $order_id, $doc_type );
+				if ( in_array( $op, array( 'view', 'preview_html' ), true ) ) {
+					$this->{$op . '_document'}( $order_id, $doc_type );
 					return;
 				}
 
@@ -208,6 +210,42 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 					readfile( $full_path );
 				}
 			}
+		}
+
+		/**
+		 * Render the document template as raw HTML and stream it to the browser.
+		 * Admin-only. Useful for inspecting template layout without generating a PDF.
+		 *
+		 * @param int    $order_id      The order ID.
+		 * @param string $document_type The document type.
+		 * @since 1.0.0
+		 */
+		public function preview_html_document( $order_id, $document_type ) {
+			$document = $this->get_document_by_type( $order_id, $document_type );
+			if ( null === $document ) {
+				wp_die( esc_html__( 'Invalid document type.', 'wpwing-wcpdf' ) );
+			}
+
+			$document->exists = true;
+
+			global $wpwing_wcpdf_document;
+			$wpwing_wcpdf_document = $document;
+
+			$document->init_template();
+			$document->init_template_generation_actions();
+
+			$theme_dir = $document->get_theme_dir();
+
+			ob_start();
+			wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
+			$html = ob_get_clean();
+
+			$document->flush_template();
+
+			header( 'Content-Type: text/html; charset=utf-8' );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $html;
+			exit();
 		}
 
 		/**

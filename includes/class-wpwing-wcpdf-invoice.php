@@ -120,6 +120,17 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 
 		}
 
+		public function get_due_date() {
+			$days = (int) $this->settings->get_option( 'invoice_due_date_days' );
+			if ( $days <= 0 ) {
+				return '';
+			}
+			$created = $this->order->get_date_created();
+			$base    = $created ? $created->getTimestamp() : time();
+			$format  = $this->settings->get_option( 'invoice_date_format' ) ?: 'd/m/Y';
+			return wp_date( $format, $base + ( $days * DAY_IN_SECONDS ) );
+		}
+
 		/**
 		 * Reset order meta data of invoice
 		 *
@@ -265,6 +276,12 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 					<td><?php esc_html_e( 'Invoice date', 'wpwing-wcpdf' ); ?></td>
 					<td class="right"><?php echo esc_html( $wpwing_wcpdf_document->get_formatted_date() ); ?></td>
 				</tr>
+				<?php $due_date = $wpwing_wcpdf_document->get_due_date(); if ( $due_date ) : ?>
+				<tr class="invoice-due-date">
+					<td><?php esc_html_e( 'Payment due date', 'wpwing-wcpdf' ); ?></td>
+					<td class="right"><?php echo esc_html( $due_date ); ?></td>
+				</tr>
+				<?php endif; ?>
 				<tr class="invoice-amount">
 					<td><?php esc_html_e( 'Order Amount', 'wpwing-wcpdf' ); ?></td>
 					<td class="right"><?php echo wc_price( $wpwing_wcpdf_document->order->get_total() ); ?></td>

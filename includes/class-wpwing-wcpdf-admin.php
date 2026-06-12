@@ -85,6 +85,12 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 								target="_blank">
 								<?php esc_html_e( 'View', 'wpwing-wcpdf' ); ?>
 							</a>
+							<a class="button tips wpwing_wcpdf_preview_html"
+								data-tip="<?php esc_attr_e( 'Preview invoice template as HTML', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-preview-html-invoice', $invoice->order->get_id() ), 'wpwing_preview_html_invoice_' . $invoice->order->get_id() ) ); ?>"
+								target="_blank">
+								<?php esc_html_e( 'Preview HTML', 'wpwing-wcpdf' ); ?>
+							</a>
 							<a class="button tips wpwing_wcpdf_cancel_invoice wpwing-btn-cancel"
 								data-tip="<?php esc_attr_e( 'Cancel Invoice', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-invoice', $invoice->order->get_id() ), 'wpwing_reset_invoice_' . $invoice->order->get_id() ) ); ?>"
@@ -111,6 +117,12 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-view-packing', $packing->order->get_id() ), 'wpwing_view_packing_' . $packing->order->get_id() ) ); ?>"
 								target="_blank">
 								<?php esc_html_e( 'View', 'wpwing-wcpdf' ); ?>
+							</a>
+							<a class="button tips wpwing_wcpdf_preview_html"
+								data-tip="<?php esc_attr_e( 'Preview packing slip template as HTML', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-preview-html-packing', $packing->order->get_id() ), 'wpwing_preview_html_packing_' . $packing->order->get_id() ) ); ?>"
+								target="_blank">
+								<?php esc_html_e( 'Preview HTML', 'wpwing-wcpdf' ); ?>
 							</a>
 							<a class="button tips wpwing_wcpdf_cancel_invoice wpwing-btn-cancel"
 								data-tip="<?php esc_attr_e( 'Cancel Packing Slip', 'wpwing-wcpdf' ); ?>"
