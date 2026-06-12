@@ -1,16 +1,5 @@
-.git/
-.gitignore
-.distignore
-.github/
-CLAUDE.md
-Makefile
-node_modules/
+pro/
 vendor/
 assets/src/
-package.json
-package-lock.json
-phpcs.xml
-dist/
-pro/
 .DS_Store
 *.map

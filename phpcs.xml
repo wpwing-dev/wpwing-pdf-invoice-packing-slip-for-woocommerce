@@ -2,10 +2,10 @@
 <ruleset name="WPWing PDF Invoice">
     <description>WordPress Coding Standards for WPWing PDF Invoice &amp; Packing Slip plugin</description>
 
-    <file>includes/</file>
-    <file>templates/</file>
-    <file>pro/</file>
-    <file>wpwing-pdf-invoice-packing-slip-for-woocommerce.php</file>
+    <file>src/includes/</file>
+    <file>src/templates/</file>
+    <file>src/pro/</file>
+    <file>src/wpwing-pdf-invoice-packing-slip-for-woocommerce.php</file>
 
     <exclude-pattern>*/vendor/*</exclude-pattern>
     <exclude-pattern>*/node_modules/*</exclude-pattern>

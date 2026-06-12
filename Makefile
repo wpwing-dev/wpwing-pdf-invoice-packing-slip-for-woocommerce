@@ -1,4 +1,5 @@
 PLUGIN_SLUG = wpwing-pdf-invoice-packing-slip-for-woocommerce
+SRC_DIR     = src
 DIST_DIR    = dist
 BUILD_DIR   = $(DIST_DIR)/$(PLUGIN_SLUG)
 
@@ -27,21 +28,21 @@ lint: ## Run PHP_CodeSniffer with WordPress standards
 .PHONY: lint
 
 pot: ## Regenerate the .pot translation file
-	wp i18n make-pot . languages/wpwing-wcpdf.pot \
-		--exclude=vendor,node_modules,dist
+	wp i18n make-pot $(SRC_DIR) $(SRC_DIR)/languages/wpwing-wcpdf.pot \
+		--exclude=vendor,node_modules
 .PHONY: pot
 
 version: ## Bump version strings — usage: make version V=1.6.0
 	@[ -n "$(V)" ] || (echo "Usage: make version V=1.6.0" && exit 1)
-	sed -i "s/Version: .*/Version: $(V)/" $(PLUGIN_SLUG).php
+	sed -i "s/Version: .*/Version: $(V)/" $(SRC_DIR)/$(PLUGIN_SLUG).php
 	sed -i "s/\"version\": \".*\"/\"version\": \"$(V)\"/" package.json
-	sed -i "s/Stable tag: .*/Stable tag: $(V)/" readme.txt
+	sed -i "s/Stable tag: .*/Stable tag: $(V)/" $(SRC_DIR)/readme.txt
 	@echo "Version bumped to $(V)"
 .PHONY: version
 
 zip: clean-build assets ## Build distributable zip into dist/
 	mkdir -p $(BUILD_DIR)
-	rsync -r --exclude-from=.distignore . $(BUILD_DIR)/
+	rsync -r --exclude-from=.distignore $(SRC_DIR)/ $(BUILD_DIR)/
 	composer install --no-dev --optimize-autoloader --working-dir=$(BUILD_DIR)
 	rm -f $(BUILD_DIR)/composer.json $(BUILD_DIR)/composer.lock
 	cd $(DIST_DIR) && zip -r $(PLUGIN_SLUG).zip $(PLUGIN_SLUG)/
@@ -60,7 +61,7 @@ release: ## Full release — usage: make release V=1.6.0
 .PHONY: release
 
 vendor-prod: ## Install Composer deps without dev packages
-	composer install --no-dev --optimize-autoloader
+	composer install --no-dev --optimize-autoloader --working-dir=$(SRC_DIR)
 .PHONY: vendor-prod
 
 clean-build: ## Remove staging build dir
@@ -76,7 +77,7 @@ dist: zip zip-pro ## Build both FREE and PRO plugin zips into dist/
 
 zip-pro: clean-build-pro ## Build pro addon zip into dist/
 	mkdir -p $(PRO_BUILD)
-	rsync -r --exclude='.gitignore' $(PRO_SRC)/ $(PRO_BUILD)/
+	rsync -r --exclude='.gitignore' $(SRC_DIR)/$(PRO_SRC)/ $(PRO_BUILD)/
 	cd $(DIST_DIR) && zip -r $(PRO_SLUG).zip $(PRO_SLUG)/
 	rm -rf $(PRO_BUILD)
 	@echo "Built: $(DIST_DIR)/$(PRO_SLUG).zip"
@@ -84,8 +85,8 @@ zip-pro: clean-build-pro ## Build pro addon zip into dist/
 
 version-pro: ## Bump pro version strings — usage: make version-pro V=1.0.1
 	@[ -n "$(V)" ] || (echo "Usage: make version-pro V=1.0.1" && exit 1)
-	sed -i "s/Version: .*/Version: $(V)/" $(PRO_SRC)/$(PRO_SLUG).php
-	sed -i "s/define( 'WPWING_WCPDF_PRO_VERSION', '.*' )/define( 'WPWING_WCPDF_PRO_VERSION', '$(V)' )/" $(PRO_SRC)/$(PRO_SLUG).php
+	sed -i "s/Version: .*/Version: $(V)/" $(SRC_DIR)/$(PRO_SRC)/$(PRO_SLUG).php
+	sed -i "s/define( 'WPWING_WCPDF_PRO_VERSION', '.*' )/define( 'WPWING_WCPDF_PRO_VERSION', '$(V)' )/" $(SRC_DIR)/$(PRO_SRC)/$(PRO_SLUG).php
 	@echo "Pro version bumped to $(V)"
 .PHONY: version-pro
 
@@ -102,12 +103,12 @@ clean-build-pro: ## Remove pro staging build dir
 .PHONY: clean-build-pro
 
 check: ## Verify version strings are consistent across all files
-	@V=$$(grep 'Version:' $(PLUGIN_SLUG).php | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1); \
+	@V=$$(grep 'Version:' $(SRC_DIR)/$(PLUGIN_SLUG).php | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1); \
 	echo "Checking version $$V …"; \
 	errors=0; \
-	grep -q "\"version\": \"$$V\"" package.json          || { echo "  FAIL: version in package.json"; errors=1; }; \
-	grep -qP "Stable tag:\s+$$V" readme.txt               || { echo "  FAIL: Stable tag in readme.txt"; errors=1; }; \
-	grep -q "WPWING_WCPDF_VERSION', '$$V'" $(PLUGIN_SLUG).php || { echo "  FAIL: WPWING_WCPDF_VERSION constant"; errors=1; }; \
+	grep -q "\"version\": \"$$V\"" package.json                    || { echo "  FAIL: version in package.json"; errors=1; }; \
+	grep -qP "Stable tag:\s+$$V" $(SRC_DIR)/readme.txt             || { echo "  FAIL: Stable tag in readme.txt"; errors=1; }; \
+	grep -q "WPWING_WCPDF_VERSION', '$$V'" $(SRC_DIR)/$(PLUGIN_SLUG).php || { echo "  FAIL: WPWING_WCPDF_VERSION constant"; errors=1; }; \
 	[ $$errors -eq 0 ] && echo "  All version strings match $$V ✓" || exit 1
 .PHONY: check
 
@@ -119,6 +120,7 @@ tag: ## Create annotated git tag — usage: make tag V=1.6.0
 
 setup: ## Bootstrap dev environment (first-time setup)
 	composer install
+	composer install --working-dir=$(SRC_DIR)
 	npm install
 	@printf '#!/bin/sh\nmake lint\n' > .git/hooks/pre-push
 	@chmod +x .git/hooks/pre-push
@@ -135,3 +137,26 @@ changelog: ## Print commits since last tag to help update CHANGELOG.md
 		git log --pretty=format:"- %s" --no-merges; \
 	fi
 .PHONY: changelog
+
+dev: ## Start local WordPress dev environment
+	docker compose --profile dev up -d db wordpress
+	docker compose --profile dev run --rm wpcli
+.PHONY: dev
+
+dev-stop: ## Stop the dev environment
+	docker compose --profile dev down
+.PHONY: dev-stop
+
+test-unit: ## Run PHPUnit tests (no WordPress stack needed)
+	docker compose --profile unit run --rm unit
+.PHONY: test-unit
+
+test-e2e: ## Run Playwright E2E tests (spins up full stack)
+	docker compose --profile e2e up -d db wordpress
+	docker compose --profile e2e run --rm wpcli
+	docker compose --profile e2e run --rm e2e
+.PHONY: test-e2e
+
+env-reset: ## Wipe all Docker volumes and containers
+	docker compose --profile dev --profile unit --profile e2e down -v
+.PHONY: env-reset
