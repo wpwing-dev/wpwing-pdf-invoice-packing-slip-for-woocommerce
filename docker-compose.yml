@@ -65,7 +65,7 @@ services:
   e2e:
     profiles: ["e2e"]
     image: mcr.microsoft.com/playwright:v1.45.0-jammy
-    depends_on: [wpcli]
+    depends_on: [wordpress]
     volumes:
       - .:/var/plugin
     working_dir: /var/plugin
