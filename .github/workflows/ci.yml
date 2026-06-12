@@ -41,7 +41,7 @@ jobs:
           coverage: none
 
       - name: Check PHP syntax
-        run: find includes pro -name '*.php' -print0 | xargs -0 -n1 php -l
+        run: find src/includes src/pro -name '*.php' -print0 | xargs -0 -n1 php -l
 
   build-assets:
     name: Build Assets
