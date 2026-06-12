@@ -1,0 +1,78 @@
+name: pdf-invoice
+
+services:
+  db:
+    profiles: ["dev", "e2e"]
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      retries: 10
+
+  wordpress:
+    profiles: ["dev", "e2e"]
+    image: wordpress:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "1122:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_DEBUG', true);
+        define('WP_DEBUG_LOG', true);
+        define('WP_HOME', 'http://pdf-invoice.local:1122');
+        define('WP_SITEURL', 'http://pdf-invoice.local:1122');
+    volumes:
+      - ./src:/var/www/html/wp-content/plugins/wpwing-pdf-invoice-packing-slip-for-woocommerce
+      - wp_data:/var/www/html
+
+  wpcli:
+    profiles: ["dev", "e2e"]
+    image: wordpress:cli-php8.2
+    depends_on: [db, wordpress]
+    volumes:
+      - ./src:/var/www/html/wp-content/plugins/wpwing-pdf-invoice-packing-slip-for-woocommerce
+      - ./docker:/docker
+      - wp_data:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    command: sh /docker/wordpress/setup.sh
+
+  unit:
+    profiles: ["unit"]
+    build: docker/php
+    volumes:
+      - .:/var/plugin
+    working_dir: /var/plugin
+    command: sh -c "composer install --quiet && ./vendor/bin/phpunit"
+
+  e2e:
+    profiles: ["e2e"]
+    image: mcr.microsoft.com/playwright:v1.45.0-jammy
+    depends_on: [wpcli]
+    volumes:
+      - .:/var/plugin
+    working_dir: /var/plugin
+    environment:
+      BASE_URL: http://pdf-invoice.local:1122
+    command: sh -c "npm install --silent && npx playwright test"
+
+volumes:
+  db_data:
+  wp_data:
