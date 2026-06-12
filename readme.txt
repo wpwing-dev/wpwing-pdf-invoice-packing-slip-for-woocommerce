@@ -6,7 +6,7 @@ Tags:               PDF, Invoice, Packing Slip, Packing List, WooCommerce
 Requires at least:  4.8
 Tested up to:       7.0
 Requires PHP:       7.1
-Stable tag:         1.7.0
+Stable tag:         1.8.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -88,6 +88,11 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 
 == Changelog ==
+
+= 1.8.0 - 14/06/2026 =
+
+* New: Added a payment due date to invoices - configure the offset in days from General Settings.
+* New: Added an HTML preview button in the order metabox - check the invoice or packing slip layout without generating a PDF.
 
 = 1.7.0 - 07/06/2026 =
 

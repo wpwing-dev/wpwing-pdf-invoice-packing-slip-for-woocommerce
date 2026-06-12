@@ -366,6 +366,11 @@
             <td>Any valid PHP date format string. This controls how the date appears on the invoice itself.</td>
           </tr>
           <tr>
+            <td><strong>Invoice due date (days)</strong></td>
+            <td>0</td>
+            <td>Number of days after the order date before payment is due. Leave at <code>0</code> to hide the field. When set to any positive number, a "Payment due date" row appears on every invoice automatically.</td>
+          </tr>
+          <tr>
             <td><strong>Reset invoice number yearly</strong></td>
             <td>Off</td>
             <td>When on, the serial counter resets to 1 on January 1 each year. Useful for compliance in some countries.</td>
@@ -482,6 +487,9 @@
 
       <h3>Viewing and downloading</h3>
       <p>Once an invoice exists, click <strong>View</strong> in the metabox. Whether it downloads or opens inline depends on the <em>PDF button behaviour</em> setting.</p>
+
+      <h3>Previewing as HTML</h3>
+      <p>Click the small code icon next to the View button to open the invoice or packing slip as a plain HTML page in a new tab. This lets you check the layout instantly without generating a PDF - useful when fine-tuning a custom template.</p>
 
       <h3>Cancelling an invoice</h3>
       <p>Click <strong>Cancel</strong> (red button) in the metabox. This deletes the stored PDF and removes the invoice metadata from the order. The order itself is not affected — only the invoice document is removed. You can create a new invoice for the same order afterwards.</p>
