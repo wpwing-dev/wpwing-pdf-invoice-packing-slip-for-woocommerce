@@ -18,12 +18,12 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256m
+          memory: 512m
           cpus: '0.50'
 
   wordpress:
     profiles: ["dev", "e2e"]
-    image: wordpress:6.7-php8.2
+    image: wordpress:latest
     depends_on:
       db:
         condition: service_healthy
@@ -39,8 +39,8 @@ services:
         define('FORCE_SSL_ADMIN', true);
         define('WP_HOME', 'https://pdf-invoice.local');
         define('WP_SITEURL', 'https://pdf-invoice.local');
-        if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
-            $_SERVER['HTTPS'] = 'on';
+        if ( isset( $$_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $$_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
+            $$_SERVER['HTTPS'] = 'on';
         }
     volumes:
       - ./src:/var/www/html/wp-content/plugins/wpwing-pdf-invoice-packing-slip-for-woocommerce
@@ -59,7 +59,7 @@ services:
 
   wpcli:
     profiles: ["dev", "e2e"]
-    image: wordpress:cli-php8.2
+    image: wordpress:cli
     user: root
     depends_on:
       db:
