@@ -6,3 +6,4 @@
 /DOC
 /dist
 .env
+.phpunit.result.cache
