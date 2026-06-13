@@ -27,6 +27,21 @@ lint: ## Run PHP_CodeSniffer with WordPress standards
 	./vendor/bin/phpcs
 .PHONY: lint
 
+lint-js: ## Lint JavaScript with ESLint
+	npm run lint:js
+.PHONY: lint-js
+
+lint-css: ## Lint SCSS with Stylelint
+	npm run lint:css
+.PHONY: lint-css
+
+lint-all: lint lint-js lint-css ## Run all linters (PHP, JS, SCSS)
+.PHONY: lint-all
+
+analyse: ## Run PHPStan static analysis
+	./vendor/bin/phpstan analyse
+.PHONY: analyse
+
 pot: ## Regenerate the .pot translation file
 	wp i18n make-pot $(SRC_DIR) $(SRC_DIR)/languages/wpwing-wcpdf.pot \
 		--exclude=vendor,node_modules
@@ -47,6 +62,7 @@ zip: clean-build assets ## Build distributable zip into dist/
 	rm -f $(BUILD_DIR)/composer.json $(BUILD_DIR)/composer.lock
 	cd $(DIST_DIR) && zip -r $(PLUGIN_SLUG).zip $(PLUGIN_SLUG)/
 	rm -rf $(BUILD_DIR)
+	unzip -t $(DIST_DIR)/$(PLUGIN_SLUG).zip > /dev/null
 	@echo "Built: $(DIST_DIR)/$(PLUGIN_SLUG).zip"
 .PHONY: zip
 
@@ -119,8 +135,8 @@ tag: ## Create annotated git tag — usage: make tag V=1.6.0
 .PHONY: tag
 
 setup: ## Bootstrap dev environment (first-time setup)
-	composer install
-	composer install --working-dir=$(SRC_DIR)
+	composer install --no-interaction
+	composer install --no-interaction --working-dir=$(SRC_DIR)
 	npm install
 	@printf '#!/bin/sh\nmake lint\n' > .git/hooks/pre-push
 	@chmod +x .git/hooks/pre-push
@@ -139,9 +155,24 @@ changelog: ## Print commits since last tag to help update CHANGELOG.md
 .PHONY: changelog
 
 dev: ## Start local WordPress dev environment
-	docker compose --profile dev up -d db wordpress
+	docker compose --profile dev up -d --wait db wordpress
 	docker compose --profile dev run --rm wpcli
+	docker compose --profile dev up -d caddy
+	@echo ""
+	@echo "Site:  https://pdf-invoice.local"
+	@echo "Admin: https://pdf-invoice.local/wp-admin  (admin / password)"
+	@echo ""
+	@echo "First time? Run: make caddy-trust"
 .PHONY: dev
+
+caddy-trust: ## Trust Caddy's local CA (run once per machine, requires sudo)
+	@echo "Waiting for Caddy to generate its CA..."
+	@sleep 3
+	docker compose --profile dev cp caddy:/data/caddy/pki/authorities/local/root.crt /tmp/caddy-root.crt
+	sudo cp /tmp/caddy-root.crt /usr/local/share/ca-certificates/caddy-local.crt
+	sudo update-ca-certificates
+	@echo "Done. Restart your browser."
+.PHONY: caddy-trust
 
 dev-stop: ## Stop the dev environment
 	docker compose --profile dev down
@@ -152,8 +183,9 @@ test-unit: ## Run PHPUnit tests (no WordPress stack needed)
 .PHONY: test-unit
 
 test-e2e: ## Run Playwright E2E tests (spins up full stack)
-	docker compose --profile e2e up -d db wordpress
+	docker compose --profile e2e up -d --wait db wordpress
 	docker compose --profile e2e run --rm wpcli
+	docker compose --profile e2e up -d caddy
 	docker compose --profile e2e run --rm e2e
 .PHONY: test-e2e
 

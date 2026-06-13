@@ -1,5 +1,5 @@
-FROM php:8.2-cli
+FROM php:8.2-cli-alpine
 
-RUN apt-get update && apt-get install -y unzip git && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache unzip git
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

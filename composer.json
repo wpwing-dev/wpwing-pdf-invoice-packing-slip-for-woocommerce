@@ -4,11 +4,14 @@
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.2",
 		"wp-coding-standards/wpcs": "^3.3",
 		"phpunit/phpunit": "^10.0",
-		"brain/monkey": "^2.6"
+		"brain/monkey": "^2.6",
+		"phpstan/phpstan": "^1.0",
+		"szepeviktor/phpstan-wordpress": "^1.0"
 	},
 	"config": {
 		"allow-plugins": {
-			"dealerdirect/phpcodesniffer-composer-installer": true
+			"dealerdirect/phpcodesniffer-composer-installer": true,
+			"phpstan/extension-installer": true
 		}
 	}
 }

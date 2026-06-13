@@ -5,54 +5,101 @@ services:
     profiles: ["dev", "e2e"]
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress}
+      MYSQL_USER: ${MYSQL_USER:-wordpress}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-wordpress}
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
       retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: '0.50'
 
   wordpress:
     profiles: ["dev", "e2e"]
-    image: wordpress:latest
+    image: wordpress:6.7-php8.2
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "1122:80"
     environment:
       WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
-      WORDPRESS_DB_NAME: wordpress
-      WORDPRESS_DEBUG: 1
+      WORDPRESS_DB_USER: ${MYSQL_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD:-wordpress}
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE:-wordpress}
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_DEBUG', true);
         define('WP_DEBUG_LOG', true);
-        define('WP_HOME', 'http://pdf-invoice.local:1122');
-        define('WP_SITEURL', 'http://pdf-invoice.local:1122');
+        define('WP_DEBUG_DISPLAY', false);
+        define('FORCE_SSL_ADMIN', true);
+        define('WP_HOME', 'https://pdf-invoice.local');
+        define('WP_SITEURL', 'https://pdf-invoice.local');
+        if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
+            $_SERVER['HTTPS'] = 'on';
+        }
     volumes:
       - ./src:/var/www/html/wp-content/plugins/wpwing-pdf-invoice-packing-slip-for-woocommerce
       - wp_data:/var/www/html
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost/wp-login.php"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: '0.50'
 
   wpcli:
     profiles: ["dev", "e2e"]
     image: wordpress:cli-php8.2
-    depends_on: [db, wordpress]
+    user: root
+    depends_on:
+      db:
+        condition: service_healthy
+      wordpress:
+        condition: service_healthy
     volumes:
       - ./src:/var/www/html/wp-content/plugins/wpwing-pdf-invoice-packing-slip-for-woocommerce
-      - ./docker:/docker
+      - ./docker/wordpress:/docker/wordpress
       - wp_data:/var/www/html
     environment:
       WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
-      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: ${MYSQL_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD:-wordpress}
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE:-wordpress}
     command: sh /docker/wordpress/setup.sh
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: '0.50'
+
+  caddy:
+    profiles: ["dev", "e2e"]
+    image: caddy:2-alpine
+    depends_on:
+      wordpress:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    deploy:
+      resources:
+        limits:
+          memory: 64m
+          cpus: '0.25'
 
   unit:
     profiles: ["unit"]
@@ -61,18 +108,34 @@ services:
       - .:/var/plugin
     working_dir: /var/plugin
     command: sh -c "composer install --quiet && ./vendor/bin/phpunit"
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: '1.00'
 
   e2e:
     profiles: ["e2e"]
     image: mcr.microsoft.com/playwright:v1.45.0-jammy
-    depends_on: [wordpress]
+    depends_on:
+      wordpress:
+        condition: service_healthy
+    extra_hosts:
+      - "pdf-invoice.local:host-gateway"
     volumes:
       - .:/var/plugin
     working_dir: /var/plugin
     environment:
-      BASE_URL: http://pdf-invoice.local:1122
+      BASE_URL: https://pdf-invoice.local
     command: sh -c "npm install --silent && npx playwright test"
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+          cpus: '1.00'
 
 volumes:
   db_data:
   wp_data:
+  caddy_data:
+  caddy_config:

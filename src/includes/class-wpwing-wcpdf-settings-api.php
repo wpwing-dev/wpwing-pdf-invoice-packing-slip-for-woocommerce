@@ -12,6 +12,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 	class WPWing_WcPdf_Settings_API {
 
 		private $setting_name = 'wpwing_wcpdf_settings';
+		private $settings_name = '';
 		private $setting_reset_name = 'reset';
 		private $show_pro_name = 'pro';
 		private $transient_setting_name = '_temp_wpwing_wcpdf_options';

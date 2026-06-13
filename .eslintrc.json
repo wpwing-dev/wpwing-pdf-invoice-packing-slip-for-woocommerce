@@ -1,0 +1,17 @@
+{
+	"env": {
+		"browser": true,
+		"es6": true,
+		"jquery": true
+	},
+	"parserOptions": {
+		"ecmaVersion": 2018
+	},
+	"rules": {
+		"no-unused-vars": "warn",
+		"no-console": "warn",
+		"eqeqeq": "error",
+		"semi": ["error", "always"],
+		"quotes": ["error", "single"]
+	}
+}

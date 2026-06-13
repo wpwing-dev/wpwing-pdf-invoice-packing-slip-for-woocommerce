@@ -8,10 +8,15 @@
 	"scripts": {
 		"build:css": "sass src/assets/src/scss/admin.scss src/assets/public/css/admin.css --no-source-map && sass src/assets/src/scss/admin.scss src/assets/public/css/admin.min.css --style=compressed --no-source-map",
 		"build:js": "terser src/assets/src/js/admin.js -o src/assets/public/js/admin.min.js --compress --mangle",
-		"watch:css": "sass --watch src/assets/src/scss/admin.scss src/assets/public/css/admin.css"
+		"watch:css": "sass --watch src/assets/src/scss/admin.scss src/assets/public/css/admin.css",
+		"lint:js": "eslint src/assets/src/js/",
+		"lint:css": "stylelint src/assets/src/scss/"
 	},
 	"devDependencies": {
+		"eslint": "^8.57.0",
 		"sass": "^1.77.0",
+		"stylelint": "^16.0.0",
+		"stylelint-config-standard-scss": "^13.0.0",
 		"terser": "^5.31.0"
 	}
 }

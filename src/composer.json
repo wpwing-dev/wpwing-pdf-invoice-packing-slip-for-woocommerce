@@ -1,5 +1,10 @@
 {
 	"require": {
 		"dompdf/dompdf": "^2.0.4"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
 	}
 }

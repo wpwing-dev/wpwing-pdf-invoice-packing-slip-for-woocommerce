@@ -29,27 +29,45 @@ Automatically generate, print, and attach professional PDF invoices and packing 
 echo "127.0.0.1 pdf-invoice.local" | sudo tee -a /etc/hosts
 ```
 
-### 2. Install all dependencies
+### 2. Configure environment (optional)
+
+```bash
+cp .env.example .env
+```
+
+The defaults in `.env.example` work out of the box. Edit `.env` if you need a different database password or port.
+
+### 3. Install all dependencies
 
 ```bash
 make setup
 ```
 
-This installs root Composer deps (phpcs, phpunit, brain/monkey), `src/` Composer deps (dompdf), and npm deps (sass, terser). It also installs a pre-push git hook that runs the linter.
+This installs root Composer deps (phpcs, phpunit, brain/monkey, phpstan), `src/` Composer deps (dompdf), and npm deps (sass, terser, eslint, stylelint). It also installs a pre-push git hook that runs the linter.
 
-### 3. Start WordPress
+### 4. Start WordPress
 
 ```bash
 make dev
 ```
 
-Docker spins up MySQL, WordPress, and a WP-CLI container that bootstraps the site on first run. Once it finishes, open:
+Docker spins up MySQL, WordPress, Caddy (HTTPS proxy), and a WP-CLI container that bootstraps the site on first run. Once it finishes, open:
 
-- **Site:** http://pdf-invoice.local:1122
-- **Admin:** http://pdf-invoice.local:1122/wp-admin
-- **Credentials:** `admin` / `admin`
+- **Site:** https://pdf-invoice.local
+- **Admin:** https://pdf-invoice.local/wp-admin
+- **Credentials:** `admin` / `password`
 
 The `src/` directory is bind-mounted directly into WordPress, so any PHP change you make is live immediately - no container restart needed.
+
+### 5. Trust the local CA (one-time, per machine)
+
+On first run your browser will show a certificate warning. To permanently silence it:
+
+```bash
+make caddy-trust
+```
+
+This extracts Caddy's root CA and adds it to your system trust store. Restart your browser once after running it.
 
 To stop the stack:
 
@@ -70,12 +88,17 @@ make env-reset
 | Command | Description |
 |---|---|
 | `make setup` | First-time install - Composer, npm, git hooks |
-| `make dev` | Start local WordPress on http://pdf-invoice.local:1122 |
+| `make dev` | Start local WordPress on https://pdf-invoice.local |
+| `make caddy-trust` | Trust Caddy's local CA (run once per machine) |
 | `make dev-stop` | Stop the dev stack |
 | `make env-reset` | Wipe all Docker volumes |
 | `make assets` | Compile SCSS and minify JS |
 | `make watch` | Watch SCSS for changes |
 | `make lint` | Run PHP_CodeSniffer |
+| `make lint-js` | Lint JavaScript with ESLint |
+| `make lint-css` | Lint SCSS with Stylelint |
+| `make lint-all` | Run all linters (PHP, JS, SCSS) |
+| `make analyse` | Run PHPStan static analysis |
 | `make test-unit` | Run PHPUnit tests (no WP stack needed) |
 | `make test-e2e` | Run Playwright E2E tests (full stack) |
 | `make check` | Verify version strings are consistent |
@@ -105,6 +128,7 @@ make env-reset
 │   └── wpwing-pdf-invoice-packing-slip-for-woocommerce.php
 │
 ├── docker/
+│   ├── caddy/Caddyfile     - Caddy reverse proxy config (HTTPS)
 │   ├── php/Dockerfile      - PHPUnit runner image
 │   └── wordpress/setup.sh  - WP-CLI bootstrap script
 ├── tests/
@@ -112,7 +136,7 @@ make env-reset
 │   ├── Unit/               - PHPUnit unit tests
 │   └── e2e/                - Playwright E2E tests
 │
-├── composer.json           - dev deps (phpcs, phpunit, brain/monkey)
+├── composer.json           - dev deps (phpcs, phpunit, brain/monkey, phpstan)
 ├── docker-compose.yml      - full dev/test stack
 ├── Makefile                - all dev commands
 ├── package.json            - npm build scripts
@@ -145,7 +169,8 @@ Bugs and pull requests are welcome on [GitHub](https://github.com/wpwing-dev/wpw
 Before submitting, run:
 
 ```bash
-make lint
+make lint-all
+make analyse
 make check
 make test-unit
 ```
