@@ -553,6 +553,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 		public function set_option( $key, $value ) {
 
 			$options         = get_option( $this->settings_name );
+			$options         = is_array( $options ) ? $options : array();
 			$options[ $key ] = $value;
 			update_option( $this->settings_name, $options );
 		}
