@@ -94,7 +94,8 @@ make env-reset
 | `make env-reset` | Wipe all Docker volumes |
 | `make assets` | Compile SCSS and minify JS |
 | `make watch` | Watch SCSS for changes |
-| `make lint` | Run PHP_CodeSniffer |
+| `make phpcs` | Run PHP_CodeSniffer and report errors |
+| `make phpcbf` | Auto-fix PHP code with PHP Code Beautifier and Fixer |
 | `make lint-js` | Lint JavaScript with ESLint |
 | `make lint-css` | Lint SCSS with Stylelint |
 | `make lint-all` | Run all linters (PHP, JS, SCSS) |

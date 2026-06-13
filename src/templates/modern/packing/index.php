@@ -1,3 +1,11 @@
+<?php
+/**
+ * Packing slip template partial - Modern theme.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
+
+?>
 <div class="invoice-document">
 	<div class="company-header">
 		<table>

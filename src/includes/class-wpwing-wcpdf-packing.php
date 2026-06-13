@@ -1,4 +1,9 @@
 <?php
+/**
+ * Packing slip document type.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
 
 defined( 'ABSPATH' ) || exit;
 
@@ -42,15 +47,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Packing' ) ) {
 		public $settings;
 
 		/**
-		 * Constructor
+		 * Constructor.
 		 *
-		 * Initialize plugin and registers actions and filters to be used
-		 *
-		 * @since  1.0.0
+		 * @since 1.0.0
+		 * @param int $order_id WooCommerce order ID.
 		 */
 		public function __construct( $order_id ) {
 
-			// Call base class constructor
+			// Call base class constructor.
 			parent::__construct( $order_id );
 
 			// If this document is not related to a valid WooCommerce order, exit.
@@ -60,9 +64,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Packing' ) ) {
 
 			$this->number = $order_id;
 
-			// Fill invoice information from a previous invoice is exists or from general plugin options plus order related data
+			// Fill packing slip information from a previous slip if it exists, or from general plugin options plus order data.
 			$this->init_document();
-
 		}
 
 		/**
@@ -79,7 +82,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Packing' ) ) {
 			if ( $this->exists ) {
 				$this->save_path = $this->order->get_meta( '_wpwing_wcpdf_packing_path' );
 			}
-
 		}
 
 		/**
@@ -94,7 +96,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Packing' ) ) {
 
 			$this->order->apply_changes();
 			$this->order->save_meta_data();
-
 		}
 
 		/**
@@ -110,13 +111,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Packing' ) ) {
 			}
 
 			$this->date = time();
-			$date = getdate( $this->date );
-			$year = $date['year'];
+			$date       = getdate( $this->date );
+			$year       = $date['year'];
 
-			$filename = apply_filters( 'wpwing_wcpdf_packing_filename', "/packing_" . $this->number, $this );
-			$this->save_path = $year . $filename . ".pdf";
-			$pdf_path = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $this->save_path;
-			$this->exists = true;
+			$filename        = apply_filters( 'wpwing_wcpdf_packing_filename', '/packing_' . $this->number, $this );
+			$this->save_path = $year . $filename . '.pdf';
+			$pdf_path        = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $this->save_path;
+			$this->exists    = true;
 			add_action( 'wpwing_wcpdf_before_template_generation', array( $this, 'init_template_generation_actions' ) );
 			$this->save_file( $pdf_path );
 
@@ -130,14 +131,21 @@ if ( ! class_exists( 'WPWing_WcPdf_Packing' ) ) {
 
 			$this->order->apply_changes();
 			$this->order->save_meta_data();
-
 		}
 
 
+		/**
+		 * Returns the localised "From" heading for the packing slip header block.
+		 *
+		 * @return string
+		 */
 		protected function get_from_label() {
 			return esc_html__( 'Packing From', 'wpwing-wcpdf' );
 		}
 
+		/**
+		 * Render the billing address block in the packing slip template.
+		 */
 		public function render_template_customer_data() {
 
 			global $wpwing_wcpdf_document;
@@ -150,9 +158,11 @@ if ( ! class_exists( 'WPWing_WcPdf_Packing' ) ) {
 			}
 
 			echo '</div>';
-
 		}
 
+		/**
+		 * Render the order details table in the packing slip template.
+		 */
 		public function render_template_order_data() {
 
 			global $wpwing_wcpdf_document;
@@ -172,8 +182,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Packing' ) ) {
 				</tr>
 			</table>
 			<?php
-
 		}
-
 	}
 }

@@ -1,4 +1,9 @@
 <?php
+/**
+ * WooCommerce hooks for auto-generation and email attachment.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
 
 defined( 'ABSPATH' ) || exit;
 
@@ -12,14 +17,34 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 	 */
 	class WPWing_WcPdf_Wc_Hooks {
 
+		/**
+		 * Plugin instance.
+		 *
+		 * @var WPWing_WcPdf_Plugin
+		 */
 		private $plugin;
+
+		/**
+		 * Settings instance.
+		 *
+		 * @var WPWing_WcPdf_Settings
+		 */
 		private $settings;
 
+		/**
+		 * Constructor.
+		 *
+		 * @param WPWing_WcPdf_Plugin   $plugin   Plugin instance.
+		 * @param WPWing_WcPdf_Settings $settings Settings instance.
+		 */
 		public function __construct( WPWing_WcPdf_Plugin $plugin, WPWing_WcPdf_Settings $settings ) {
 			$this->plugin   = $plugin;
 			$this->settings = $settings;
 		}
 
+		/**
+		 * Register all WooCommerce hooks.
+		 */
 		public function register() {
 			add_filter( 'woocommerce_my_account_my_orders_actions', array( $this, 'my_account_order_actions' ), 10, 2 );
 			add_action( 'woocommerce_order_status_changed', array( $this, 'maybe_auto_generate' ), 10, 4 );
@@ -96,7 +121,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 		 * @param WC_Order $object      Object passed to the email (usually WC_Order).
 		 * @return array
 		 */
-		public function attach_document_to_email( $attachments, $email_id, $object ) {
+		public function attach_document_to_email( $attachments, $email_id, $object ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.objectFound -- WooCommerce hook signature requires this parameter name.
 			static $running = false;
 			if ( $running ) {
 				return $attachments;

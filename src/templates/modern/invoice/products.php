@@ -1,4 +1,10 @@
 <?php
+/**
+ * Invoice products table template - Modern theme.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
+
 global $wpwing_wcpdf_document;
 $show_sku           = (bool) $wpwing_wcpdf_document->settings->get_option( 'show_product_sku' );
 $show_tax_breakdown = (bool) $wpwing_wcpdf_document->settings->get_option( 'show_tax_breakdown' );
@@ -28,9 +34,9 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 			$price_per_unit_sale = $item['line_total'] / $item['qty'];
 			$discount            = $price_per_unit - $price_per_unit_sale;
 		}
-		$tax     = $item['line_tax'];
-		$product = $item->get_product();
-		$sku     = ( $show_sku && $product ) ? $product->get_sku() : '';
+		$item_tax = $item['line_tax'];
+		$product  = $item->get_product();
+		$sku      = ( $show_sku && $product ) ? $product->get_sku() : '';
 
 		?>
 
@@ -40,15 +46,16 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 				<td class="column-sku"><?php echo esc_html( $sku ); ?></td>
 			<?php endif; ?>
 			<td class="column-quantity"><?php echo isset( $item['qty'] ) ? esc_html( $item['qty'] ) : ''; ?></td>
-			<td class="column-price"><?php echo wc_price( $price_per_unit ); ?></td>
-			<td class="column-total"><?php echo wc_price( $item['line_subtotal'] ); ?></td>
-			<td class="column-tax"><?php echo wc_price( $tax ); ?></td>
+			<td class="column-price"><?php echo wp_kses_post( wc_price( $price_per_unit ) ); ?></td>
+			<td class="column-total"><?php echo wp_kses_post( wc_price( $item['line_subtotal'] ) ); ?></td>
+			<td class="column-tax"><?php echo wp_kses_post( wc_price( $item_tax ) ); ?></td>
 		</tr>
 
-	<?php };
+		<?php
+	}
 
-	$order_shipping = $wpwing_wcpdf_document->order->get_items( 'shipping' );
-	$total_shipping = 0.00;
+	$order_shipping     = $wpwing_wcpdf_document->order->get_items( 'shipping' );
+	$total_shipping     = 0.00;
 	$total_shipping_tax = 0.00;
 
 	foreach ( $order_shipping as $item_id => $item ) {
@@ -60,7 +67,7 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 
 		<tr>
 			<td class="column-product">
-				<?php echo ! empty( $item['name'] ) ? esc_html( $item['name'] ) : __( 'Shipping', 'wpwing-wcpdf' ); ?>
+				<?php echo ! empty( $item['name'] ) ? esc_html( $item['name'] ) : esc_html__( 'Shipping', 'wpwing-wcpdf' ); ?>
 			</td>
 			<?php if ( $show_sku ) : ?>
 				<td class="column-sku"></td>
@@ -68,29 +75,29 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 			<td class="column-quantity"></td>
 			<td class="column-price"></td>
 			<td class="column-total">
-				<?php echo ( isset( $item['cost'] ) ) ? wc_price( wc_round_tax_total( $item['cost'] ) ) : ''; ?>
+				<?php echo ( isset( $item['cost'] ) ) ? wp_kses_post( wc_price( wc_round_tax_total( $item['cost'] ) ) ) : ''; ?>
 			</td>
 			<td class="column-tax">
 				<?php
-				$taxes = 0;
+				$taxes      = 0;
 				$taxes_list = maybe_unserialize( $item['taxes'] );
 				$taxes_list = isset( $taxes_list['total'] ) ? $taxes_list['total'] : $taxes_list;
 
 				foreach ( $taxes_list as $tax_id => $amount ) {
-					if ( 'total' != $tax_id ) {
-						$taxes += (int)$amount;
+					if ( 'total' !== $tax_id ) {
+						$taxes += (int) $amount;
 					}
 				}
 				$total_shipping_tax += $taxes;
-				echo wc_price( wc_round_tax_total( $taxes ) );
+				echo wp_kses_post( wc_price( wc_round_tax_total( $taxes ) ) );
 				?>
 			</td>
 		</tr>
 		<?php
-	};
+	}
 
-	$order_fees = $wpwing_wcpdf_document->order->get_items( 'fee' );
-	$total_fee = 0.00;
+	$order_fees    = $wpwing_wcpdf_document->order->get_items( 'fee' );
+	$total_fee     = 0.00;
 	$total_fee_tax = 0.00;
 
 	foreach ( $order_fees as $item_id => $item ) {
@@ -104,7 +111,7 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 
 		<tr>
 			<td class="column-product">
-				<?php echo ! empty( $item['name'] ) ? esc_html( $item['name'] ) : __( 'Fee', 'wpwing-wcpdf' ); ?>
+				<?php echo ! empty( $item['name'] ) ? esc_html( $item['name'] ) : esc_html__( 'Fee', 'wpwing-wcpdf' ); ?>
 			</td>
 			<?php if ( $show_sku ) : ?>
 				<td class="column-sku"></td>
@@ -112,14 +119,14 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 			<td class="column-quantity"></td>
 			<td class="column-price"></td>
 			<td class="column-total">
-				<?php echo ( isset( $item['line_total'] ) ) ? wc_price( wc_round_tax_total( $item['line_total'] ) ) : ''; ?>
+				<?php echo ( isset( $item['line_total'] ) ) ? wp_kses_post( wc_price( wc_round_tax_total( $item['line_total'] ) ) ) : ''; ?>
 			</td>
 			<td class="column-tax">
-				<?php echo ( isset( $item['line_tax'] ) ) ? wc_price( $item['line_tax'] ) : ''; ?>
+				<?php echo ( isset( $item['line_tax'] ) ) ? wp_kses_post( wc_price( $item['line_tax'] ) ) : ''; ?>
 			</td>
 		</tr>
 		<?php
-	};
+	}
 	?>
 
 	</tbody>
@@ -133,34 +140,34 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 		<td class="column2">
 			<table class="invoice-totals">
 				<tr class="invoice-details-subtotal">
-					<td class="column-product"><?php _e( "Subtotal", 'wpwing-wcpdf' ); ?></td>
-					<td class="column-total"><?php echo wc_price( $wpwing_wcpdf_document->order->get_subtotal() + $total_fee + $total_shipping ); ?></td>
+					<td class="column-product"><?php esc_html_e( 'Subtotal', 'wpwing-wcpdf' ); ?></td>
+					<td class="column-total"><?php echo wp_kses_post( wc_price( $wpwing_wcpdf_document->order->get_subtotal() + $total_fee + $total_shipping ) ); ?></td>
 				</tr>
 
 				<tr>
-					<td class="column-product"><?php _e( "Discount", 'wpwing-wcpdf' ); ?></td>
-					<td class="column-total"><?php echo wc_price( $wpwing_wcpdf_document->order->get_total_discount() ); ?></td>
+					<td class="column-product"><?php esc_html_e( 'Discount', 'wpwing-wcpdf' ); ?></td>
+					<td class="column-total"><?php echo wp_kses_post( wc_price( $wpwing_wcpdf_document->order->get_total_discount() ) ); ?></td>
 				</tr>
 
-				<?php if ( 'yes' == get_option( 'woocommerce_calc_taxes' ) ) : ?>
+				<?php if ( 'yes' === get_option( 'woocommerce_calc_taxes' ) ) : ?>
 					<?php if ( $show_tax_breakdown ) : ?>
-						<?php foreach ( $wpwing_wcpdf_document->order->get_tax_totals() as $code => $tax ) : ?>
+						<?php foreach ( $wpwing_wcpdf_document->order->get_tax_totals() as $code => $tax_totals_item ) : ?>
 							<tr class="invoice-details-vat">
-								<td class="column-product"><?php echo esc_html( $tax->label ); ?>:</td>
-								<td class="column-total"><?php echo esc_html( $tax->formatted_amount ); ?></td>
+								<td class="column-product"><?php echo esc_html( $tax_totals_item->label ); ?>:</td>
+								<td class="column-total"><?php echo esc_html( $tax_totals_item->formatted_amount ); ?></td>
 							</tr>
 						<?php endforeach; ?>
 					<?php else : ?>
 						<tr class="invoice-details-vat">
 							<td class="column-product"><?php esc_html_e( 'Tax', 'wpwing-wcpdf' ); ?>:</td>
-							<td class="column-total"><?php echo wc_price( $wpwing_wcpdf_document->order->get_total_tax() ); ?></td>
+							<td class="column-total"><?php echo wp_kses_post( wc_price( $wpwing_wcpdf_document->order->get_total_tax() ) ); ?></td>
 						</tr>
 					<?php endif; ?>
 				<?php endif; ?>
 
 				<tr class="invoice-details-total">
-					<td class="column-product"><?php _e( "Total", 'wpwing-wcpdf' ); ?></td>
-					<td class="column-total"><?php echo wc_price( $wpwing_wcpdf_document->order->get_total() ); ?></td>
+					<td class="column-product"><?php esc_html_e( 'Total', 'wpwing-wcpdf' ); ?></td>
+					<td class="column-total"><?php echo wp_kses_post( wc_price( $wpwing_wcpdf_document->order->get_total() ) ); ?></td>
 				</tr>
 			</table>
 		</td>
@@ -170,7 +177,8 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 
 <?php
 $customer_note = $show_customer_note ? $wpwing_wcpdf_document->order->get_customer_note() : '';
-if ( $customer_note ) : ?>
+if ( $customer_note ) :
+	?>
 <div class="customer-note">
 	<strong><?php esc_html_e( 'Customer note:', 'wpwing-wcpdf' ); ?></strong>
 	<?php echo wp_kses( nl2br( $customer_note ), array( 'br' => array() ) ); ?>

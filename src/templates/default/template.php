@@ -1,15 +1,15 @@
 <?php
+/**
+ * The Template for invoice.
+ *
+ * Override this template by copying it to yourtheme/default/template.php
+ *
+ * @version 1.0.0
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
 
-	/**
-	 * The Template for invoice
-	 *
-	 * Override this template by copying it to yourtheme/default/template.php
-	 *
-	 * @version     1.0.0
-	 */
-
-	// Exit if accessed directly
-	defined( 'ABSPATH' ) || exit;
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit;
 
 ?>
 
@@ -24,8 +24,8 @@
 			}
 		</style>
 		<?php
-			/**
-			 * wpwing_wcpdf_template_head hook
+			/*
+			 * Fires wpwing_wcpdf_template_head.
 			 *
 			 * @hooked add_template_head - 10 ( add css style )
 			 */
@@ -36,8 +36,8 @@
 	<body>
 
 		<?php
-			/**
-			 * wpwing_wcpdf_template_content hook
+			/*
+			 * Fires wpwing_wcpdf_template_content.
 			 *
 			 * @hooked add_template_content - 10 ( add other content )
 			 */

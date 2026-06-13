@@ -1,4 +1,10 @@
 <?php
+/**
+ * Credit note products table template.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
+
 global $wpwing_wcpdf_document;
 $refund = $wpwing_wcpdf_document->refund;
 ?>
@@ -17,7 +23,7 @@ $refund = $wpwing_wcpdf_document->refund;
 			<tr>
 				<td class="column-product"><?php echo esc_html( $item->get_name() ); ?></td>
 				<td class="column-quantity"><?php echo esc_html( abs( $item->get_quantity() ) ); ?></td>
-				<td class="column-total"><?php echo wc_price( abs( $item->get_total() ) ); ?></td>
+				<td class="column-total"><?php echo wp_kses_post( wc_price( abs( $item->get_total() ) ) ); ?></td>
 			</tr>
 		<?php endforeach; ?>
 	<?php endif; ?>
@@ -31,7 +37,7 @@ $refund = $wpwing_wcpdf_document->refund;
 			<table class="invoice-totals">
 				<tr class="invoice-details-total">
 					<td class="column-product"><?php esc_html_e( 'Total Refunded', 'wpwing-pdf-invoice-pro' ); ?></td>
-					<td class="column-total"><?php echo wc_price( $refund ? abs( $refund->get_total() ) : 0 ); ?></td>
+					<td class="column-total"><?php echo wp_kses_post( wc_price( $refund ? abs( $refund->get_total() ) : 0 ) ); ?></td>
 				</tr>
 			</table>
 		</td>

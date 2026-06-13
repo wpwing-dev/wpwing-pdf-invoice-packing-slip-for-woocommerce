@@ -23,9 +23,13 @@ watch: ## Watch SCSS for changes (Ctrl+C to stop)
 	npm run watch:css
 .PHONY: watch
 
-lint: ## Run PHP_CodeSniffer with WordPress standards
+phpcs: ## Run PHP_CodeSniffer and report errors
 	./vendor/bin/phpcs
-.PHONY: lint
+.PHONY: phpcs
+
+phpcbf: ## Auto-fix PHP code with PHP Code Beautifier and Fixer
+	./vendor/bin/phpcbf
+.PHONY: phpcbf
 
 lint-js: ## Lint JavaScript with ESLint
 	npm run lint:js
@@ -35,7 +39,7 @@ lint-css: ## Lint SCSS with Stylelint
 	npm run lint:css
 .PHONY: lint-css
 
-lint-all: lint lint-js lint-css ## Run all linters (PHP, JS, SCSS)
+lint-all: phpcs lint-js lint-css ## Run all linters (PHP, JS, SCSS)
 .PHONY: lint-all
 
 analyse: ## Run PHPStan static analysis
@@ -70,7 +74,7 @@ release: ## Full release — usage: make release V=1.6.0
 	@[ -n "$(V)" ] || (echo "Usage: make release V=1.6.0" && exit 1)
 	$(MAKE) version V=$(V)
 	$(MAKE) check
-	$(MAKE) lint
+	$(MAKE) phpcs
 	$(MAKE) zip
 	@echo ""
 	@echo "Next: git commit -am 'Release v$(V)' && make tag V=$(V) && git push && git push --tags"
@@ -138,7 +142,7 @@ setup: ## Bootstrap dev environment (first-time setup)
 	composer install --no-interaction
 	composer install --no-interaction --working-dir=$(SRC_DIR)
 	npm install
-	@printf '#!/bin/sh\nmake lint\n' > .git/hooks/pre-push
+	@printf '#!/bin/sh\nmake phpcs\n' > .git/hooks/pre-push
 	@chmod +x .git/hooks/pre-push
 	@echo "Dev environment ready. Run 'make assets' to build CSS/JS."
 .PHONY: setup

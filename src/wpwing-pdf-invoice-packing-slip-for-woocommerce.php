@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name:           PDF Invoice and Packing Slip for WooCommerce
  * Plugin URI:            https://wpwing.com/
@@ -16,13 +15,15 @@
  * License:               GPL-3.0-or-later
  * License URI:           https://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain:           wpwing-wcpdf
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
  */
 
 defined( 'ABSPATH' ) || exit;
 
 $wp_upload_dir = wp_upload_dir();
 
-// Define constants
+// Define constants.
 defined( 'WPWING_WCPDF_DOCUMENT_SAVE_DIR' ) || define( 'WPWING_WCPDF_DOCUMENT_SAVE_DIR', $wp_upload_dir['basedir'] . '/wpwing-pdf-invoices/' );
 
 defined( 'WPWING_WCPDF_VERSION' ) || define( 'WPWING_WCPDF_VERSION', '1.8.0' );
@@ -46,15 +47,18 @@ defined( 'WPWING_WCPDF_INC_DIR' ) || define( 'WPWING_WCPDF_INC_DIR', WPWING_WCPD
 defined( 'WPWING_WCPDF_VENDOR_DIR' ) || define( 'WPWING_WCPDF_VENDOR_DIR', WPWING_WCPDF_DIR . 'vendor/' );
 
 /** Implement HPOS compatibility */
-add_action( 'before_woocommerce_init', function() {
-    if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
-        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
-            'custom_order_tables',
-            __FILE__,
-            true // true if compatible, false otherwise
-        );
-    }
-} );
+add_action(
+	'before_woocommerce_init',
+	function () {
+		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+				'custom_order_tables',
+				__FILE__,
+				true // True if compatible, false otherwise.
+			);
+		}
+	}
+);
 
 /**
  * Show notification if WooCommerce is not installed
@@ -64,32 +68,32 @@ add_action( 'before_woocommerce_init', function() {
 function wpwing_wcpdf_wc_error_admin_notice() {
 	echo '<div class="error notice">';
 	echo '<p>';
-	_e( '<strong>Error:</strong>', 'wpwing-wcpdf' );
-	_e( 'The <em>PDF Invoice and Packing Slip for WooCommerce</em> plugin won\'t execute because the following required plugin is not active: <em>WooCommerce</em>. <br>Please activate this <a href="plugins.php">plugin</a> first.', 'wpwing-wcpdf' );
+	echo '<strong>' . esc_html__( 'Error:', 'wpwing-wcpdf' ) . '</strong>';
+	echo wp_kses_post( __( 'The <em>PDF Invoice and Packing Slip for WooCommerce</em> plugin won\'t execute because the following required plugin is not active: <em>WooCommerce</em>. <br>Please activate this <a href="plugins.php">plugin</a> first.', 'wpwing-wcpdf' ) );
 	echo '</p>';
 	echo '</div>';
-	echo '<div class="updated notice is-dismissible"><p>' . __( 'The <em>WPWing PDF Invoice and Packing Slip for WooCommerce</em> plugin deactivated.', 'wpwing-wcpdf' ) . '</p></div>';
+	echo '<div class="updated notice is-dismissible"><p>' . wp_kses_post( __( 'The <em>WPWing PDF Invoice and Packing Slip for WooCommerce</em> plugin deactivated.', 'wpwing-wcpdf' ) ) . '</p></div>';
 }
 
-/**
- * Create files/directories to protect upload folders
- *
- * @since 1.0.0
- */
-if (  ! function_exists( 'wpwing_wcpdf_protect_folder' ) ) {
+if ( ! function_exists( 'wpwing_wcpdf_protect_folder' ) ) {
+	/**
+	 * Create files/directories to protect upload folders.
+	 *
+	 * @since 1.0.0
+	 */
 	function wpwing_wcpdf_protect_folder() {
-		$files = [
-			[
+		$files = array(
+			array(
 				'base'    => WPWING_WCPDF_DOCUMENT_SAVE_DIR,
 				'file'    => 'index.html',
 				'content' => '',
-			],
-			[
+			),
+			array(
 				'base'    => WPWING_WCPDF_DOCUMENT_SAVE_DIR,
 				'file'    => '.htaccess',
 				'content' => 'deny from all',
-			],
-		];
+			),
+		);
 
 		foreach ( $files as $file ) {
 			if ( wp_mkdir_p( $file['base'] ) && ! file_exists( trailingslashit( $file['base'] ) . $file['file'] ) ) {
@@ -98,12 +102,13 @@ if (  ! function_exists( 'wpwing_wcpdf_protect_folder' ) ) {
 				if ( false !== $file_handle ) {
 					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 					fwrite( $file_handle, $file['content'] );
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 					fclose( $file_handle );
 				}
 			}
 		}
 
-		// Updating the option not to execute the function 'wpwing_wcpdf_protect_folder' again
+		// Updating the option not to execute the function 'wpwing_wcpdf_protect_folder' again.
 		update_option( 'wpwing_wcpdf_check_folder_already_protected', true );
 	}
 }
@@ -140,10 +145,10 @@ add_action( 'wpwing_wcpdf_init', 'wpwing_wcpdf_init' );
  * @since 1.0.0
  */
 function wpwing_wcpdf_install() {
-	if (  ! function_exists( 'WC' ) ) {
+	if ( ! function_exists( 'WC' ) ) {
 		add_action( 'admin_notices', 'wpwing_wcpdf_wc_error_admin_notice' );
 
-		// Call A Hook for Deactivate our plugin
+		// Call a hook to deactivate our plugin.
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		deactivate_plugins( plugin_basename( __FILE__ ) );
 
@@ -152,26 +157,27 @@ function wpwing_wcpdf_install() {
 		do_action( 'wpwing_wcpdf_init' );
 	}
 
-	if (  ! get_option( 'wpwing_wcpdf_check_folder_already_protected' ) ) {
+	if ( ! get_option( 'wpwing_wcpdf_check_folder_already_protected' ) ) {
 		wpwing_wcpdf_protect_folder();
 	}
 }
 
 add_action( 'plugins_loaded', 'wpwing_wcpdf_install', 11 );
 
-/**
- * For test and debug, log function to view any data in wp-content/debug.log
- * uses: log_it($variable);
- *
- * @since 1.0.0
- */
-
-if (  ! function_exists( 'log_it' ) ) {
+if ( ! function_exists( 'log_it' ) ) {
+	/**
+	 * For test and debug, log function to view any data in wp-content/debug.log.
+	 *
+	 * @since 1.0.0
+	 * @param mixed $message Value to log.
+	 */
 	function log_it( $message ) {
 		if ( WP_DEBUG === true ) {
 			if ( is_array( $message ) || is_object( $message ) ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				error_log( "\r\n" . print_r( $message, true ) );
 			} else {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 				error_log( $message );
 			}
 		}

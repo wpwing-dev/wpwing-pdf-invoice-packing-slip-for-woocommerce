@@ -1,4 +1,9 @@
 <?php
+/**
+ * Admin UI: metabox, notices, asset enqueuing, and AJAX preview.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
 
 defined( 'ABSPATH' ) || exit;
 
@@ -12,14 +17,34 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 	 */
 	class WPWing_WcPdf_Admin {
 
+		/**
+		 * Plugin instance.
+		 *
+		 * @var WPWing_WcPdf_Plugin
+		 */
 		private $plugin;
+
+		/**
+		 * Settings instance.
+		 *
+		 * @var WPWing_WcPdf_Settings
+		 */
 		private $settings;
 
+		/**
+		 * Constructor.
+		 *
+		 * @param WPWing_WcPdf_Plugin   $plugin   Plugin instance.
+		 * @param WPWing_WcPdf_Settings $settings Settings instance.
+		 */
 		public function __construct( WPWing_WcPdf_Plugin $plugin, WPWing_WcPdf_Settings $settings ) {
 			$this->plugin   = $plugin;
 			$this->settings = $settings;
 		}
 
+		/**
+		 * Register all admin hooks.
+		 */
 		public function register() {
 			add_action( 'add_meta_boxes', array( $this, 'add_invoice_metabox' ) );
 			add_action( 'admin_notices', array( $this, 'show_admin_notices' ) );
@@ -271,12 +296,22 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 			if ( ! empty( $_POST['preview_overrides'] ) && is_array( $_POST['preview_overrides'] ) ) {
 				$overrides   = array_map( 'sanitize_text_field', wp_unslash( $_POST['preview_overrides'] ) );
 				$option_name = apply_filters( 'wpwing_wcpdf_settings_name', 'wpwing_wcpdf_settings' );
-				add_filter( "option_{$option_name}", function( $value ) use ( $overrides ) {
-					return array_merge( (array) $value, $overrides );
-				}, 999 );
+				add_filter(
+					"option_{$option_name}",
+					function ( $value ) use ( $overrides ) {
+						return array_merge( (array) $value, $overrides );
+					},
+					999
+				);
 			}
 
-			$orders = wc_get_orders( array( 'limit' => 1, 'orderby' => 'date', 'order' => 'DESC' ) );
+			$orders = wc_get_orders(
+				array(
+					'limit'   => 1,
+					'orderby' => 'date',
+					'order'   => 'DESC',
+				)
+			);
 			if ( empty( $orders ) ) {
 				wp_send_json_error( __( 'No orders found to preview.', 'wpwing-wcpdf' ) );
 			}

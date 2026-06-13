@@ -1,10 +1,18 @@
-<?php global $wpwing_wcpdf_document; ?>
+<?php
+/**
+ * Packing slip products table template - Modern theme.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
+
+global $wpwing_wcpdf_document;
+?>
 
 <table class="invoice-details">
 	<thead>
 		<tr>
-			<th class="column-product"><?php _e( 'Product', 'wpwing-wcpdf' ); ?></th>
-			<th class="column-quantity"><?php _e( 'Quantity', 'wpwing-wcpdf' ); ?></th>
+			<th class="column-product"><?php esc_html_e( 'Product', 'wpwing-wcpdf' ); ?></th>
+			<th class="column-quantity"><?php esc_html_e( 'Quantity', 'wpwing-wcpdf' ); ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -19,7 +27,7 @@
 			<td class="column-quantity"><?php echo ( isset( $item['qty'] ) ) ? esc_html( $item['qty'] ) : ''; ?></td>
 		</tr>
 
-	<?php }; ?>
+	<?php } ?>
 
 	</tbody>
 </table>

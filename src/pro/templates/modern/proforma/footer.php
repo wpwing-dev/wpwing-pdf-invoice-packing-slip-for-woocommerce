@@ -1,3 +1,11 @@
+<?php
+/**
+ * Proforma invoice footer template - Modern theme.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
+
+?>
 <?php if ( isset( $notes ) ) : ?>
 	<div class="notes">
 		<span class="notes-title"><?php esc_html_e( 'Notes', 'wpwing-pdf-invoice-pro' ); ?></span>

@@ -1,3 +1,11 @@
+<?php
+/**
+ * Credit note template partial.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
+
+?>
 <div class="invoice-document creditnote-document">
 	<div class="creditnote-banner"><?php esc_html_e( 'CREDIT NOTE', 'wpwing-pdf-invoice-pro' ); ?></div>
 

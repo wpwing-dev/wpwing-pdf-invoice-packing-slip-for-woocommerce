@@ -1,4 +1,9 @@
 <?php
+/**
+ * Pro plugin controller class.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
 
 defined( 'ABSPATH' ) || exit;
 
@@ -14,6 +19,9 @@ if ( ! class_exists( 'WPWing_WcPdf_Pro' ) ) {
 	 */
 	class WPWing_WcPdf_Pro {
 
+		/**
+		 * Constructor.
+		 */
 		public function __construct() {
 			// Access control runs before free plugin's init_plugin_actions (priority 10).
 			add_action( 'init', array( $this, 'check_document_access' ), 5 );
@@ -43,10 +51,12 @@ if ( ! class_exists( 'WPWing_WcPdf_Pro' ) ) {
 			$protected = array( 'wpwing-view-invoice', 'wpwing-view-packing', 'wpwing-view-proforma' );
 
 			foreach ( $protected as $param ) {
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only access gate; no data is mutated.
 				if ( ! isset( $_GET[ $param ] ) ) {
 					continue;
 				}
 
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only access gate; no data is mutated.
 				$order_id = intval( $_GET[ $param ] );
 				if ( $this->user_can_view_order( $order_id ) ) {
 					continue;

@@ -1,3 +1,11 @@
+<?php
+/**
+ * Proforma invoice template partial.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
+
+?>
 <div class="invoice-document proforma-document">
 	<div class="proforma-banner"><?php esc_html_e( 'PROFORMA INVOICE', 'wpwing-pdf-invoice-pro' ); ?></div>
 

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Main plugin bootstrapper: wires up sub-classes and handles document actions.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
 
 defined( 'ABSPATH' ) || exit;
 
@@ -64,16 +69,16 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 		public function init_plugin_actions() {
 			$this->maybe_migrate_invoice_number_format();
 
-			// Each entry: GET param key => [ doc type, operation, admin-only, notice key ]
+			// Each entry: GET param key => [ doc type, operation, admin-only, notice key ].
 			$document_actions = array(
-				'wpwing-create-invoice'       => array( 'invoice', 'create',       true,  'invoice_created'   ),
-				'wpwing-view-invoice'         => array( 'invoice', 'view',         false, ''                  ),
-				'wpwing-reset-invoice'        => array( 'invoice', 'reset',        true,  'invoice_cancelled' ),
-				'wpwing-preview-html-invoice' => array( 'invoice', 'preview_html', true,  ''                  ),
-				'wpwing-create-packing'       => array( 'packing', 'create',       true,  'packing_created'   ),
-				'wpwing-view-packing'         => array( 'packing', 'view',         false, ''                  ),
-				'wpwing-reset-packing'        => array( 'packing', 'reset',        true,  'packing_cancelled' ),
-				'wpwing-preview-html-packing' => array( 'packing', 'preview_html', true,  ''                  ),
+				'wpwing-create-invoice'       => array( 'invoice', 'create', true, 'invoice_created' ),
+				'wpwing-view-invoice'         => array( 'invoice', 'view', false, '' ),
+				'wpwing-reset-invoice'        => array( 'invoice', 'reset', true, 'invoice_cancelled' ),
+				'wpwing-preview-html-invoice' => array( 'invoice', 'preview_html', true, '' ),
+				'wpwing-create-packing'       => array( 'packing', 'create', true, 'packing_created' ),
+				'wpwing-view-packing'         => array( 'packing', 'view', false, '' ),
+				'wpwing-reset-packing'        => array( 'packing', 'reset', true, 'packing_cancelled' ),
+				'wpwing-preview-html-packing' => array( 'packing', 'preview_html', true, '' ),
 			);
 
 			$notice = '';
@@ -94,7 +99,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 					$msg = $admin_only
 						? esc_html__( 'You do not have permission to perform this action.', 'wpwing-wcpdf' )
 						: esc_html__( 'You do not have permission to view this document.', 'wpwing-wcpdf' );
-					wp_die( $msg );
+					wp_die( $msg ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already escaped via esc_html__() above.
 				}
 
 				if ( in_array( $op, array( 'view', 'preview_html' ), true ) ) {
@@ -287,8 +292,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 			$format   = $settings->get_option( 'invoice_number_format' );
 
 			if ( $format && ( strpos( $format, '[prefix]' ) !== false || strpos( $format, '[suffix]' ) !== false || strpos( $format, '[number]' ) !== false ) ) {
-				$prefix = $settings->get_option( 'invoice_prefix' ) ?: '';
-				$suffix = $settings->get_option( 'invoice_suffix' ) ?: '';
+				$raw_prefix = $settings->get_option( 'invoice_prefix' );
+				$prefix     = $raw_prefix ? $raw_prefix : '';
+				$raw_suffix = $settings->get_option( 'invoice_suffix' );
+				$suffix     = $raw_suffix ? $raw_suffix : '';
 
 				$new_format = str_replace(
 					array( '[prefix]', '[suffix]', '[number]' ),

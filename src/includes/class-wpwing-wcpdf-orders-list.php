@@ -1,4 +1,9 @@
 <?php
+/**
+ * Orders list column and bulk actions for invoice/packing slip generation.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
 
 defined( 'ABSPATH' ) || exit;
 
@@ -12,12 +17,25 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 	 */
 	class WPWing_WcPdf_Orders_List {
 
+		/**
+		 * Plugin instance.
+		 *
+		 * @var WPWing_WcPdf_Plugin
+		 */
 		private $plugin;
 
+		/**
+		 * Constructor.
+		 *
+		 * @param WPWing_WcPdf_Plugin $plugin Plugin instance.
+		 */
 		public function __construct( WPWing_WcPdf_Plugin $plugin ) {
 			$this->plugin = $plugin;
 		}
 
+		/**
+		 * Register orders list hooks.
+		 */
 		public function register() {
 			// Bulk actions - classic orders screen.
 			add_filter( 'bulk_actions-edit-shop_order', array( $this, 'add_bulk_actions' ) );

@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Plugin Name:       PDF Invoice and Packing Slip for WooCommerce — Pro
+ * Plugin Name:       PDF Invoice and Packing Slip for WooCommerce - Pro
  * Plugin URI:        https://wpwing.com/
  * Description:       Pro add-on: access control, proforma invoices, and credit notes. Requires the free WPWing PDF Invoice plugin.
  * Version:           1.0.0
@@ -17,6 +16,8 @@
  * License:           GPL-3.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain:       wpwing-pdf-invoice-pro
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -27,17 +28,20 @@ define( 'WPWING_WCPDF_PRO_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WPWING_WCPDF_PRO_TEMPLATE_DIR', WPWING_WCPDF_PRO_DIR . 'templates/' );
 
 /** Declare HPOS compatibility */
-add_action( 'before_woocommerce_init', function () {
-	if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
-		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+add_action(
+	'before_woocommerce_init',
+	function () {
+		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		}
 	}
-} );
+);
+
+add_action( 'plugins_loaded', 'wpwing_wcpdf_pro_init', 12 );
 
 /**
  * Boot the pro plugin after the free plugin has loaded.
  */
-add_action( 'plugins_loaded', 'wpwing_wcpdf_pro_init', 12 );
-
 function wpwing_wcpdf_pro_init() {
 	if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 		add_action( 'admin_notices', 'wpwing_wcpdf_pro_dependency_notice' );
@@ -52,6 +56,9 @@ function wpwing_wcpdf_pro_init() {
 	new WPWing_WcPdf_Pro();
 }
 
+/**
+ * Show admin notice when the free plugin is not active.
+ */
 function wpwing_wcpdf_pro_dependency_notice() {
 	echo '<div class="notice notice-error"><p>' .
 		esc_html__( 'WPWing PDF Invoice Pro requires the free WPWing PDF Invoice & Packing Slip plugin to be installed and active.', 'wpwing-pdf-invoice-pro' ) .

@@ -1,6 +1,14 @@
+<?php
+/**
+ * Invoice footer template - Modern theme.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
+
+?>
 <?php if ( isset( $notes ) ) : ?>
 	<div class="notes">
-		<span class="notes-title"><?php _e( "Notes", 'wpwing-wcpdf' ); ?></span>
+		<span class="notes-title"><?php esc_html_e( 'Notes', 'wpwing-wcpdf' ); ?></span>
 		<span><?php echo nl2br( esc_html( $notes ) ); ?></span>
 	</div>
 <?php endif; ?>

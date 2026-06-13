@@ -1,21 +1,21 @@
 .billing-address {
-    border: 1px solid #0000ff;
-    width: 50%;
+	border: 1px solid #0000ff;
+	width: 50%;
 
-    float: left;
+	float: left;
 }
 
 .shipping-address {
-    border: 1px solid #0000ff;
+	border: 1px solid #0000ff;
 text-align: right;
-    width: 50%;
-    float: left;
+	width: 50%;
+	float: left;
 }
 
 .order-info {
-    clear: both;
+	clear: both;
 }
 
 ul {
-    list-style: none;
+	list-style: none;
 }

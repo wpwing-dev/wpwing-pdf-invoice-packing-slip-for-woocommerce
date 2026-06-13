@@ -1,4 +1,9 @@
 <?php
+/**
+ * Invoice document type.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
 
 defined( 'ABSPATH' ) || exit;
 
@@ -13,16 +18,46 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 	 */
 	class WPWing_WcPdf_Invoice extends WPWing_WcPdf_Document {
 
+		/**
+		 * Document type identifier.
+		 *
+		 * @var string
+		 */
 		public $document_type = 'invoice';
 
+		/**
+		 * Invoice creation timestamp.
+		 *
+		 * @var int
+		 */
 		public $date;
 
+		/**
+		 * Invoice number.
+		 *
+		 * @var int
+		 */
 		private $number;
 
+		/**
+		 * Invoice number prefix.
+		 *
+		 * @var string
+		 */
 		private $prefix;
 
+		/**
+		 * Invoice number suffix.
+		 *
+		 * @var string
+		 */
 		private $suffix;
 
+		/**
+		 * Relative path to the saved PDF file.
+		 *
+		 * @var string
+		 */
 		public $save_path;
 
 		/**
@@ -33,23 +68,22 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 		public $settings;
 
 		/**
-		 * Constructor
+		 * Constructor.
 		 *
-		 * Initialize plugin and registers actions and filters to be used
-		 *
-		 * @since  1.0.0
+		 * @since 1.0.0
+		 * @param int $order_id WooCommerce order ID.
 		 */
 		public function __construct( $order_id ) {
 
-			// Call base class constructor
+			// Call base class constructor.
 			parent::__construct( $order_id );
 
-			// If this document is not related to a valid WooCommerce order, exit
+			// If this document is not related to a valid WooCommerce order, exit.
 			if ( ! $this->is_valid ) {
 				return;
 			}
 
-			// Fill invoice information from a previous invoice is exists or from general plugin options plus order related data
+			// Fill invoice information from a previous invoice if it exists, or from general plugin options plus order data.
 			$this->init_document();
 		}
 
@@ -64,10 +98,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 
 			$this->exists = $this->order->get_meta( '_wpwing_wcpdf_invoiced' );
 			if ( $this->exists ) {
-				$this->number = $this->order->get_meta( '_wpwing_wcpdf_invoice_number' );
-				$this->prefix = $this->order->get_meta( '_wpwing_wcpdf_invoice_prefix' );
-				$this->suffix = $this->order->get_meta( '_wpwing_wcpdf_invoice_suffix' );
-				$this->date = $this->order->get_meta( '_wpwing_wcpdf_invoice_date' );
+				$this->number    = $this->order->get_meta( '_wpwing_wcpdf_invoice_number' );
+				$this->prefix    = $this->order->get_meta( '_wpwing_wcpdf_invoice_prefix' );
+				$this->suffix    = $this->order->get_meta( '_wpwing_wcpdf_invoice_suffix' );
+				$this->date      = $this->order->get_meta( '_wpwing_wcpdf_invoice_date' );
 				$this->save_path = $this->order->get_meta( '_wpwing_wcpdf_invoice_path' );
 			} else {
 				$prefix       = $this->settings->get_option( 'invoice_prefix' );
@@ -75,7 +109,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 				$suffix       = $this->settings->get_option( 'invoice_suffix' );
 				$this->suffix = $suffix ? $suffix : 'suffix';
 			}
-
 		}
 
 		/**
@@ -111,23 +144,28 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 				wp_date( 'Y', $timestamp ),
 				wp_date( 'm', $timestamp ),
 				wp_date( 'd', $timestamp ),
-				$this->number,   // legacy [number]
-				$this->prefix,   // legacy [prefix]
-				$this->suffix,   // legacy [suffix]
+				$this->number,   // Legacy [number].
+				$this->prefix,   // Legacy [prefix].
+				$this->suffix,   // Legacy [suffix].
 			);
 
 			return apply_filters( 'wpwing_wcpdf_get_formatted_invoice_number', str_replace( $search, $replace, $format ), $this->order );
-
 		}
 
+		/**
+		 * Get the formatted due date based on the configured payment terms.
+		 *
+		 * @return string Formatted due date, or empty string if not configured.
+		 */
 		public function get_due_date() {
 			$days = (int) $this->settings->get_option( 'invoice_due_date_days' );
 			if ( $days <= 0 ) {
 				return '';
 			}
-			$created = $this->order->get_date_created();
-			$base    = $created ? $created->getTimestamp() : time();
-			$format  = $this->settings->get_option( 'invoice_date_format' ) ?: 'd/m/Y';
+			$created    = $this->order->get_date_created();
+			$base       = $created ? $created->getTimestamp() : time();
+			$raw_format = $this->settings->get_option( 'invoice_date_format' );
+			$format     = $raw_format ? $raw_format : 'd/m/Y';
 			return wp_date( $format, $base + ( $days * DAY_IN_SECONDS ) );
 		}
 
@@ -147,7 +185,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 
 			$this->order->apply_changes();
 			$this->order->save_meta_data();
-
 		}
 
 		/**
@@ -161,6 +198,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 
 			global $wpdb;
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- advisory lock, no cacheable result.
 			$wpdb->query( $wpdb->prepare( 'SELECT GET_LOCK(%s, 5)', 'wpwing_wcpdf_invoice_number' ) );
 
 			$current = (int) $this->settings->get_option( 'invoice_number' );
@@ -170,10 +208,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 
 			$this->settings->set_option( 'invoice_number', $current + 1 );
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- advisory lock, no cacheable result.
 			$wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', 'wpwing_wcpdf_invoice_number' ) );
 
 			return $current;
-
 		}
 
 		/**
@@ -183,14 +221,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 		 */
 		public function save() {
 
-			// Avoid generating a new invoice from a previous one
+			// Avoid generating a new invoice from a previous one.
 			if ( $this->exists ) {
 				return;
 			}
 
 			$this->date = time();
-			$date = getdate( $this->date );
-			$year = $date['year'];
+			$date       = getdate( $this->date );
+			$year       = $date['year'];
 
 			if ( $this->settings->get_option( 'invoice_number_reset_yearly' ) ) {
 				$current_year = (int) wp_date( 'Y' );
@@ -207,10 +245,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 
 			$this->number = $invoice_number ? $invoice_number : $this->get_new_invoice_number();
 
-			$filename = apply_filters( 'wpwing_wcpdf_invoice_filename', "/invoice_" . $this->number, $this );
-			$this->save_path = $year . $filename . ".pdf";
-			$pdf_path = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $this->save_path;
-			$this->exists = true;
+			$filename        = apply_filters( 'wpwing_wcpdf_invoice_filename', '/invoice_' . $this->number, $this );
+			$this->save_path = $year . $filename . '.pdf';
+			$pdf_path        = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $this->save_path;
+			$this->exists    = true;
 			add_action( 'wpwing_wcpdf_before_template_generation', array( $this, 'init_template_generation_actions' ) );
 			$this->save_file( $pdf_path );
 
@@ -228,13 +266,20 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 
 			$this->order->apply_changes();
 			$this->order->save_meta_data();
-
 		}
 
+		/**
+		 * Returns the localised "From" heading for the invoice header block.
+		 *
+		 * @return string
+		 */
 		protected function get_from_label() {
 			return esc_html__( 'Invoice From', 'wpwing-wcpdf' );
 		}
 
+		/**
+		 * Render the billing and shipping address block in the invoice template.
+		 */
 		public function render_template_customer_data() {
 
 			global $wpwing_wcpdf_document;
@@ -252,9 +297,11 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 			}
 
 			echo '</div>';
-
 		}
 
+		/**
+		 * Render the order details table in the invoice template.
+		 */
 		public function render_template_order_data() {
 
 			global $wpwing_wcpdf_document;
@@ -284,13 +331,11 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 				<?php endif; ?>
 				<tr class="invoice-amount">
 					<td><?php esc_html_e( 'Order Amount', 'wpwing-wcpdf' ); ?></td>
-					<td class="right"><?php echo wc_price( $wpwing_wcpdf_document->order->get_total() ); ?></td>
+					<td class="right"><?php echo wp_kses_post( wc_price( $wpwing_wcpdf_document->order->get_total() ) ); ?></td>
 				</tr>
 			</table>
 			<?php
-
 		}
-
 	}
 
 }

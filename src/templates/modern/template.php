@@ -1,14 +1,14 @@
 <?php
+/**
+ * The Template for invoice - Modern theme.
+ *
+ * Override this template by copying it to yourtheme/modern/template.php
+ *
+ * @version 1.0.0
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
 
-	/**
-	 * The Template for invoice — Modern theme
-	 *
-	 * Override this template by copying it to yourtheme/modern/template.php
-	 *
-	 * @version     1.0.0
-	 */
-
-	defined( 'ABSPATH' ) || exit;
+defined( 'ABSPATH' ) || exit;
 
 ?>
 

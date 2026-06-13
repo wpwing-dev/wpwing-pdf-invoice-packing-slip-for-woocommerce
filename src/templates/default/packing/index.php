@@ -1,10 +1,18 @@
+<?php
+/**
+ * Packing slip template partial.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
+
+?>
 <div class="invoice-document">
 	<div class="company-header">
 		<table>
 			<tr>
 				<td class="invoice-from-section">
 					<?php
-					/**
+					/*
 					 * wpwing_wcpdf_packing_template_company_data hook
 					 *
 					 * @hooked show_packing_template_company_data - 10 (Render and show company data)
@@ -14,7 +22,7 @@
 				</td>
 				<td class="invoice-logo">
 					<?php
-					/**
+					/*
 					 * wpwing_wcpdf_packing_template_company_logo hook
 					 *
 					 * @hooked show_packing_template_company_logo - 10 (Show company logo)
@@ -33,7 +41,7 @@
 			<tr>
 				<td class="invoice-to-section">
 					<?php
-					/**
+					/*
 					 * wpwing_wcpdf_packing_template_customer_data hook
 					 *
 					 * @hooked show_packing_template_customer_data - 10 (Render and show customer data)
@@ -43,7 +51,7 @@
 				</td>
 				<td class="invoice-data">
 					<?php
-					/**
+					/*
 					 * wpwing_wcpdf_packing_template_order_data hook
 					 *
 					 * @hooked show_packing_template_order_data - 10 (Render and show order data)
@@ -58,7 +66,7 @@
 
 	<div class="invoice-content">
 		<?php
-		/**
+		/*
 		 * wpwing_wcpdf_packing_template_product_list hook
 		 *
 		 * @hooked show_packing_template_product_list - 10 (Show product list for current order)
@@ -68,7 +76,7 @@
 	</div>
 
 	<?php
-	/**
+	/*
 	 * wpwing_wcpdf_packing_template_footer hook
 	 *
 	 * @hooked show_packing_template_footer - 10 (Show footer information)

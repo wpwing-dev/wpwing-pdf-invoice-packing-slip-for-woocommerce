@@ -16,6 +16,14 @@
         <exclude name="WordPress.Files.FileName"/>
     </rule>
 
+    <rule ref="WordPress.WP.Capabilities">
+        <properties>
+            <property name="custom_capabilities" type="array">
+                <element value="manage_woocommerce"/>
+            </property>
+        </properties>
+    </rule>
+
     <config name="minimum_supported_wp_version" value="5.0"/>
     <config name="testVersion" value="7.1-"/>
 </ruleset>

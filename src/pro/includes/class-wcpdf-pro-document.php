@@ -1,4 +1,9 @@
 <?php
+/**
+ * Abstract pro document base class.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
 
 defined( 'ABSPATH' ) || exit;
 
@@ -11,7 +16,11 @@ if ( ! class_exists( 'WPWing_WcPdf_ProDocument' ) ) {
 	 */
 	abstract class WPWing_WcPdf_ProDocument extends WPWing_WcPdf_Document {
 
-		/** @var WPWing_WcPdf_Settings */
+		/**
+		 * Settings API instance.
+		 *
+		 * @var WPWing_WcPdf_Settings
+		 */
 		public $settings;
 
 		/**
@@ -54,13 +63,13 @@ if ( ! class_exists( 'WPWing_WcPdf_ProDocument' ) ) {
 			}
 
 			if ( $show_details ) {
-				$address   = $this->settings->get_option( 'company_address' );
-				$city      = $this->settings->get_option( 'company_city' );
-				$zip       = $this->settings->get_option( 'company_zip' );
-				$country   = $this->settings->get_option( 'company_country' );
-				$phone     = $this->settings->get_option( 'company_phone' );
-				$email     = $this->settings->get_option( 'company_email' );
-				$vat       = $this->settings->get_option( 'company_vat' );
+				$address = $this->settings->get_option( 'company_address' );
+				$city    = $this->settings->get_option( 'company_city' );
+				$zip     = $this->settings->get_option( 'company_zip' );
+				$country = $this->settings->get_option( 'company_country' );
+				$phone   = $this->settings->get_option( 'company_phone' );
+				$email   = $this->settings->get_option( 'company_email' );
+				$vat     = $this->settings->get_option( 'company_vat' );
 
 				echo '<div class="company-details">';
 				if ( $address ) {
@@ -96,7 +105,7 @@ if ( ! class_exists( 'WPWing_WcPdf_ProDocument' ) ) {
 				return;
 			}
 
-			echo '<div class="company-logo"><img src="' . apply_filters( 'wpwing_wcpdf_company_image_path', esc_url( $company_logo ) ) . '"></div>';
+			echo '<div class="company-logo"><img src="' . esc_url( apply_filters( 'wpwing_wcpdf_company_image_path', $company_logo ) ) . '"></div>';
 		}
 
 		/**
@@ -121,9 +130,9 @@ if ( ! class_exists( 'WPWing_WcPdf_ProDocument' ) ) {
 		 * @param string $doc_type Subfolder name within the theme dir (e.g. 'proforma').
 		 */
 		protected function render_footer( $doc_type ) {
-			$theme_dir   = $this->get_theme_dir();
-			$notes       = null;
-			$footer      = null;
+			$theme_dir = $this->get_theme_dir();
+			$notes     = null;
+			$footer    = null;
 
 			if ( $this->settings->get_option( 'company_notes_checkbox' ) ) {
 				$notes = $this->settings->get_option( 'company_notes_text' );

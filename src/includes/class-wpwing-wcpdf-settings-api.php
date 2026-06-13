@@ -1,93 +1,179 @@
 <?php
+/**
+ * Settings API: admin menu, tabs, field rendering, and option storage.
+ *
+ * @package WPWing_PDF_Invoice_Packing_Slip
+ */
 
 defined( 'ABSPATH' ) || exit;
 
-// 1. add settings: init priority 1
-// 2. initial class: init priority 2
-// 3. store defaults: init priority 3
-// 4. get defaults / do whatever you want to do
+// 1. add settings: init priority 1.
+// 2. initial class: init priority 2.
+// 3. store defaults: init priority 3.
+// 4. get defaults / do whatever you want to do.
 
 if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
+	/**
+	 * Low-level settings API: handles WP options, admin tabs, and field rendering.
+	 */
 	class WPWing_WcPdf_Settings_API {
 
+		/**
+		 * Option name used to persist all plugin settings.
+		 *
+		 * @var string
+		 */
 		private $setting_name = 'wpwing_wcpdf_settings';
+
+		/**
+		 * Filterable option name (may differ from $setting_name via filter).
+		 *
+		 * @var string
+		 */
 		private $settings_name = '';
+
+		/**
+		 * URL query key used to trigger a full settings reset.
+		 *
+		 * @var string
+		 */
 		private $setting_reset_name = 'reset';
+
+		/**
+		 * URL query key used to show the pro tab.
+		 *
+		 * @var string
+		 */
 		private $show_pro_name = 'pro';
+
+		/**
+		 * Transient key for temporary option overrides.
+		 *
+		 * @var string
+		 */
 		private $transient_setting_name = '_temp_wpwing_wcpdf_options';
+
+		/**
+		 * Object-cache key for options.
+		 *
+		 * @var string
+		 */
 		private $cache_key = 'wpwing_wcpdf_options';
+
+		/**
+		 * Theme feature name for theme support overrides.
+		 *
+		 * @var string
+		 */
 		private $theme_feature_name = 'wpwing-wcpdf';
+
+		/**
+		 * Admin page/menu slug.
+		 *
+		 * @var string
+		 */
 		private $slug;
-		// private $plugin_class;
-		private $defaults = [];
+
+		/**
+		 * Default values keyed by field ID.
+		 *
+		 * @var array
+		 */
+		private $defaults = array();
+
+		/**
+		 * Option key used to store reserved (protected) field values.
+		 *
+		 * @var string
+		 */
 		private $reserved_key = '';
-		private $reserved_fields = [];
 
-		private $fields = [];
-		private $allowed_html = [
-			'fieldset' => [ 'class' => [] ],
-			'label' => [],
-			'input' => [
-				'type' => [],
-				'id' => [],
-				'class' => [],
-				'name' => [],
-				'value' => [],
-				'checked' => [],
-				'placeholder' => [],
-				'readonly' => [],
+		/**
+		 * Field IDs whose values are stored separately and never overwritten on save.
+		 *
+		 * @var array
+		 */
+		private $reserved_fields = array();
 
-			],
-			'select' => [
-				'id' => [],
-				'class' => [],
-				'name' => [],
-				'value' => [],
-				'readonly' => [],
-				'multiple' => [],
-				'size' => [],
-			],
-			'option' => [
-				'value' => [],
-				'selected' => [],
-			],
-			'textarea' => [
-				'id' => [],
-				'class' => [],
-				'name' => [],
-				'placeholder' => [],
-				'readonly' => [],
-			],
-			'a'	=> [
-				'href' => [],
-				'title' => [],
-				'class' => [],
-			],
-			'p'	=> [
-				'class' => [],
-			],
-			'br' => [],
-			'strong' => [],
-		'button' => [
-			'type'     => [],
-			'id'       => [],
-			'class'    => [],
-			'name'     => [],
-			'disabled' => [],
-		],
-		];
+		/**
+		 * Registered settings fields grouped by tab.
+		 *
+		 * @var array
+		 */
+		private $fields = array();
 
+		/**
+		 * Allowed HTML tags for wp_kses() calls when rendering field HTML.
+		 *
+		 * @var array
+		 */
+		private $allowed_html = array(
+			'fieldset' => array( 'class' => array() ),
+			'label'    => array(),
+			'input'    => array(
+				'type'        => array(),
+				'id'          => array(),
+				'class'       => array(),
+				'name'        => array(),
+				'value'       => array(),
+				'checked'     => array(),
+				'placeholder' => array(),
+				'readonly'    => array(),
+
+			),
+			'select'   => array(
+				'id'       => array(),
+				'class'    => array(),
+				'name'     => array(),
+				'value'    => array(),
+				'readonly' => array(),
+				'multiple' => array(),
+				'size'     => array(),
+			),
+			'option'   => array(
+				'value'    => array(),
+				'selected' => array(),
+			),
+			'textarea' => array(
+				'id'          => array(),
+				'class'       => array(),
+				'name'        => array(),
+				'placeholder' => array(),
+				'readonly'    => array(),
+			),
+			'a'        => array(
+				'href'  => array(),
+				'title' => array(),
+				'class' => array(),
+			),
+			'p'        => array(
+				'class' => array(),
+			),
+			'br'       => array(),
+			'strong'   => array(),
+			'button'   => array(
+				'type'     => array(),
+				'id'       => array(),
+				'class'    => array(),
+				'name'     => array(),
+				'disabled' => array(),
+			),
+		);
+
+		/**
+		 * Constructor.
+		 */
 		public function __construct() {
 
-			$this->settings_name = apply_filters( 'wpwing_wcpdf_settings_name', $this->setting_name );
+			$this->settings_name      = apply_filters( 'wpwing_wcpdf_settings_name', $this->setting_name );
 			$this->setting_reset_name = apply_filters( 'wpwing_wcpdf_settings_reset_name', $this->setting_reset_name );
 
 			$this->slug = sprintf( '%s-settings', sanitize_key( WPWING_WCPDF_DIR_NAME ) );
-			// license_key
-			$this->fields = apply_filters( 'wpwing_wcpdf_settings', $this->fields );
-			$this->reserved_key = sprintf( '%s_reserved', esc_html( $this->settings_name ) );
-			$this->reserved_fields = apply_filters( 'wpwing_wcpdf_reserved_fields', [] );
+			// License key.
+			$this->fields          = apply_filters( 'wpwing_wcpdf_settings', $this->fields );
+			$this->reserved_key    = sprintf( '%s_reserved', esc_html( $this->settings_name ) );
+			$this->reserved_fields = apply_filters( 'wpwing_wcpdf_reserved_fields', array() );
 
 			add_action( 'admin_menu', array( $this, 'add_menu' ) );
 			add_action( 'admin_init', array( $this, 'redirect_parent_menu' ), 15 );
@@ -96,26 +182,27 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
 			add_action( 'admin_init', array( $this, 'settings_init' ), 90 );
 
-			// add_filter( 'pre_update_option', array( $this, 'before_update' ), 10, 3 );
-			// add_action( 'updated_option', array( $this, 'before_update' ), 10, 3 );
-
 			add_filter( "pre_update_option_{$this->settings_name}", array( $this, 'before_update' ), 10, 3 );
 			add_action( "update_option_{$this->settings_name}", array( $this, 'after_update' ), 10, 3 );
-
 
 			add_filter( 'plugin_action_links_' . WPWING_WCPDF_BASE_NAME, array( $this, 'plugin_action_links' ) );
 			add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 2 );
 
-			if ( apply_filters( 'show_wpwing_wcpdf_settings_link_on_admin_bar', false ) ):
+			if ( apply_filters( 'show_wpwing_wcpdf_settings_link_on_admin_bar', false ) ) :
 				add_action( 'wp_before_admin_bar_render', array( $this, 'add_admin_bar' ), 999 );
 			endif;
 
 			add_action( 'admin_footer', array( $this, 'admin_inline_js' ) );
 
 			do_action( 'wpwing_wcpdf_setting_api_init', $this );
-
 		}
 
+		/**
+		 * Retrieve reserved field data, optionally filtered by key.
+		 *
+		 * @param string|false $key Field key, or false to return all.
+		 * @return mixed
+		 */
 		public function get_reserved( $key = false ) {
 
 			$data = (array) get_option( $this->reserved_key );
@@ -124,15 +211,19 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			} else {
 				return $data;
 			}
-
 		}
 
+		/**
+		 * Persist reserved field values separately so they survive a full settings save.
+		 *
+		 * @param array $value Incoming options array from the settings form.
+		 */
 		public function save_reserved( $value ) {
 
-			$reserved_data = [];
-			foreach ( (array) $this->reserved_fields as $fieldKey ) {
-				if ( ! empty( $value[ $fieldKey ] ) ) {
-					$reserved_data[ $fieldKey ] = $value[ $fieldKey ];
+			$reserved_data = array();
+			foreach ( (array) $this->reserved_fields as $field_key ) {
+				if ( ! empty( $value[ $field_key ] ) ) {
+					$reserved_data[ $field_key ] = $value[ $field_key ];
 				}
 			}
 
@@ -141,22 +232,35 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			} else {
 				delete_option( $this->reserved_key );
 			}
-
 		}
 
-		public function before_update( $value, $old_value, $option ) {
+		/**
+		 * Hook fired before the settings option is updated.
+		 *
+		 * @param mixed  $value     New option value.
+		 * @param mixed  $old_value Previous option value.
+		 * @param string $option    Option name.
+		 * @return mixed
+		 */
+		public function before_update( $value, $old_value, $option ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress hook callback must match hook signature.
 
 			$this->save_reserved( $value );
 			do_action( sprintf( 'before_update_%s_settings', esc_html( $this->settings_name ) ), $this );
 
 			return $value;
-
 		}
 
-		public function after_update( $old_value, $value, $option ) {
+		/**
+		 * Hook fired after the settings option is updated.
+		 *
+		 * @param mixed  $old_value Previous option value.
+		 * @param mixed  $value     New option value.
+		 * @param string $option    Option name.
+		 * @return mixed
+		 */
+		public function after_update( $old_value, $value, $option ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress hook callback must match hook signature.
 
 			return $value;
-
 		}
 
 		/**
@@ -179,7 +283,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 				})
 			</script>
 			<?php
-
 		}
 
 		/**
@@ -210,7 +313,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			$page_title = esc_html__( 'PDF Invoice for WooCommerce Settings', 'wpwing-wcpdf' );
 			$menu_title = esc_html__( 'Invoice Settings', 'wpwing-wcpdf' );
 			add_submenu_page( 'wpwing', $page_title, $menu_title, 'manage_woocommerce', $this->slug, array( $this, 'settings_form' ) );
-
 		}
 
 		/**
@@ -228,6 +330,9 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			}
 		}
 
+		/**
+		 * Add a Settings link to the WP admin bar.
+		 */
 		public function add_admin_bar() {
 
 			if ( empty( $this->fields ) ) {
@@ -244,32 +349,44 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 				'title' => $menu_title,
 				'href'  => $url,
 				'meta'  => array(
-					'class' => sprintf( '%s-admin-toolbar', esc_html( $this->slug ) )
-				)
+					'class' => sprintf( '%s-admin-toolbar', esc_html( $this->slug ) ),
+				),
 			);
 			$wp_admin_bar->add_menu( $args );
 
 			if ( ! is_admin() && class_exists( 'WooCommerce' ) && ( is_singular( 'product' ) || is_shop() ) ) {
-				$wp_admin_bar->add_menu( array(
-					'id'     => 'wpwing-wcpdf-clear-transient',
-					'title'  => esc_html__( 'Clear transient', 'wpwing-wcpdf' ),
-					'href'   => esc_url( remove_query_arg( array(
-						'variation_id',
-						'remove_item',
-						'add-to-cart',
-						'added-to-cart'
-					), add_query_arg( 'wpwing_wcpdf_clear_transient', '' ) ) ),
-					'parent' => $this->settings_name,
-					'meta'   => array(
-						'class' => sprintf( '%s-admin-toolbar-cache', esc_html( $this->slug ) )
+				$wp_admin_bar->add_menu(
+					array(
+						'id'     => 'wpwing-wcpdf-clear-transient',
+						'title'  => esc_html__( 'Clear transient', 'wpwing-wcpdf' ),
+						'href'   => esc_url(
+							remove_query_arg(
+								array(
+									'variation_id',
+									'remove_item',
+									'add-to-cart',
+									'added-to-cart',
+								),
+								add_query_arg( 'wpwing_wcpdf_clear_transient', '' )
+							)
+						),
+						'parent' => $this->settings_name,
+						'meta'   => array(
+							'class' => sprintf( '%s-admin-toolbar-cache', esc_html( $this->slug ) ),
+						),
 					)
-				) );
+				);
 			}
 
 			do_action( 'wpwing_wcpdf_admin_bar_menu', $wp_admin_bar, $this->settings_name );
-
 		}
 
+		/**
+		 * Add a Settings link to the plugin action links on the Plugins page.
+		 *
+		 * @param array $links Existing plugin action links.
+		 * @return array
+		 */
 		public function plugin_action_links( $links ) {
 
 			if ( empty( $this->fields ) ) {
@@ -280,9 +397,15 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			$plugin_links = array( sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Settings', 'wpwing-wcpdf' ) ) );
 
 			return array_merge( $plugin_links, $links );
-
 		}
 
+		/**
+		 * Add documentation link to plugin row meta on the Plugins page.
+		 *
+		 * @param array  $links       Existing row meta links.
+		 * @param string $plugin_file Plugin basename.
+		 * @return array
+		 */
 		public function plugin_row_meta( $links, $plugin_file ) {
 
 			if ( WPWING_WCPDF_BASE_NAME !== $plugin_file ) {
@@ -293,27 +416,48 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			$links[]  = sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( $docs_url ), esc_html__( 'Documentation', 'wpwing-wcpdf' ) );
 
 			return $links;
-
 		}
 
+		/**
+		 * Register a single field default.
+		 *
+		 * @param string $key   Field ID.
+		 * @param string $type  Field type.
+		 * @param mixed  $value Default value.
+		 */
 		private function set_default( $key, $type, $value ) {
 
-			$this->defaults[ $key ] = array( 'id' => $key, 'type' => $type, 'value' => $value );
-
+			$this->defaults[ $key ] = array(
+				'id'    => $key,
+				'type'  => $type,
+				'value' => $value,
+			);
 		}
 
+		/**
+		 * Get the default definition for a single field.
+		 *
+		 * @param string $key Field ID.
+		 * @return array|null
+		 */
 		private function get_default( $key ) {
 
 			return isset( $this->defaults[ $key ] ) ? $this->defaults[ $key ] : null;
-
 		}
 
+		/**
+		 * Return all registered field defaults.
+		 *
+		 * @return array
+		 */
 		public function get_defaults() {
 
 			return $this->defaults;
-
 		}
 
+		/**
+		 * Walk all registered fields and call set_default() for each non-pro field.
+		 */
 		public function set_defaults() {
 
 			foreach ( $this->fields as $tab_key => $tab ) {
@@ -339,7 +483,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 					}
 				}
 			}
-
 		}
 
 		/**
@@ -351,22 +494,28 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
 			do_action( sprintf( 'delete_%s_settings', esc_html( $this->settings_name ) ), $this );
 
-			// license_key should not updated
+			// License key should not be updated.
 
 			return delete_option( $this->settings_name );
-
 		}
 
+		/**
+		 * Retrieve a single option value, falling back to its registered default.
+		 *
+		 * @param string $option Option key.
+		 * @return mixed
+		 */
 		public function get_option( $option ) {
 
 			$default = $this->get_default( $option );
+			// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- kept for reference during development.
 			// $all_defaults = wp_list_pluck( $this->get_defaults(), 'value' );
 
 			$options = get_option( $this->settings_name );
 
 			$is_new = ( ! is_array( $options ) && is_bool( $options ) );
 
-			// Theme Support
+			// Theme Support.
 			if ( current_theme_supports( $this->theme_feature_name ) ) {
 				$theme_support    = get_theme_support( $this->theme_feature_name );
 				$default['value'] = isset( $theme_support[0][ $option ] ) ? $theme_support[0][ $option ] : $default['value'];
@@ -379,29 +528,41 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			}
 
 			if ( $is_new ) {
-				// return ( $default[ 'type' ] === 'checkbox' ) ? ( ! ! $default[ 'value' ] ) : $default[ 'value' ];
 				return $default_value;
 			} else {
-				// return ( $default[ 'type' ] === 'checkbox' ) ? ( isset( $options[ $option ] ) ? TRUE : FALSE ) : ( isset( $options[ $option ] ) ? $options[ $option ] : $default[ 'value' ] );
 				return isset( $options[ $option ] ) ? $options[ $option ] : $default_value;
 			}
-
 		}
 
+		/**
+		 * Return the full options array from the database.
+		 *
+		 * @return array|false
+		 */
 		public function get_options() {
 
 			return get_option( $this->settings_name );
-
 		}
 
+		/**
+		 * Persist a single option value within the settings array.
+		 *
+		 * @param string $key   Option key.
+		 * @param mixed  $value Option value.
+		 */
 		public function set_option( $key, $value ) {
 
 			$options         = get_option( $this->settings_name );
 			$options[ $key ] = $value;
 			update_option( $this->settings_name, $options );
-
 		}
 
+		/**
+		 * Sanitize and normalize the options array on save.
+		 *
+		 * @param array $options Raw options from the settings form.
+		 * @return array
+		 */
 		public function sanitize_callback( $options ) {
 
 			if ( ! is_array( $options ) ) {
@@ -447,19 +608,28 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			}
 
 			return $options;
-
 		}
 
+		/**
+		 * Return true when the current request is a settings reset action.
+		 *
+		 * @return bool
+		 */
 		public function is_reset_all() {
 
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified in settings_init() before any action is taken.
 			return isset( $_GET['page'] ) && ( sanitize_key( $_GET['page'] ) === $this->slug ) && isset( $_GET[ $this->setting_reset_name ] );
-
 		}
 
+		/**
+		 * Return true when the current request should show pro fields.
+		 *
+		 * @return bool
+		 */
 		public function is_show_pro() {
 
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only checking presence of GET param, no data processed.
 			return isset( $_GET['page'] ) && ( sanitize_key( $_GET['page'] ) === $this->slug ) && isset( $_GET[ $this->show_pro_name ] );
-
 		}
 
 		/**
@@ -477,7 +647,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 					wp_die( esc_html__( 'You do not have permission to reset settings.', 'wpwing-wcpdf' ) );
 				}
 				$this->delete_settings();
-				wp_redirect( $this->settings_url() );
+				wp_safe_redirect( $this->settings_url() );
 			}
 
 			register_setting( $this->settings_name, $this->settings_name, array( $this, 'sanitize_callback' ) );
@@ -492,14 +662,19 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
 					$section['id'] = ! isset( $section['id'] ) ? $tab['id'] . '-section-' . $section_key : $section['id'];
 
-					// Adding Settings section id
+					// Adding Settings section id.
 					$this->fields[ $tab_key ]['sections'][ $section_key ]['id'] = $section['id'];
 
-					add_settings_section( $tab['id'] . $section['id'], $section['title'], function () use ( $section ) {
-						if ( isset( $section['desc'] ) && ! empty( $section['desc'] ) ) {
-							echo '<div class="inside">' . esc_html( $section['desc'] ) . '</div>';
-						}
-					}, $tab['id'] . $section['id'] );
+					add_settings_section(
+						$tab['id'] . $section['id'],
+						$section['title'],
+						function () use ( $section ) {
+							if ( isset( $section['desc'] ) && ! empty( $section['desc'] ) ) {
+								echo '<div class="inside">' . esc_html( $section['desc'] ) . '</div>';
+							}
+						},
+						$tab['id'] . $section['id']
+					);
 
 					$section['fields'] = apply_filters( 'wpwing_wcpdf_settings_fields', $section['fields'], $section, $tab );
 
@@ -511,30 +686,45 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 							$field['title'] = '';
 						}
 
-						//$field[ 'label_for' ] = $this->settings_name . '[' . $field[ 'id' ] . ']';
+						// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- kept for reference during development.
+						// $field[ 'label_for' ] = $this->settings_name . '[' . $field[ 'id' ] . ']';
 						$field['label_for'] = $field['id'] . '-field';
 						$field['default']   = isset( $field['default'] ) ? $field['default'] : null;
 
+						// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- kept for reference during development.
 						// $this->set_default( $field[ 'id' ], $field[ 'default' ] );
 
-						if ( $field['type'] == 'checkbox' || $field['type'] == 'radio' || $field['type'] == 'checkboxgroup' ) {
+						if ( 'checkbox' === $field['type'] || 'radio' === $field['type'] || 'checkboxgroup' === $field['type'] ) {
 							unset( $field['label_for'] );
 						}
 
-						add_settings_field( $this->settings_name . '[' . $field['id'] . ']', $field['title'], array(
-							$this,
-							'field_callback'
-						), $tab['id'] . $section['id'], $tab['id'] . $section['id'], $field );
+						add_settings_field(
+							$this->settings_name . '[' . $field['id'] . ']',
+							$field['title'],
+							array(
+								$this,
+								'field_callback',
+							),
+							$tab['id'] . $section['id'],
+							$tab['id'] . $section['id'],
+							$field
+						);
 
 					}
 				}
 			}
-
 		}
 
+		/**
+		 * Build an HTML attribute string from an array, excluding specified keys.
+		 *
+		 * @param array $attributes Key-value pairs of HTML attributes.
+		 * @param array $except     Attribute names to exclude.
+		 * @return string
+		 */
 		public function make_implode_html_attributes( $attributes, $except = array( 'type', 'id', 'name', 'value' ) ) {
 
-			$attrs = [];
+			$attrs = array();
 			foreach ( $attributes as $name => $value ) {
 				if ( in_array( $name, $except, true ) ) {
 					continue;
@@ -543,14 +733,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			}
 
 			return implode( ' ', array_unique( $attrs ) );
-
 		}
 
 		/**
 		 * Render a settings field. Dispatches on $args['type'] and builds the
-		 * appropriate HTML inline — no separate per-type methods needed.
+		 * appropriate HTML inline - no separate per-type methods needed.
 		 *
 		 * @since 1.0.0 (unified in 2.1.0)
+		 * @param array $args Field definition array registered via add_settings_field().
 		 */
 		public function field_callback( $args ) {
 
@@ -568,13 +758,24 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 					$options = apply_filters( "wpwing_wcpdf_settings_{$id}_radio_options", $args['options'] );
 					$value   = esc_attr( $this->get_option( $id ) );
 					$html    = '<fieldset>';
-					$html   .= implode( '<br />', array_map( function( $key, $option ) use ( $attrs, $id, $name, $value ) {
-						return sprintf(
-							'<label><input %s type="radio" name="%s[%s]" value="%s" %s/> %s</label>',
-							esc_attr( $attrs ), esc_html( $name ), esc_attr( $id ),
-							esc_html( $key ), checked( $value, $key, false ), esc_html( $option )
-						);
-					}, array_keys( $options ), $options ) );
+					$html   .= implode(
+						'<br />',
+						array_map(
+							function ( $key, $option ) use ( $attrs, $id, $name, $value ) {
+								return sprintf(
+									'<label><input %s type="radio" name="%s[%s]" value="%s" %s/> %s</label>',
+									esc_attr( $attrs ),
+									esc_html( $name ),
+									esc_attr( $id ),
+									esc_html( $key ),
+									checked( $value, $key, false ),
+									esc_html( $option )
+								);
+							},
+							array_keys( $options ),
+							$options
+						)
+					);
 					$html   .= $desc . '</fieldset>';
 					break;
 
@@ -582,17 +783,28 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 					$value = wc_string_to_bool( $this->get_option( $id ) );
 					$html  = sprintf(
 						'<fieldset><label><input %s type="checkbox" id="%s-field" name="%s[%s]" value="1" %s /> %s</label></fieldset>',
-						esc_attr( $attrs ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ),
-						checked( $value, true, false ), esc_html( $args['desc'] )
+						esc_attr( $attrs ),
+						esc_attr( $id ),
+						esc_html( $name ),
+						esc_attr( $id ),
+						checked( $value, true, false ),
+						esc_html( $args['desc'] )
 					);
 					break;
 
 				case 'select':
 					$options  = apply_filters( "wpwing_wcpdf_settings_{$id}_select_options", $args['options'] );
 					$value    = esc_attr( $this->get_option( $id ) );
-					$opt_html = implode( '', array_map( function( $key, $label ) use ( $value ) {
-						return sprintf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $key, $value, false ), esc_html( $label ) );
-					}, array_keys( $options ), $options ) );
+					$opt_html = implode(
+						'',
+						array_map(
+							function ( $key, $label ) use ( $value ) {
+								return sprintf( '<option value="%s"%s>%s</option>', esc_attr( $key ), selected( $key, $value, false ), esc_html( $label ) );
+							},
+							array_keys( $options ),
+							$options
+						)
+					);
 					$html     = sprintf( '<select %s class="%s-text" id="%s-field" name="%s[%s]">%s</select>', esc_attr( $attrs ), esc_html( $size ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ), $opt_html );
 					$html    .= $desc;
 					break;
@@ -601,10 +813,17 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 					$options  = apply_filters( "wpwing_wcpdf_settings_{$id}_multiselect_options", $args['options'] );
 					$saved    = $this->get_option( $id );
 					$value    = is_array( $saved ) ? $saved : array();
-					$opt_html = implode( '', array_map( function( $key, $label ) use ( $value ) {
-						$sel = in_array( $key, $value, true ) ? ' selected="selected"' : '';
-						return '<option value="' . esc_attr( $key ) . '"' . $sel . '>' . esc_html( $label ) . '</option>';
-					}, array_keys( $options ), $options ) );
+					$opt_html = implode(
+						'',
+						array_map(
+							function ( $key, $label ) use ( $value ) {
+								$sel = in_array( $key, $value, true ) ? ' selected="selected"' : '';
+								return '<option value="' . esc_attr( $key ) . '"' . $sel . '>' . esc_html( $label ) . '</option>';
+							},
+							array_keys( $options ),
+							$options
+						)
+					);
 					$html     = sprintf( '<select %s multiple="multiple" size="6" class="%s-text" id="%s-field" name="%s[%s][]">%s</select>', esc_attr( $attrs ), esc_html( $size ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ), $opt_html );
 					$html    .= '<p class="description">' . esc_html__( 'Hold Ctrl (Windows) or Cmd (Mac) to select multiple options.', 'wpwing-wcpdf' ) . '</p>';
 					$html    .= $desc;
@@ -614,13 +833,24 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 					$options = apply_filters( "wpwing_wcpdf_settings_{$id}_checkboxgroup_options", $args['options'] );
 					$saved   = $this->get_option( $id );
 					$value   = is_array( $saved ) ? $saved : array();
-					$items   = implode( '', array_map( function( $key, $label ) use ( $id, $name, $value ) {
-						$checked = in_array( $key, $value, true ) ? ' checked="checked"' : '';
-						return sprintf(
-							'<label><input type="checkbox" name="%s[%s][]" value="%s"%s /> %s</label>',
-							esc_html( $name ), esc_attr( $id ), esc_attr( $key ), $checked, esc_html( $label )
-						);
-					}, array_keys( $options ), $options ) );
+					$items   = implode(
+						'',
+						array_map(
+							function ( $key, $label ) use ( $id, $name, $value ) {
+								$checked = in_array( $key, $value, true ) ? ' checked="checked"' : '';
+								return sprintf(
+									'<label><input type="checkbox" name="%s[%s][]" value="%s"%s /> %s</label>',
+									esc_html( $name ),
+									esc_attr( $id ),
+									esc_attr( $key ),
+									$checked,
+									esc_html( $label )
+								);
+							},
+							array_keys( $options ),
+							$options
+						)
+					);
 					$html    = '<fieldset class="wpwing-checkboxgroup">' . $items . '</fieldset>';
 					$html   .= $desc;
 					break;
@@ -644,7 +874,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 					$html .= $desc;
 					break;
 
-				default: // text
+				default: // Text.
 					$value = $this->get_option( $id );
 					$ph    = isset( $args['placeholder'] ) ? $args['placeholder'] : '';
 					$html  = sprintf( '<input %s type="text" class="%s-text" id="%s-field" name="%s[%s]" placeholder="%s" value="%s" />', esc_attr( $attrs ), esc_html( $size ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ), esc_html( $ph ), esc_attr( $value ) );
@@ -655,14 +885,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
 			echo wp_kses( $html, $this->allowed_html );
 			do_action( 'wpwing_wcpdf_settings_field_callback', $args );
-
 		}
 
 
 		/**
-		 * Show description after field
+		 * Show description after field.
 		 *
 		 * @since 1.0.0
+		 * @param array $args Field definition array.
 		 */
 		public function get_field_description( $args ) {
 
@@ -675,7 +905,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			}
 
 			return wp_kses( $desc, $this->allowed_html );
-
 		}
 
 		/**
@@ -686,7 +915,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 		public function settings_form() {
 
 			if ( ! current_user_can( 'manage_options' ) ) {
-				wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+				wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'wpwing-wcpdf' ) );
 			}
 			?>
 			<div id="<?php echo esc_attr( $this->slug ); ?>-wrap" class="wrap settings-wrap">
@@ -705,31 +934,33 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 							<?php $this->options_tabs(); ?>
 
 							<div id="settings-tabs">
-								<?php foreach ( $this->fields as $tab ):
+								<?php
+								foreach ( $this->fields as $tab ) :
 
 									if ( ! isset( $tab['active'] ) ) {
 										$tab['active'] = false;
 									}
-									$is_active = ( $this->get_last_active_tab() == $tab['id'] );
+									$is_active = ( $this->get_last_active_tab() === $tab['id'] );
 									?>
 
 									<div id="<?php echo esc_attr( $tab['id'] ); ?>"
 										class="settings-tab wpwing-wcpdf-setting-tab"
 										style="<?php echo ! $is_active ? 'display: none' : ''; ?>">
-										<?php foreach ( $tab['sections'] as $section ):
+										<?php
+										foreach ( $tab['sections'] as $section ) :
 											$this->do_settings_sections( $tab['id'] . $section['id'] );
-										endforeach; ?>
+										endforeach;
+										?>
 									</div>
 
 								<?php endforeach; ?>
 							</div>
 							<?php
 							$this->last_tab_input();
-							// submit_button();
 							?>
 							<p class="submit wpwing-wcpdf-button-wrapper">
-								<input type="submit" id="submit" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'wpwing-wcpdf' ) ?>">
-								<a onclick="return confirm('<?php esc_attr_e( 'Are you sure to reset current settings?', 'wpwing-wcpdf' ) ?>')" class="reset" href="<?php echo esc_url( $this->reset_url() ); ?>"><?php esc_html_e( 'Reset all', 'wpwing-wcpdf' ) ?></a>
+								<input type="submit" id="submit" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'wpwing-wcpdf' ); ?>">
+								<a onclick="return confirm('<?php esc_attr_e( 'Are you sure to reset current settings?', 'wpwing-wcpdf' ); ?>')" class="reset" href="<?php echo esc_url( $this->reset_url() ); ?>"><?php esc_html_e( 'Reset all', 'wpwing-wcpdf' ); ?></a>
 							</p>
 
 						</form>
@@ -749,7 +980,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 				</div><!-- .wpwing-settings-layout -->
 			</div>
 			<?php
-
 		}
 
 		/**
@@ -760,10 +990,15 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 		public function reset_url() {
 
 			return wp_nonce_url(
-				add_query_arg( array( 'page' => $this->slug, 'reset' => '' ), admin_url( 'admin.php' ) ),
+				add_query_arg(
+					array(
+						'page'  => $this->slug,
+						'reset' => '',
+					),
+					admin_url( 'admin.php' )
+				),
 				'wpwing_reset_settings'
 			);
-
 		}
 
 		/**
@@ -774,7 +1009,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 		public function settings_url() {
 
 			return add_query_arg( array( 'page' => $this->slug ), admin_url( 'admin.php' ) );
-
 		}
 
 		/**
@@ -785,7 +1019,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 		private function last_tab_input() {
 
 			printf( '<input type="hidden" id="_last_active_tab" name="%s[_last_active_tab]" value="%s">', esc_html( $this->settings_name ), esc_html( $this->get_last_active_tab() ) );
-
 		}
 
 		/**
@@ -797,24 +1030,29 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
 			?>
 			<h2 class="nav-tab-wrapper wp-clearfix">
-				<?php foreach ( $this->fields as $tabs ): ?>
+				<?php foreach ( $this->fields as $tabs ) : ?>
 					<a data-target="<?php echo esc_attr( $tabs['id'] ); ?>" class="wpwing-wcpdf-setting-nav-tab nav-tab <?php echo esc_attr( $this->get_options_tab_css_classes( $tabs ) ); ?>" href="#<?php echo esc_attr( $tabs['id'] ); ?>"><?php echo esc_html( $tabs['title'] ); ?></a>
 				<?php endforeach; ?>
 			</h2>
 			<?php
-
 		}
 
+		/**
+		 * Build the CSS class string for a settings nav tab.
+		 *
+		 * @param array $tabs Tab definition array.
+		 * @return string
+		 */
 		private function get_options_tab_css_classes( $tabs ) {
 
 			$classes = array();
 
-			$classes[] = ( $this->get_last_active_tab() == $tabs['id'] ) ? 'nav-tab-active' : '';
+			$classes[] = ( $this->get_last_active_tab() === $tabs['id'] ) ? 'nav-tab-active' : '';
 
+			// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- kept for reference during development.
 			// $classes[] = ( $this->get_options_tab_pro_attr( $tabs ) ) ? 'pro-tab' : '';
 
 			return implode( ' ', array_unique( apply_filters( 'get_options_tab_css_classes', $classes ) ) );
-
 		}
 
 		/**
@@ -835,13 +1073,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			}
 
 			return ! empty( $last_tab ) ? esc_html( $last_tab ) : esc_html( $default_tab );
-
 		}
 
 		/**
-		 * Tab section content
+		 * Tab section content.
 		 *
 		 * @since 1.0.0
+		 * @param string $page Settings page slug.
 		 */
 		private function do_settings_sections( $page ) {
 
@@ -868,10 +1106,15 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 				$this->do_settings_fields( $page, $section['id'] );
 				echo '</table>';
 			}
-
 		}
 
-private function build_dependency( $require_array ) {
+		/**
+		 * Build a data-attribute string for JS-driven field dependencies.
+		 *
+		 * @param array $require_array Map of field IDs to required values.
+		 * @return string
+		 */
+		private function build_dependency( $require_array ) {
 
 			$b_array = array();
 			foreach ( $require_array as $k => $v ) {
@@ -879,13 +1122,14 @@ private function build_dependency( $require_array ) {
 			}
 
 			return 'data-wpwing-wcpdf-depends="[' . esc_attr( wp_json_encode( $b_array ) ) . ']"';
-
 		}
 
 		/**
-		 * Tab section fields
+		 * Tab section fields.
 		 *
 		 * @since 1.0.0
+		 * @param string $page    Settings page slug.
+		 * @param string $section Section ID.
 		 */
 		private function do_settings_fields( $page, $section ) {
 
@@ -919,9 +1163,7 @@ private function build_dependency( $require_array ) {
 
 				echo '</tr>';
 			}
-
 		}
-
 	}
 
 }
