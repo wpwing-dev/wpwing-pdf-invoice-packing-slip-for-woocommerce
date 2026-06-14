@@ -125,7 +125,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 						<?php else : ?>
 							<a class="button tips wpwing_wcpdf_create_invoice"
 								data-tip="<?php esc_attr_e( 'Create Invoice', 'wpwing-wcpdf' ); ?>"
-								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-invoice', $invoice->order->get_id() ), 'wpwing_create_invoice_' . $invoice->order->get_id() ) ); ?>">
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-invoice', $order_id ), 'wpwing_create_invoice_' . $order_id ) ); ?>">
 								<?php esc_html_e( 'Create', 'wpwing-wcpdf' ); ?>
 							</a>
 						<?php endif; ?>
@@ -158,7 +158,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 						<?php else : ?>
 							<a class="button tips wpwing_wcpdf_create_invoice"
 								data-tip="<?php esc_attr_e( 'Create Packing Slip', 'wpwing-wcpdf' ); ?>"
-								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-packing', $packing->order->get_id() ), 'wpwing_create_packing_' . $packing->order->get_id() ) ); ?>">
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-packing', $order_id ), 'wpwing_create_packing_' . $order_id ) ); ?>">
 								<?php esc_html_e( 'Create', 'wpwing-wcpdf' ); ?>
 							</a>
 						<?php endif; ?>

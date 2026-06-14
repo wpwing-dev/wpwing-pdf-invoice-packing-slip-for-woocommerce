@@ -182,6 +182,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 			$this->order->delete_meta_data( '_wpwing_wcpdf_invoice_suffix' );
 			$this->order->delete_meta_data( '_wpwing_wcpdf_invoice_date' );
 			$this->order->delete_meta_data( '_wpwing_wcpdf_invoice_path' );
+			$this->order->delete_meta_data( '_wpwing_wcpdf_pending_invoice_number' );
 
 			$this->order->apply_changes();
 			$this->order->save_meta_data();
@@ -243,7 +244,19 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 
 			$invoice_number = apply_filters( 'wpwing_wcpdf_new_invoice_number', null, $this->order );
 
-			$this->number = $invoice_number ? $invoice_number : $this->get_new_invoice_number();
+			if ( $invoice_number ) {
+				$this->number = $invoice_number;
+			} else {
+				// Reuse a previously reserved number if PDF generation failed on a prior attempt.
+				$reserved = (int) $this->order->get_meta( '_wpwing_wcpdf_pending_invoice_number' );
+				if ( $reserved > 0 ) {
+					$this->number = $reserved;
+				} else {
+					$this->number = $this->get_new_invoice_number();
+					$this->order->update_meta_data( '_wpwing_wcpdf_pending_invoice_number', $this->number );
+					$this->order->save_meta_data();
+				}
+			}
 
 			$filename        = apply_filters( 'wpwing_wcpdf_invoice_filename', '/invoice_' . $this->number, $this );
 			$this->save_path = $year . $filename . '.pdf';
@@ -263,6 +276,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 			$this->order->update_meta_data( '_wpwing_wcpdf_invoice_suffix', $this->suffix );
 			$this->order->update_meta_data( '_wpwing_wcpdf_invoice_date', $this->date );
 			$this->order->update_meta_data( '_wpwing_wcpdf_invoice_path', $this->save_path );
+			$this->order->delete_meta_data( '_wpwing_wcpdf_pending_invoice_number' );
 
 			$this->order->apply_changes();
 			$this->order->save_meta_data();

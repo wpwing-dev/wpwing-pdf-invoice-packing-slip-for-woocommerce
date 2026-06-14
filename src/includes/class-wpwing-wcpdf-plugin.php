@@ -213,6 +213,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 					header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( basename( $full_path ) ) . '"' );
 					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
 					readfile( $full_path );
+					exit();
 				}
 			}
 		}

@@ -93,6 +93,11 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 * New: Added a payment due date to invoices - configure the offset in days from General Settings.
 * New: Added an HTML preview button in the order metabox - check the invoice or packing slip layout without generating a PDF.
+* Fix: Downloaded PDFs no longer include stray HTML content after the file data, which could corrupt the download on some browsers.
+* Fix: Creating an invoice or packing slip from a draft or incomplete order no longer causes a fatal error.
+* Fix: When generating multiple PDFs in bulk or via email attachments, templates no longer bleed into each other from leftover hooks of a previous generation.
+* Fix: If PDF generation fails partway through, the invoice number is now held in reserve and reused on the next attempt - no more gaps in your invoice sequence from a failed save.
+* Fix: Accessing invoice details on an order that could not be loaded no longer causes a fatal error.
 
 = 1.7.0 - 07/06/2026 =
 

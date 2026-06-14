@@ -66,6 +66,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 		 */
 		public function __construct( $order_id ) {
 
+			$this->settings = WPWing_WcPdf_Settings::get_instance();
+
 			// Get the WooCommerce order for this order id.
 			$this->order = wc_get_order( $order_id );
 
@@ -256,8 +258,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 		 */
 		public function flush_template() {
 
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_head' );
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_content' );
+			remove_all_filters( 'wpwing_wcpdf_template_head' );
+			remove_all_filters( 'wpwing_wcpdf_template_content' );
 
 			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_company_data' );
 			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_company_logo' );
