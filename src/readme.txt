@@ -6,7 +6,7 @@ Tags:               PDF, Invoice, Packing Slip, Packing List, WooCommerce
 Requires at least:  4.8
 Tested up to:       7.0
 Requires PHP:       7.1
-Stable tag:         1.8.0
+Stable tag:         1.8.1
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
