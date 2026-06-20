@@ -200,7 +200,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 			if ( null !== $document ) {
 				$full_path       = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $document->save_path;
 				$behavior_key    = $document_type . '_button_behavior';
-				$button_behavior = $this->settings->get_option( $behavior_key ) ?: $this->settings->get_option( 'invoice_button_behavior' );
+				$button_behavior = $this->settings->get_option( $behavior_key ) ? $this->settings->get_option( $behavior_key ) : $this->settings->get_option( 'invoice_button_behavior' );
 				$real            = realpath( $full_path );
 				$base            = realpath( WPWING_WCPDF_DOCUMENT_SAVE_DIR );
 

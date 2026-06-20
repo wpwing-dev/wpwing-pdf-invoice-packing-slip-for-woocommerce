@@ -39,7 +39,7 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 		$sku      = '';
 		if ( $show_sku && $product ) {
 			$raw_sku = $product->get_sku();
-			$sku     = $raw_sku ?: '-';
+			$sku     = $raw_sku ? $raw_sku : '-';
 		}
 
 		?>
@@ -67,7 +67,7 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 			$total_shipping += $item['cost'];
 		}
 
-		if ( ! isset( $item['cost'] ) || (float) $item['cost'] === 0.0 ) {
+		if ( ! isset( $item['cost'] ) || 0.0 === (float) $item['cost'] ) {
 			continue;
 		}
 		?>
