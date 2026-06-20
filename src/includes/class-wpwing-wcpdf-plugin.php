@@ -113,7 +113,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 			}
 
 			if ( $notice && is_admin() && isset( $_SERVER['HTTP_REFERER'] ) ) {
-				$location = add_query_arg( 'wpwing_notice', $notice, sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) );
+				$location = add_query_arg(
+					array(
+						'wpwing_notice' => $notice,
+						'wpwing_nonce'  => wp_create_nonce( 'wpwing_admin_notice' ),
+					),
+					sanitize_url( wp_unslash( $_SERVER['HTTP_REFERER'] ) )
+				);
 				wp_safe_redirect( $location );
 				exit();
 			}

@@ -91,26 +91,28 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 			}
 			$running = true;
 
-			$invoice_statuses = $this->settings->get_option( 'invoice_auto_statuses' );
-			if ( is_array( $invoice_statuses ) && in_array( $new_status, $invoice_statuses, true ) ) {
-				$skip = $this->settings->get_option( 'invoice_disable_free_orders' ) && (float) $order->get_total() === 0.0;
-				if ( ! $skip ) {
-					$invoice = $this->plugin->get_document_by_type( $order_id, 'invoice' );
-					if ( null !== $invoice && ! $invoice->exists ) {
-						$this->plugin->save_document( $invoice );
+			try {
+				$invoice_statuses = $this->settings->get_option( 'invoice_auto_statuses' );
+				if ( is_array( $invoice_statuses ) && in_array( $new_status, $invoice_statuses, true ) ) {
+					$skip = $this->settings->get_option( 'invoice_disable_free_orders' ) && (float) $order->get_total() === 0.0;
+					if ( ! $skip ) {
+						$invoice = $this->plugin->get_document_by_type( $order_id, 'invoice' );
+						if ( null !== $invoice && ! $invoice->exists ) {
+							$this->plugin->save_document( $invoice );
+						}
 					}
 				}
-			}
 
-			$packing_statuses = $this->settings->get_option( 'packing_auto_statuses' );
-			if ( is_array( $packing_statuses ) && in_array( $new_status, $packing_statuses, true ) ) {
-				$packing = $this->plugin->get_document_by_type( $order_id, 'packing' );
-				if ( null !== $packing && ! $packing->exists ) {
-					$this->plugin->save_document( $packing );
+				$packing_statuses = $this->settings->get_option( 'packing_auto_statuses' );
+				if ( is_array( $packing_statuses ) && in_array( $new_status, $packing_statuses, true ) ) {
+					$packing = $this->plugin->get_document_by_type( $order_id, 'packing' );
+					if ( null !== $packing && ! $packing->exists ) {
+						$this->plugin->save_document( $packing );
+					}
 				}
+			} finally {
+				$running = false;
 			}
-
-			$running = false;
 		}
 
 		/**
@@ -150,9 +152,11 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 				$this->plugin->save_document( $invoice );
 			}
 
-			$path = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $invoice->save_path;
-			if ( file_exists( $path ) ) {
-				$attachments[] = $path;
+			if ( $invoice->exists && ! empty( $invoice->save_path ) ) {
+				$path = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $invoice->save_path;
+				if ( file_exists( $path ) ) {
+					$attachments[] = $path;
+				}
 			}
 
 			$running = false;

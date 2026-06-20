@@ -105,9 +105,9 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 				$this->save_path = $this->order->get_meta( '_wpwing_wcpdf_invoice_path' );
 			} else {
 				$prefix       = $this->settings->get_option( 'invoice_prefix' );
-				$this->prefix = $prefix ? $prefix : 'prefix';
+				$this->prefix = $prefix ? $prefix : '';
 				$suffix       = $this->settings->get_option( 'invoice_suffix' );
-				$this->suffix = $suffix ? $suffix : 'suffix';
+				$this->suffix = $suffix ? $suffix : '';
 			}
 		}
 
@@ -202,6 +202,17 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- advisory lock, no cacheable result.
 			$wpdb->query( $wpdb->prepare( 'SELECT GET_LOCK(%s, 5)', 'wpwing_wcpdf_invoice_number' ) );
 
+			if ( $this->settings->get_option( 'invoice_number_reset_yearly' ) ) {
+				$current_year = (int) wp_date( 'Y' );
+				$stored_year  = (int) $this->settings->get_option( '_invoice_last_year' );
+				if ( $stored_year > 0 && $stored_year !== $current_year ) {
+					$this->settings->set_option( 'invoice_number', 1 );
+				}
+				if ( $stored_year !== $current_year ) {
+					$this->settings->set_option( '_invoice_last_year', $current_year );
+				}
+			}
+
 			$current = (int) $this->settings->get_option( 'invoice_number' );
 			if ( $current < 1 ) {
 				$current = 1;
@@ -230,17 +241,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 			$this->date = time();
 			$date       = getdate( $this->date );
 			$year       = $date['year'];
-
-			if ( $this->settings->get_option( 'invoice_number_reset_yearly' ) ) {
-				$current_year = (int) wp_date( 'Y' );
-				$stored_year  = (int) $this->settings->get_option( '_invoice_last_year' );
-				if ( $stored_year > 0 && $stored_year !== $current_year ) {
-					$this->settings->set_option( 'invoice_number', 1 );
-				}
-				if ( $stored_year !== $current_year ) {
-					$this->settings->set_option( '_invoice_last_year', $current_year );
-				}
-			}
 
 			$invoice_number = apply_filters( 'wpwing_wcpdf_new_invoice_number', null, $this->order );
 

@@ -183,8 +183,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 				);
 			}
 
-			// phpcs:disable WordPress.Security.NonceVerification.Recommended
-			if ( isset( $_GET['wpwing_notice'] ) ) {
+			if ( isset( $_GET['wpwing_notice'] )
+				&& isset( $_GET['wpwing_nonce'] )
+				&& wp_verify_nonce( sanitize_key( $_GET['wpwing_nonce'] ), 'wpwing_admin_notice' )
+			) {
 				$notice = sanitize_key( $_GET['wpwing_notice'] );
 
 				$messages = array(

@@ -89,6 +89,14 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 == Changelog ==
 
+= 1.8.1 - 20/06/2026 =
+
+* Fix: Yearly invoice counter reset could race under concurrent Jan 1 requests, causing two invoices to receive the same number. The reset now runs inside the advisory lock alongside the counter increment.
+* Fix: When no prefix or suffix was configured, the literal text "prefix" or "suffix" appeared verbatim on invoices. These now fall back to an empty string.
+* Fix: When PDF generation failed, the upload directory itself could be added as an email attachment. The attachment is now skipped unless the document was saved successfully and has a valid file path.
+* Fix: Admin success and warning notices could be triggered by a crafted URL with no authentication check. Notices are now verified with a nonce before being displayed.
+* Fix: An unexpected error during auto-generation left an internal reentrancy guard permanently set, silently suppressing all further auto-generation for the rest of that request. The guard is now always reset even if an error occurs.
+
 = 1.8.0 - 14/06/2026 =
 
 * New: Added a payment due date to invoices - configure the offset in days from General Settings.
