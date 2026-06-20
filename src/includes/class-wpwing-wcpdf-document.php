@@ -116,7 +116,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 					sprintf( 'WPWing PDF Invoice: PDF generation failed - %s', $e->getMessage() ),
 					array( 'source' => 'wpwing-pdf-invoice' )
 				);
-				set_transient( 'wpwing_wcpdf_pdf_error_' . get_current_user_id(), $e->getMessage(), 60 );
+				set_transient( 'wpwing_wcpdf_pdf_error_' . get_current_user_id(), sanitize_text_field( $e->getMessage() ), 60 );
 				return;
 			}
 

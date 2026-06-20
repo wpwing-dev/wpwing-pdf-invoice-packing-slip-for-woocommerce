@@ -206,7 +206,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 				}
 			}
 
-			if ( isset( $_GET['wpwing_bulk_created'] ) ) {
+			if ( isset( $_GET['wpwing_bulk_created'] )
+				&& isset( $_GET['wpwing_bulk_nonce'] )
+				&& wp_verify_nonce( sanitize_key( $_GET['wpwing_bulk_nonce'] ), 'wpwing_bulk_notice' )
+			) {
 				$count   = intval( $_GET['wpwing_bulk_created'] );
 				$skipped = isset( $_GET['wpwing_bulk_skipped'] ) ? intval( $_GET['wpwing_bulk_skipped'] ) : 0;
 				$type    = isset( $_GET['wpwing_bulk_type'] ) ? sanitize_key( $_GET['wpwing_bulk_type'] ) : 'invoice';
@@ -225,7 +228,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 					esc_html( $message )
 				);
 			}
-			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		}
 
 		/**

@@ -864,7 +864,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 
 				case 'upload':
 					$value = esc_attr( $this->get_option( $id ) );
-					$html  = sprintf( '<input %s type="text" class="%s-text" id="%s-field" name="%s[%s]" placeholder="%s" value="%s" readonly />', esc_attr( $attrs ), esc_html( $size ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ), esc_html( $args['placeholder'] ), esc_html( $value ) );
+					$html  = sprintf( '<input %s type="text" class="%s-text" id="%s-field" name="%s[%s]" placeholder="%s" value="%s" />', esc_attr( $attrs ), esc_html( $size ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ), esc_html( $args['placeholder'] ), esc_html( $value ) );
 					$html .= '&nbsp;&nbsp;<a href="#" class="wcpdf_upload_image">Upload Logo</a>';
 					$html .= $desc;
 					break;

@@ -29,14 +29,18 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 
 	$order_items = $wpwing_wcpdf_document->order->get_items();
 	foreach ( $order_items as $item_id => $item ) {
-		if ( isset( $item['qty'] ) ) {
+		$price_per_unit = 0;
+		if ( ! empty( $item['qty'] ) ) {
 			$price_per_unit      = $item['line_subtotal'] / $item['qty'];
 			$price_per_unit_sale = $item['line_total'] / $item['qty'];
-			$discount            = $price_per_unit - $price_per_unit_sale;
 		}
 		$item_tax = $item['line_tax'];
 		$product  = $item->get_product();
-		$sku      = ( $show_sku && $product ) ? $product->get_sku() : '';
+		$sku      = '';
+		if ( $show_sku && $product ) {
+			$raw_sku = $product->get_sku();
+			$sku     = $raw_sku ?: '-';
+		}
 
 		?>
 
@@ -63,6 +67,9 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 			$total_shipping += $item['cost'];
 		}
 
+		if ( ! isset( $item['cost'] ) || (float) $item['cost'] === 0.0 ) {
+			continue;
+		}
 		?>
 
 		<tr>
@@ -85,7 +92,7 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 
 				foreach ( $taxes_list as $tax_id => $amount ) {
 					if ( 'total' !== $tax_id ) {
-						$taxes += (int) $amount;
+						$taxes += (float) $amount;
 					}
 				}
 				$total_shipping_tax += $taxes;
@@ -141,7 +148,7 @@ $show_customer_note = (bool) $wpwing_wcpdf_document->settings->get_option( 'show
 			<table class="invoice-totals">
 				<tr class="invoice-details-subtotal">
 					<td class="column-product"><?php esc_html_e( 'Subtotal', 'wpwing-wcpdf' ); ?></td>
-					<td class="column-total"><?php echo wp_kses_post( wc_price( $wpwing_wcpdf_document->order->get_subtotal() + $total_fee + $total_shipping ) ); ?></td>
+					<td class="column-total"><?php echo wp_kses_post( wc_price( $wpwing_wcpdf_document->order->get_subtotal() ) ); ?></td>
 				</tr>
 
 				<tr>

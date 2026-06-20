@@ -154,8 +154,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 
 			if ( $invoice->exists && ! empty( $invoice->save_path ) ) {
 				$path = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $invoice->save_path;
-				if ( file_exists( $path ) ) {
-					$attachments[] = $path;
+				$real = realpath( $path );
+				$base = realpath( WPWING_WCPDF_DOCUMENT_SAVE_DIR );
+				if ( $real && $base && strpos( $real, $base . DIRECTORY_SEPARATOR ) === 0 ) {
+					$attachments[] = $real;
 				}
 			}
 

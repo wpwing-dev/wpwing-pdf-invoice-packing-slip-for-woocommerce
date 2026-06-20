@@ -89,16 +89,19 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 				$document = $this->plugin->get_document_by_type( intval( $order_id ), $document_type );
 				if ( null !== $document && ! $document->exists ) {
 					$this->plugin->save_document( $document );
-					++$count;
+					if ( $document->exists ) {
+						++$count;
+					}
 				}
 			}
 
-			$redirect_to = remove_query_arg( array( 'wpwing_bulk_type', 'wpwing_bulk_created', 'wpwing_bulk_skipped' ), $redirect_to );
+			$redirect_to = remove_query_arg( array( 'wpwing_bulk_type', 'wpwing_bulk_created', 'wpwing_bulk_skipped', 'wpwing_bulk_nonce' ), $redirect_to );
 			$redirect_to = add_query_arg(
 				array(
 					'wpwing_bulk_type'    => $document_type,
 					'wpwing_bulk_created' => $count,
 					'wpwing_bulk_skipped' => $skipped,
+					'wpwing_bulk_nonce'   => wp_create_nonce( 'wpwing_bulk_notice' ),
 				),
 				$redirect_to
 			);

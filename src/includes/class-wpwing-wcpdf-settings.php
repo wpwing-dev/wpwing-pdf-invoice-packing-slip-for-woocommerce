@@ -183,7 +183,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'id'          => 'invoice_due_date_days',
 										'type'        => 'number',
 										'title'       => esc_html__( 'Payment due within (days):', 'wpwing-wcpdf' ),
-										'desc'        => 'Days from order date until payment is due. Leave empty or 0 to hide the due date.',
+										'desc'        => 'Days from order creation date until payment is due. Leave empty or 0 to hide the due date on the invoice.',
 										'placeholder' => '0',
 										'default'     => 0,
 									),

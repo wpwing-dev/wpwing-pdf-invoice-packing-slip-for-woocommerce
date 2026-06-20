@@ -199,9 +199,12 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 
 			if ( null !== $document ) {
 				$full_path       = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $document->save_path;
-				$button_behavior = $this->settings->get_option( 'invoice_button_behavior' );
+				$behavior_key    = $document_type . '_button_behavior';
+				$button_behavior = $this->settings->get_option( $behavior_key ) ?: $this->settings->get_option( 'invoice_button_behavior' );
+				$real            = realpath( $full_path );
+				$base            = realpath( WPWING_WCPDF_DOCUMENT_SAVE_DIR );
 
-				if ( ! file_exists( $full_path ) ) {
+				if ( ! $real || ! $base || strpos( $real, $base . DIRECTORY_SEPARATOR ) !== 0 ) {
 					wp_die( esc_html__( 'Invoice file not found. Please regenerate the invoice.', 'wpwing-wcpdf' ) );
 				}
 
@@ -243,16 +246,18 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 			global $wpwing_wcpdf_document;
 			$wpwing_wcpdf_document = $document;
 
-			$document->init_template();
-			$document->init_template_generation_actions();
-
 			$theme_dir = $document->get_theme_dir();
 
-			ob_start();
-			wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
-			$html = ob_get_clean();
-
-			$document->flush_template();
+			try {
+				$document->init_template();
+				$document->init_template_generation_actions();
+				ob_start();
+				wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
+				$html = ob_get_clean();
+			} finally {
+				$document->flush_template();
+				$wpwing_wcpdf_document = null;
+			}
 
 			header( 'Content-Type: text/html; charset=utf-8' );
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
