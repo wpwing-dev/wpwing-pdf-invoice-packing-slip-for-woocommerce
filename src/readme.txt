@@ -89,13 +89,16 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 == Changelog ==
 
-= 1.8.1 - 20/06/2026 =
+= 1.8.1 - 21/06/2026 =
 
 * Fix: Yearly invoice counter reset could race under concurrent Jan 1 requests, causing two invoices to receive the same number. The reset now runs inside the advisory lock alongside the counter increment.
 * Fix: When no prefix or suffix was configured, the literal text "prefix" or "suffix" appeared verbatim on invoices. These now fall back to an empty string.
 * Fix: When PDF generation failed, the upload directory itself could be added as an email attachment. The attachment is now skipped unless the document was saved successfully and has a valid file path.
 * Fix: Admin success and warning notices could be triggered by a crafted URL with no authentication check. Notices are now verified with a nonce before being displayed.
 * Fix: An unexpected error during auto-generation left an internal reentrancy guard permanently set, silently suppressing all further auto-generation for the rest of that request. The guard is now always reset even if an error occurs.
+* Fix: Viewing or emailing a PDF was vulnerable to directory traversal via a tampered file path stored in order meta; bulk-action result notices now require a nonce before rendering; PDF generation error messages are sanitised before being stored in admin notices.
+* Fix: Invoice table no longer crashes on orders with zero-quantity line items; shipping and fee rows now include the SKU column cell when SKU display is enabled; shipping tax is summed as a float rather than an integer; the Subtotal row shows product lines only and no longer double-counts fees and shipping; zero-cost shipping lines are suppressed; empty product SKUs fall back to "-".
+* Fix: The HTML preview endpoint always resets its document global after rendering, even if an error occurs mid-template; bulk generation count now reflects only orders where the PDF was actually saved; PDF open/download behaviour is now resolved per document type; payment due date field description clarifies it is calculated from order creation date; logo URL field is no longer read-only.
 
 = 1.8.0 - 14/06/2026 =
 
