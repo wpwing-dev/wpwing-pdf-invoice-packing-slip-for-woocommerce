@@ -144,76 +144,77 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 
 			$theme_dir = $this->get_theme_dir();
 
-			do_action( 'wpwing_wcpdf_before_template_generation' );
+			try {
+				do_action( 'wpwing_wcpdf_before_template_generation' );
 
-			ob_start();
-			wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
-			$html = ob_get_clean();
+				ob_start();
+				wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
+				$html = ob_get_clean();
 
-			require_once WPWING_WCPDF_VENDOR_DIR . 'autoload.php';
+				require_once WPWING_WCPDF_VENDOR_DIR . 'autoload.php';
 
-			// Use a writable font cache so Dompdf generates complete .ufm metrics
-			// from the full TTF glyph table, covering all currency symbols (Taka,
-			// Bitcoin, etc.) that the bundled vendor .ufm files omit.
-			$font_cache = trailingslashit( wp_upload_dir()['basedir'] ) . 'wpwing-pdf-fonts/';
-			wp_mkdir_p( $font_cache );
+				// Use a writable font cache so Dompdf generates complete .ufm metrics
+				// from the full TTF glyph table, covering all currency symbols (Taka,
+				// Bitcoin, etc.) that the bundled vendor .ufm files omit.
+				$font_cache = trailingslashit( wp_upload_dir()['basedir'] ) . 'wpwing-pdf-fonts/';
+				wp_mkdir_p( $font_cache );
 
-			$options = new Options();
-			$options->setIsRemoteEnabled( true );
-			$options->setFontDir( $font_cache );
-			$options->setFontCache( $font_cache );
+				$options = new Options();
+				$options->setIsRemoteEnabled( true );
+				$options->setFontDir( $font_cache );
+				$options->setFontCache( $font_cache );
 
-			$paper_size = WPWing_WcPdf_Settings::get_instance()->get_option( 'paper_size' );
-			$dompdf     = new Dompdf( $options );
+				$paper_size = WPWing_WcPdf_Settings::get_instance()->get_option( 'paper_size' );
+				$dompdf     = new Dompdf( $options );
 
-			// One-time font registration — skipped on every subsequent PDF.
-			if ( ! file_exists( $font_cache . 'fonts_ready' ) ) {
-				$src     = WPWING_WCPDF_VENDOR_DIR . 'dompdf/dompdf/lib/fonts/';
-				$metrics = $dompdf->getFontMetrics();
-				$metrics->registerFont(
-					array(
-						'family' => 'DejaVu Sans',
-						'weight' => 'normal',
-						'style'  => 'normal',
-					),
-					'file://' . $src . 'DejaVuSans.ttf'
-				);
-				$metrics->registerFont(
-					array(
-						'family' => 'DejaVu Sans',
-						'weight' => 'bold',
-						'style'  => 'normal',
-					),
-					'file://' . $src . 'DejaVuSans-Bold.ttf'
-				);
-				$metrics->registerFont(
-					array(
-						'family' => 'DejaVu Sans',
-						'weight' => 'normal',
-						'style'  => 'italic',
-					),
-					'file://' . $src . 'DejaVuSans-Oblique.ttf'
-				);
-				$metrics->registerFont(
-					array(
-						'family' => 'DejaVu Sans',
-						'weight' => 'bold',
-						'style'  => 'italic',
-					),
-					'file://' . $src . 'DejaVuSans-BoldOblique.ttf'
-				);
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- WP_Filesystem not available in this context.
-				file_put_contents( $font_cache . 'fonts_ready', '1' );
+				// One-time font registration — skipped on every subsequent PDF.
+				if ( ! file_exists( $font_cache . 'fonts_ready' ) ) {
+					$src     = WPWING_WCPDF_VENDOR_DIR . 'dompdf/dompdf/lib/fonts/';
+					$metrics = $dompdf->getFontMetrics();
+					$metrics->registerFont(
+						array(
+							'family' => 'DejaVu Sans',
+							'weight' => 'normal',
+							'style'  => 'normal',
+						),
+						'file://' . $src . 'DejaVuSans.ttf'
+					);
+					$metrics->registerFont(
+						array(
+							'family' => 'DejaVu Sans',
+							'weight' => 'bold',
+							'style'  => 'normal',
+						),
+						'file://' . $src . 'DejaVuSans-Bold.ttf'
+					);
+					$metrics->registerFont(
+						array(
+							'family' => 'DejaVu Sans',
+							'weight' => 'normal',
+							'style'  => 'italic',
+						),
+						'file://' . $src . 'DejaVuSans-Oblique.ttf'
+					);
+					$metrics->registerFont(
+						array(
+							'family' => 'DejaVu Sans',
+							'weight' => 'bold',
+							'style'  => 'italic',
+						),
+						'file://' . $src . 'DejaVuSans-BoldOblique.ttf'
+					);
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- WP_Filesystem not available in this context.
+					file_put_contents( $font_cache . 'fonts_ready', '1' );
+				}
+
+				$dompdf->setPaper( $paper_size ? strtolower( $paper_size ) : 'a4' );
+				$dompdf->loadHtml( $html );
+				$dompdf->render();
+
+				return $dompdf->output();
+			} finally {
+				$this->flush_template();
 			}
-
-			$dompdf->setPaper( $paper_size ? strtolower( $paper_size ) : 'a4' );
-			$dompdf->loadHtml( $html );
-			$dompdf->render();
-
-			$pdf = $dompdf->output();
-			$this->flush_template();
-
-			return $pdf;
 		}
 
 		/**
@@ -258,6 +259,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 		 */
 		public function flush_template() {
 
+			remove_all_filters( 'wpwing_wcpdf_before_template_generation' );
 			remove_all_filters( 'wpwing_wcpdf_template_head' );
 			remove_all_filters( 'wpwing_wcpdf_template_content' );
 

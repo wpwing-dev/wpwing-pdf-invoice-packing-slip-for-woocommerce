@@ -294,6 +294,30 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'desc'  => esc_html__( 'Preview the invoice template using your most recent order.', 'wpwing-wcpdf' ),
 									),
 									array(
+										'id'      => 'invoice_qr_checkbox',
+										'type'    => 'checkbox',
+										'title'   => esc_html__( 'Show QR code on invoice:', 'wpwing-wcpdf' ),
+										'desc'    => 'Yes',
+										'default' => false,
+									),
+									array(
+										'id'      => 'invoice_qr_content',
+										'type'    => 'radio',
+										'title'   => esc_html__( 'QR code content:', 'wpwing-wcpdf' ),
+										'options' => array(
+											'order_url' => esc_html__( 'Order view URL', 'wpwing-wcpdf' ),
+											'custom'    => esc_html__( 'Custom text', 'wpwing-wcpdf' ),
+										),
+										'default' => 'order_url',
+									),
+									array(
+										'id'          => 'invoice_qr_custom_text',
+										'type'        => 'text',
+										'title'       => esc_html__( 'QR custom text:', 'wpwing-wcpdf' ),
+										'desc'        => esc_html__( 'Used when content is set to Custom text. Placeholders: {order_number}, {invoice_number}.', 'wpwing-wcpdf' ),
+										'placeholder' => 'Order {order_number}',
+									),
+									array(
 										'id'      => 'company_name_checkbox',
 										'type'    => 'checkbox',
 										'title'   => esc_html__( 'Show company name on invoice:', 'wpwing-wcpdf' ),

@@ -349,6 +349,86 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 				</tr>
 			</table>
 			<?php
+			$this->render_invoice_qr_code();
+		}
+
+		/**
+		 * Render the QR code beneath the order details table when enabled.
+		 */
+		public function render_invoice_qr_code() {
+
+			if ( ! $this->settings->get_option( 'invoice_qr_checkbox' ) ) {
+				return;
+			}
+
+			$data = $this->get_qr_content();
+			if ( '' === $data ) {
+				return;
+			}
+
+			$uri = $this->generate_qr_data_uri( $data );
+			if ( '' === $uri ) {
+				return;
+			}
+
+			echo '<div class="invoice-qr" style="margin-top:10px;"><img src="' . esc_attr( $uri ) . '" width="110" height="110" alt="QR code" /></div>';
+		}
+
+		/**
+		 * Resolve the string encoded in the invoice QR code.
+		 *
+		 * @return string
+		 */
+		private function get_qr_content() {
+
+			global $wpwing_wcpdf_document;
+
+			if ( 'custom' === $this->settings->get_option( 'invoice_qr_content' ) ) {
+				$text = (string) $this->settings->get_option( 'invoice_qr_custom_text' );
+				$text = str_replace(
+					array( '{order_number}', '{invoice_number}' ),
+					array( $wpwing_wcpdf_document->order->get_order_number(), $wpwing_wcpdf_document->get_formatted_invoice_number() ),
+					$text
+				);
+				return trim( $text );
+			}
+
+			return (string) $wpwing_wcpdf_document->order->get_view_order_url();
+		}
+
+		/**
+		 * Build a QR code as a data URI. Uses a GD PNG when available, SVG otherwise.
+		 *
+		 * @param string $data Content to encode.
+		 * @return string Data URI, or empty string on failure.
+		 */
+		private function generate_qr_data_uri( $data ) {
+
+			if ( ! class_exists( '\chillerlan\QRCode\QRCode' ) && defined( 'WPWING_WCPDF_VENDOR_DIR' ) ) {
+				require_once WPWING_WCPDF_VENDOR_DIR . 'autoload.php';
+			}
+
+			if ( ! class_exists( '\chillerlan\QRCode\QRCode' ) ) {
+				return '';
+			}
+
+			$output_type = extension_loaded( 'gd' )
+				? \chillerlan\QRCode\QRCode::OUTPUT_IMAGE_PNG
+				: \chillerlan\QRCode\QRCode::OUTPUT_MARKUP_SVG;
+
+			try {
+				$options = new \chillerlan\QRCode\QROptions(
+					array(
+						'outputType'  => $output_type,
+						'eccLevel'    => \chillerlan\QRCode\QRCode::ECC_M,
+						'scale'       => 4,
+						'imageBase64' => true,
+					)
+				);
+				return ( new \chillerlan\QRCode\QRCode( $options ) )->render( $data );
+			} catch ( \Exception $e ) {
+				return '';
+			}
 		}
 	}
 

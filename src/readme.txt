@@ -5,8 +5,8 @@ Donate link:        https://wpwing.com/
 Tags:               PDF, Invoice, Packing Slip, Packing List, WooCommerce
 Requires at least:  4.8
 Tested up to:       7.0
-Requires PHP:       7.1
-Stable tag:         1.8.1
+Requires PHP:       7.4
+Stable tag:         1.9.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -29,6 +29,7 @@ Built strictly with performance, security, and modern WordPress standards in min
 * 📑 **Automated Email PDF Attachment:** Automatically generate and attach PDF invoices to specific WooCommerce order status emails, including Processing Order, Completed Order, or Customer Invoice / Order Details.
 * 📦 **Efficient Order Management & Bulk Actions:** Save time during busy shipping hours. Quickly download or print multiple invoices and packing slips simultaneously directly from your WooCommerce orders list page.
 * 🎨 **Multiple Beautiful Templates:** Switch between beautifully formatted layouts including our crisp "Default" and modern minimalist designs that print perfectly on standard A4 or Letter sizes.
+* 📱 **QR Code on Invoice:** Add a scannable QR code to your invoices - link straight to the customer's order page, or encode your own custom text with order and invoice number placeholders.
 * ⚙️ **Fully Customizable Store Branding:** Create a professional look that matches your business identity. Easily upload your store logo, input company address details, insert tax registration information (VAT/GST/Tax ID), and add custom terms or footer notes.
 * 🔢 **Sequential Invoice Numbering:** Keep your business accounting perfectly compliant. Set up custom invoice numbers with personalized prefixes, suffixes, dynamic padding length, and an option for an automatic yearly number reset.
 * 👤 **Secure Customer My-Account Downloads:** Logged-in customers can easily navigate to their account page to view, print, or download past PDF invoices for their personal bookkeeping.
@@ -88,6 +89,14 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 
 == Changelog ==
+
+= 1.9.0 - 28/06/2026 =
+
+* New: Added an optional QR code on invoices - configure it from Template Settings. Encode the customer's order view URL, or your own custom text with {order_number} and {invoice_number} placeholders.
+* Fix: Bulk generating invoices or packing slips no longer duplicates the document content. A template hook left registered between documents caused the second PDF in a batch to render its content twice, the third three times, and so on.
+* Fix: The template hook cleanup now always runs even when PDF generation fails partway, so a failed document can no longer corrupt the next one generated in the same request.
+* Fix: Declared the packing slip date property to avoid a dynamic property deprecation notice on PHP 8.2+.
+* Note: Minimum required PHP version is now 7.4.
 
 = 1.8.1 - 21/06/2026 =
 

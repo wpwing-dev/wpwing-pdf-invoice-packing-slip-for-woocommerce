@@ -33,6 +33,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Packing' ) ) {
 		public $number;
 
 		/**
+		 * Packing slip creation timestamp.
+		 *
+		 * @var int
+		 */
+		public $date;
+
+		/**
 		 * Save path
 		 *
 		 * @var string
