@@ -36,4 +36,12 @@ else
     wp --path="$WP_PATH" plugin activate wpwing-pdf-invoice-packing-slip-for-woocommerce --allow-root
 fi
 
+# This script runs as root, so uploads ends up root-owned and the web server
+# cannot write PDFs or font caches. Use numeric 33 (www-data in the Debian
+# wordpress image - this Alpine CLI image maps www-data to 82). Only uploads is
+# chowned - wp-content/plugins holds a bind mount of the host working tree.
+echo "Fixing uploads ownership..."
+mkdir -p "$WP_PATH/wp-content/uploads"
+chown -R 33:33 "$WP_PATH/wp-content/uploads"
+
 echo "Done. Visit https://pdf-invoice.local/wp-admin (admin / password)"

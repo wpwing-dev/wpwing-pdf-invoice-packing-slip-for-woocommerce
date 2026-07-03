@@ -456,6 +456,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'desc'    => 'Yes - show each tax class as a separate line',
 										'default' => true,
 									),
+									array(
+										'id'          => 'template_custom_css',
+										'type'        => 'textarea',
+										'title'       => esc_html__( 'Custom CSS:', 'wpwing-wcpdf' ),
+										'desc'        => esc_html__( 'Applied to both invoice and packing slip, after the template styles. Example: .company-name { font-size: 18px; }', 'wpwing-wcpdf' ),
+										'placeholder' => '.company-name { font-size: 18px; }',
+									),
 								)
 							),
 						),

@@ -40,13 +40,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Packing' ) ) {
 		public $date;
 
 		/**
-		 * Save path
-		 *
-		 * @var string
-		 */
-		public $save_path;
-
-		/**
 		 * Settings API instance
 		 *
 		 * @var Object

@@ -54,13 +54,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 		private $suffix;
 
 		/**
-		 * Relative path to the saved PDF file.
-		 *
-		 * @var string
-		 */
-		public $save_path;
-
-		/**
 		 * Settings API instance
 		 *
 		 * @var Object

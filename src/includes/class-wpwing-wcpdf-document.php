@@ -36,6 +36,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 		public $exists = false;
 
 		/**
+		 * Relative path to the saved PDF file.
+		 *
+		 * @var string
+		 */
+		public $save_path;
+
+		/**
 		 * Current WooCommerce order.
 		 *
 		 * @var WC_Order
@@ -111,7 +118,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 
 			try {
 				$pdf_content = $this->generate_template();
-			} catch ( \Exception $e ) {
+			} catch ( \Throwable $e ) {
 				wc_get_logger()->error(
 					sprintf( 'WPWing PDF Invoice: PDF generation failed - %s', $e->getMessage() ),
 					array( 'source' => 'wpwing-pdf-invoice' )
@@ -151,70 +158,88 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 				wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
 				$html = ob_get_clean();
 
-				require_once WPWING_WCPDF_VENDOR_DIR . 'autoload.php';
-
-				// Use a writable font cache so Dompdf generates complete .ufm metrics
-				// from the full TTF glyph table, covering all currency symbols (Taka,
-				// Bitcoin, etc.) that the bundled vendor .ufm files omit.
-				$font_cache = trailingslashit( wp_upload_dir()['basedir'] ) . 'wpwing-pdf-fonts/';
-				wp_mkdir_p( $font_cache );
-
-				$options = new Options();
-				$options->setIsRemoteEnabled( true );
-				$options->setFontDir( $font_cache );
-				$options->setFontCache( $font_cache );
-
-				$paper_size = WPWing_WcPdf_Settings::get_instance()->get_option( 'paper_size' );
-				$dompdf     = new Dompdf( $options );
-
-				// One-time font registration — skipped on every subsequent PDF.
-				if ( ! file_exists( $font_cache . 'fonts_ready' ) ) {
-					$src     = WPWING_WCPDF_VENDOR_DIR . 'dompdf/dompdf/lib/fonts/';
-					$metrics = $dompdf->getFontMetrics();
-					$metrics->registerFont(
-						array(
-							'family' => 'DejaVu Sans',
-							'weight' => 'normal',
-							'style'  => 'normal',
-						),
-						'file://' . $src . 'DejaVuSans.ttf'
-					);
-					$metrics->registerFont(
-						array(
-							'family' => 'DejaVu Sans',
-							'weight' => 'bold',
-							'style'  => 'normal',
-						),
-						'file://' . $src . 'DejaVuSans-Bold.ttf'
-					);
-					$metrics->registerFont(
-						array(
-							'family' => 'DejaVu Sans',
-							'weight' => 'normal',
-							'style'  => 'italic',
-						),
-						'file://' . $src . 'DejaVuSans-Oblique.ttf'
-					);
-					$metrics->registerFont(
-						array(
-							'family' => 'DejaVu Sans',
-							'weight' => 'bold',
-							'style'  => 'italic',
-						),
-						'file://' . $src . 'DejaVuSans-BoldOblique.ttf'
-					);
-					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- WP_Filesystem not available in this context.
-					file_put_contents( $font_cache . 'fonts_ready', '1' );
-				}
-
-				$dompdf->setPaper( $paper_size ? strtolower( $paper_size ) : 'a4' );
-				$dompdf->loadHtml( $html );
-				$dompdf->render();
-
-				return $dompdf->output();
+				return self::render_pdf_from_html( $html );
 			} finally {
 				$this->flush_template();
 			}
+		}
+
+		/**
+		 * Render an HTML string to PDF bytes with the shared Dompdf configuration.
+		 *
+		 * @param string $html Full HTML document.
+		 * @return string PDF file contents.
+		 * @since 1.10.0
+		 */
+		public static function render_pdf_from_html( $html ) {
+
+			require_once WPWING_WCPDF_VENDOR_DIR . 'autoload.php';
+
+			// Use a writable font cache so Dompdf generates complete .ufm metrics
+			// from the full TTF glyph table, covering all currency symbols (Taka,
+			// Bitcoin, etc.) that the bundled vendor .ufm files omit.
+			$font_cache = trailingslashit( wp_upload_dir()['basedir'] ) . 'wpwing-pdf-fonts/';
+			wp_mkdir_p( $font_cache );
+
+			// Fall back to the bundled vendor fonts when the cache dir is not
+			// writable - PDFs still generate, only extended currency glyphs degrade.
+			$font_cache_usable = is_dir( $font_cache ) && wp_is_writable( $font_cache );
+
+			$options = new Options();
+			$options->setIsRemoteEnabled( true );
+			if ( $font_cache_usable ) {
+				$options->setFontDir( $font_cache );
+				$options->setFontCache( $font_cache );
+			}
+
+			$paper_size = WPWing_WcPdf_Settings::get_instance()->get_option( 'paper_size' );
+			$dompdf     = new Dompdf( $options );
+
+			// One-time font registration — skipped on every subsequent PDF.
+			if ( $font_cache_usable && ! file_exists( $font_cache . 'fonts_ready' ) ) {
+				$src     = WPWING_WCPDF_VENDOR_DIR . 'dompdf/dompdf/lib/fonts/';
+				$metrics = $dompdf->getFontMetrics();
+				$metrics->registerFont(
+					array(
+						'family' => 'DejaVu Sans',
+						'weight' => 'normal',
+						'style'  => 'normal',
+					),
+					'file://' . $src . 'DejaVuSans.ttf'
+				);
+				$metrics->registerFont(
+					array(
+						'family' => 'DejaVu Sans',
+						'weight' => 'bold',
+						'style'  => 'normal',
+					),
+					'file://' . $src . 'DejaVuSans-Bold.ttf'
+				);
+				$metrics->registerFont(
+					array(
+						'family' => 'DejaVu Sans',
+						'weight' => 'normal',
+						'style'  => 'italic',
+					),
+					'file://' . $src . 'DejaVuSans-Oblique.ttf'
+				);
+				$metrics->registerFont(
+					array(
+						'family' => 'DejaVu Sans',
+						'weight' => 'bold',
+						'style'  => 'italic',
+					),
+					'file://' . $src . 'DejaVuSans-BoldOblique.ttf'
+				);
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- WP_Filesystem not available in this context.
+				file_put_contents( $font_cache . 'fonts_ready', '1' );
+			}
+
+			$dompdf->setPaper( $paper_size ? strtolower( $paper_size ) : 'a4' );
+			$dompdf->loadHtml( $html );
+			$dompdf->render();
+
+			return $dompdf->output();
 		}
 
 		/**
@@ -291,6 +316,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 					echo esc_html( $content );
 					echo '</style>';
 				}
+			}
+
+			$custom_css = $this->settings->get_option( 'template_custom_css' );
+			if ( $custom_css ) {
+				echo '<style type="text/css">';
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS cannot be HTML-escaped inside <style>; tags are stripped, matching core's wp_custom_css_cb().
+				echo wp_strip_all_tags( (string) $custom_css );
+				echo '</style>';
 			}
 		}
 

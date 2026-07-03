@@ -243,6 +243,23 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 
 			$document->exists = true;
 
+			$html = $this->render_document_html( $document );
+
+			header( 'Content-Type: text/html; charset=utf-8' );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $html;
+			exit();
+		}
+
+		/**
+		 * Render a document's full template HTML and return it as a string.
+		 * Sets up and tears down the template hooks and the global document context.
+		 *
+		 * @param WPWing_WcPdf_Document $document The document to render.
+		 * @return string
+		 * @since 1.10.0
+		 */
+		public function render_document_html( $document ) {
 			global $wpwing_wcpdf_document;
 			$wpwing_wcpdf_document = $document;
 
@@ -253,16 +270,11 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 				$document->init_template_generation_actions();
 				ob_start();
 				wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
-				$html = ob_get_clean();
+				return ob_get_clean();
 			} finally {
 				$document->flush_template();
 				$wpwing_wcpdf_document = null;
 			}
-
-			header( 'Content-Type: text/html; charset=utf-8' );
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $html;
-			exit();
 		}
 
 		/**
