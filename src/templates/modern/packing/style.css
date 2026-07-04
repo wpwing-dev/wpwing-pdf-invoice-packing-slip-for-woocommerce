@@ -162,3 +162,8 @@ footer {
 	bottom: 0;
 	color: #555555;
 }
+
+
+.woocommerce-Price-currencySymbol {
+	font-family: WPWing Currency, DejaVu Sans, sans-serif;
+}

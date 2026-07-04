@@ -238,3 +238,7 @@ footer {
 	overflow-wrap: break-word;
 	word-break: break-word;
 }
+
+.woocommerce-Price-currencySymbol {
+	font-family: WPWing Currency, DejaVu Sans, sans-serif;
+}

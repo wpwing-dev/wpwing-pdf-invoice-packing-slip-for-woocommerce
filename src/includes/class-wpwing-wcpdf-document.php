@@ -185,6 +185,22 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 			// writable - PDFs still generate, only extended currency glyphs degrade.
 			$font_cache_usable = is_dir( $font_cache ) && wp_is_writable( $font_cache );
 
+			// Self-heal: if the registry survived but the registered font copies were
+			// deleted (e.g. a partial cleanup of the uploads dir), wipe the cache
+			// metadata so registration below re-runs. Without this, generated PDFs
+			// reference fonts they never embed and viewers substitute their own.
+			if ( $font_cache_usable
+				&& file_exists( $font_cache . 'fonts_ready_2' )
+				&& ( ! glob( $font_cache . 'dejavu_sans_normal_*.ufm' ) || ! glob( $font_cache . 'dejavu_sans_normal_*.ttf' ) ) ) {
+				$stale_files = array_merge(
+					array( $font_cache . 'fonts_ready_2', $font_cache . 'installed-fonts.json' ),
+					(array) glob( $font_cache . '*.ufm.json' )
+				);
+				foreach ( $stale_files as $stale_file ) {
+					wp_delete_file( $stale_file );
+				}
+			}
+
 			$options = new Options();
 			$options->setIsRemoteEnabled( true );
 			if ( $font_cache_usable ) {
@@ -192,11 +208,22 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 				$options->setFontCache( $font_cache );
 			}
 
+			// registerFont() only accepts file:// paths inside the chroot; cover
+			// both the bundled Dompdf fonts and our own currency font.
+			$options->setChroot(
+				array(
+					WPWING_WCPDF_VENDOR_DIR . 'dompdf/dompdf',
+					WPWING_WCPDF_DIR . 'assets/fonts',
+				)
+			);
+
 			$paper_size = WPWing_WcPdf_Settings::get_instance()->get_option( 'paper_size' );
 			$dompdf     = new Dompdf( $options );
 
 			// One-time font registration — skipped on every subsequent PDF.
-			if ( $font_cache_usable && ! file_exists( $font_cache . 'fonts_ready' ) ) {
+			// Marker renamed (v2) when the WPWing Currency font was added so
+			// existing installs register it too.
+			if ( $font_cache_usable && ! file_exists( $font_cache . 'fonts_ready_2' ) ) {
 				$src     = WPWING_WCPDF_VENDOR_DIR . 'dompdf/dompdf/lib/fonts/';
 				$metrics = $dompdf->getFontMetrics();
 				$metrics->registerFont(
@@ -231,8 +258,31 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 					),
 					'file://' . $src . 'DejaVuSans-BoldOblique.ttf'
 				);
+
+				// WPWing Currency: covers every WooCommerce currency symbol
+				// (Taka, manat, lari, riel, rial, ...) that DejaVu Sans lacks.
+				// Templates apply it to the .woocommerce-Price-currencySymbol span.
+				// Registered for all four style variants (same outlines) - otherwise
+				// bold contexts like the invoice Total row resolve to DejaVu Bold
+				// and the symbol degrades to a missing-glyph box again.
+				$currency_font = WPWING_WCPDF_DIR . 'assets/fonts/WPWingCurrency-Regular.ttf';
+				if ( file_exists( $currency_font ) ) {
+					foreach ( array( 'normal', 'bold' ) as $weight ) {
+						foreach ( array( 'normal', 'italic' ) as $font_style ) {
+							$metrics->registerFont(
+								array(
+									'family' => 'WPWing Currency',
+									'weight' => $weight,
+									'style'  => $font_style,
+								),
+								'file://' . $currency_font
+							);
+						}
+					}
+				}
+
 				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- WP_Filesystem not available in this context.
-				file_put_contents( $font_cache . 'fonts_ready', '1' );
+				file_put_contents( $font_cache . 'fonts_ready_2', '1' );
 			}
 
 			$dompdf->setPaper( $paper_size ? strtolower( $paper_size ) : 'a4' );
