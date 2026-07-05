@@ -6,7 +6,7 @@ Tags:               PDF, Invoice, Packing Slip, Packing List, WooCommerce
 Requires at least:  4.8
 Tested up to:       7.0
 Requires PHP:       7.4
-Stable tag:         1.9.0
+Stable tag: 1.10.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -27,8 +27,9 @@ Built strictly with performance, security, and modern WordPress standards in min
 ### 🔥 KEY FEATURES ###
 
 * 📑 **Automated Email PDF Attachment:** Automatically generate and attach PDF invoices to specific WooCommerce order status emails, including Processing Order, Completed Order, or Customer Invoice / Order Details.
-* 📦 **Efficient Order Management & Bulk Actions:** Save time during busy shipping hours. Quickly download or print multiple invoices and packing slips simultaneously directly from your WooCommerce orders list page.
-* 🎨 **Multiple Beautiful Templates:** Switch between beautifully formatted layouts including our crisp "Default" and modern minimalist designs that print perfectly on standard A4 or Letter sizes.
+* 📦 **Efficient Order Management & Bulk Actions:** Save time during busy shipping hours. Quickly generate, download, or print multiple invoices and packing slips directly from your WooCommerce orders list page - grab a whole batch as a single ZIP file or one merged PDF in a couple of clicks.
+* 🌍 **Full International Currency Support:** Every WooCommerce currency symbol renders perfectly on your PDFs - including the Bangladeshi Taka (৳), Indian Rupee (₹), Thai Baht (฿), and dozens more that other plugins leave as blank boxes.
+* 🎨 **Multiple Beautiful Templates:** Switch between beautifully formatted layouts including our crisp "Default" and modern minimalist designs that print perfectly on standard A4 or Letter sizes. Add your own Custom CSS to fine-tune any detail.
 * 📱 **QR Code on Invoice:** Add a scannable QR code to your invoices - link straight to the customer's order page, or encode your own custom text with order and invoice number placeholders.
 * ⚙️ **Fully Customizable Store Branding:** Create a professional look that matches your business identity. Easily upload your store logo, input company address details, insert tax registration information (VAT/GST/Tax ID), and add custom terms or footer notes.
 * 🔢 **Sequential Invoice Numbering:** Keep your business accounting perfectly compliant. Set up custom invoice numbers with personalized prefixes, suffixes, dynamic padding length, and an option for an automatic yearly number reset.
@@ -38,7 +39,7 @@ Built strictly with performance, security, and modern WordPress standards in min
 ### 💡 WHY CHOOSE THIS PLUGIN? ###
 Many alternative WooCommerce invoice layout tools suffer from extreme feature bloat, heavy database queries, or outdated user interfaces that confuse shop managers.
 
-This plugin cuts through the noise by focusing purely on doing two essential tasks perfectly: delivering flawless, elegant PDF invoices and generating accurate packing slips—fast. We don't bundle unnecessary scripts or tracking codes. You get a reliable, high-speed automation tool engineered to help you run your business efficiently.
+This plugin cuts through the noise by focusing purely on doing two essential tasks perfectly: delivering flawless, elegant PDF invoices and generating accurate packing slips - fast. We don't bundle unnecessary scripts or tracking codes. You get a reliable, high-speed automation tool engineered to help you run your business efficiently.
 
 ### 🛣️ FUTURE ROADMAP ###
 We are actively building features to make your shop management even smoother. Look out for these upcoming documentation formats in future releases:
@@ -89,6 +90,15 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 
 == Changelog ==
+
+= 1.10.0 - 05/07/2026 =
+
+* New: Bulk download invoices and packing slips. Select any number of orders on the orders list and download them as a single ZIP file, or as one merged PDF - any documents that don't exist yet are generated automatically.
+* New: International currency support. Currency symbols that previously printed as an empty box - such as the Bangladeshi Taka (৳), Georgian Lari (₾), Cambodian Riel (៛), and many more - now render correctly on every invoice, thanks to a bundled currency font.
+* New: Custom CSS box in Template Settings. Fine-tune the look of your invoices and packing slips without editing any template files.
+* Improvement: If PDF generation ever fails, you now get a clear admin notice instead of a blank page or a broken download.
+* Fix: When the font cache folder is missing or not writable, invoices still generate using the built-in font instead of failing outright.
+* Fix: A currency symbol added by an incomplete font cache could push invoice rows out of alignment. The bundled font now matches the default line spacing and repairs a stale cache automatically.
 
 = 1.9.0 - 28/06/2026 =
 

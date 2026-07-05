@@ -3,7 +3,7 @@
 [![CI](https://github.com/wpwing-dev/wpwing-pdf-invoice-packing-slip-for-woocommerce/actions/workflows/ci.yml/badge.svg)](https://github.com/wpwing-dev/wpwing-pdf-invoice-packing-slip-for-woocommerce/actions/workflows/ci.yml)
 [![WordPress](https://img.shields.io/badge/WordPress-4.8%2B-21759B.svg)](https://wordpress.org/)
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-4.5%2B-96588A.svg)](https://woocommerce.com/)
-[![PHP](https://img.shields.io/badge/PHP-7.1%2B-777BB4.svg)](https://www.php.net/)
+[![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4.svg)](https://www.php.net/)
 [![License](https://img.shields.io/badge/License-GPL--3.0--or--later-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
 Automatically generate, print, and attach professional PDF invoices and packing slips to WooCommerce emails. Clean, lightweight, and fast.
@@ -12,7 +12,7 @@ Automatically generate, print, and attach professional PDF invoices and packing 
 
 ## Requirements
 
-- PHP 7.1 or higher
+- PHP 7.4 or higher
 - WordPress 4.8 or higher
 - WooCommerce 4.5 or higher
 - Docker (for the local dev environment)
@@ -136,6 +136,8 @@ make env-reset
 │   ├── bootstrap.php       - PHPUnit bootstrap
 │   ├── Unit/               - PHPUnit unit tests
 │   └── e2e/                - Playwright E2E tests
+├── tools/
+│   └── currency-font/      - build scripts for the bundled currency font (dev only, not shipped)
 │
 ├── composer.json           - dev deps (phpcs, phpunit, brain/monkey, phpstan)
 ├── docker-compose.yml      - full dev/test stack

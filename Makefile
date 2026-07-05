@@ -54,6 +54,7 @@ pot: ## Regenerate the .pot translation file
 version: ## Bump version strings — usage: make version V=1.6.0
 	@[ -n "$(V)" ] || (echo "Usage: make version V=1.6.0" && exit 1)
 	sed -i "s/Version: .*/Version: $(V)/" $(SRC_DIR)/$(PLUGIN_SLUG).php
+	sed -i "s/WPWING_WCPDF_VERSION', '[0-9.]*'/WPWING_WCPDF_VERSION', '$(V)'/" $(SRC_DIR)/$(PLUGIN_SLUG).php
 	sed -i "s/\"version\": \".*\"/\"version\": \"$(V)\"/" package.json
 	sed -i "s/Stable tag: .*/Stable tag: $(V)/" $(SRC_DIR)/readme.txt
 	@echo "Version bumped to $(V)"
