@@ -6,8 +6,8 @@ Reference doc for competitive analysis when planning updates and the freemium mo
 when planning a release, and it will read this and re-fetch the live pages (numbers below are snapshots and go stale).
 
 - Our plugin: **PDF Invoice and Packing Slip for WooCommerce** (wpwing / voboghure)
-- Our version at last update: 1.9.0 - Requires PHP 7.4, WP 4.8+, WC 4.5+
-- Last snapshot of this doc: 2026-07-03
+- Our version at last update: 1.10.0 - Requires PHP 7.4, WP 4.8+, WC 4.5+
+- Last snapshot of this doc: 2026-07-11
 
 ---
 
@@ -27,7 +27,8 @@ when planning a release, and it will read this and re-fetch the live pages (numb
 
 - URL: https://wordpress.org/plugins/woocommerce-pdf-invoices-packing-slips/
 - Pro/extensions: https://wpovernight.com/
-- Installs: 300,000+ | Rating: 5.0 (1,858 reviews) | Last updated: 2026-06-29 | Version: 5.15.0
+- Installs: 300,000+ | Rating: 5.0 (1,858 reviews) | Last updated: 2026-07-08 | Version: 5.15.1
+- Recent changelog: global template color setting, BIC support for UBL payment means, Peppol endpoint derivation from VAT, email attachment logging to order notes - still investing heavily in e-invoicing
 - Requires: WP 4.4+, PHP 7.4+, WC 3.3+ | Tested: WP 7.0
 - Support responsiveness: 22 of 28 forum issues resolved in last two months
 

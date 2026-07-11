@@ -40,6 +40,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 			( new WPWing_WcPdf_Admin( $this, $this->settings ) )->register();
 			( new WPWing_WcPdf_Orders_List( $this ) )->register();
 			( new WPWing_WcPdf_Wc_Hooks( $this, $this->settings ) )->register();
+			( new WPWing_WcPdf_Shortcodes( $this ) )->register();
 		}
 
 		/**

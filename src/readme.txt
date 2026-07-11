@@ -6,7 +6,7 @@ Tags:               PDF, Invoice, Packing Slip, Packing List, WooCommerce
 Requires at least:  4.8
 Tested up to:       7.0
 Requires PHP:       7.4
-Stable tag: 1.10.0
+Stable tag: 1.11.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -27,13 +27,13 @@ Built strictly with performance, security, and modern WordPress standards in min
 ### 🔥 KEY FEATURES ###
 
 * 📑 **Automated Email PDF Attachment:** Automatically generate and attach PDF invoices to specific WooCommerce order status emails, including Processing Order, Completed Order, or Customer Invoice / Order Details.
-* 📦 **Efficient Order Management & Bulk Actions:** Save time during busy shipping hours. Quickly generate, download, or print multiple invoices and packing slips directly from your WooCommerce orders list page - grab a whole batch as a single ZIP file or one merged PDF in a couple of clicks.
+* 📦 **Efficient Order Management & Bulk Actions:** Save time during busy shipping hours. Quickly generate, download, or print multiple invoices and packing slips directly from your WooCommerce orders list page - grab a whole batch as a single ZIP file or one merged PDF in a couple of clicks. Find any order instantly by typing its invoice number into the order search box.
 * 🌍 **Full International Currency Support:** Every WooCommerce currency symbol renders perfectly on your PDFs - including the Bangladeshi Taka (৳), Indian Rupee (₹), Thai Baht (฿), and dozens more that other plugins leave as blank boxes.
 * 🎨 **Multiple Beautiful Templates:** Switch between beautifully formatted layouts including our crisp "Default" and modern minimalist designs that print perfectly on standard A4 or Letter sizes. Add your own Custom CSS to fine-tune any detail.
 * 📱 **QR Code on Invoice:** Add a scannable QR code to your invoices - link straight to the customer's order page, or encode your own custom text with order and invoice number placeholders.
 * ⚙️ **Fully Customizable Store Branding:** Create a professional look that matches your business identity. Easily upload your store logo, input company address details, insert tax registration information (VAT/GST/Tax ID), and add custom terms or footer notes.
 * 🔢 **Sequential Invoice Numbering:** Keep your business accounting perfectly compliant. Set up custom invoice numbers with personalized prefixes, suffixes, dynamic padding length, and an option for an automatic yearly number reset.
-* 👤 **Secure Customer My-Account Downloads:** Logged-in customers can easily navigate to their account page to view, print, or download past PDF invoices for their personal bookkeeping.
+* 👤 **Secure Customer My-Account Downloads:** Logged-in customers can easily navigate to their account page to view, print, or download past PDF invoices for their personal bookkeeping. Prefer a download link somewhere else? Drop the [wpwing_invoice] shortcode on any page.
 * 🔒 **Developer-Friendly & Robust Security:** Built with optimized, clean code ensuring theme compatibility. All critical document actions (create, view, cancel) are fully CSRF-protected with secure WordPress nonces.
 
 ### 💡 WHY CHOOSE THIS PLUGIN? ###
@@ -73,6 +73,9 @@ Not at all! This plugin is designed to be plug-and-play. It features a highly in
 = Do I need to edit my current WordPress theme files? =
 No, it works seamlessly out-of-the-box with any standard WordPress theme. You just need to activate the plugin, and the system handles the PDF generation automatically.
 
+= Can I show an invoice download link anywhere on my site? =
+Yes! Use the `[wpwing_invoice]` shortcode. On the order Thank You page or a My Account order page it finds the order automatically; anywhere else, pass the order explicitly with `[wpwing_invoice order_id="123"]`. You can change the link text with the `label` attribute. The link only appears for the order's own customer (logged in) or store managers, and only after the invoice has been generated.
+
 = Is the plugin compatible with WooCommerce HPOS? =
 Yes! The plugin fully supports High-Performance Order Storage (HPOS) to ensure maximum database efficiency and site speed for modern WooCommerce environments.
 
@@ -90,6 +93,11 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 
 == Changelog ==
+
+= 1.11.0 - 12/07/2026 =
+
+* New: [wpwing_invoice] shortcode - drop it on any page to show a secure invoice download link. It automatically detects the order on the Thank You page and in My Account, or accepts an explicit order_id attribute. Use the label attribute to customize the link text.
+* New: Search orders by invoice number. Type an invoice number into the search box on the WooCommerce orders list and the matching order appears - works on both the classic and High-Performance Order Storage screens.
 
 = 1.10.0 - 05/07/2026 =
 

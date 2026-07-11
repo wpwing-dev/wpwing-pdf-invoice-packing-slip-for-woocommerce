@@ -52,6 +52,24 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 			// Invoice status column - HPOS orders screen.
 			add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'add_order_list_column' ) );
 			add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'render_order_list_column' ), 10, 2 );
+
+			// Search orders by invoice number - classic and HPOS orders screens.
+			add_filter( 'woocommerce_shop_order_search_fields', array( $this, 'add_invoice_number_search_field' ) );
+			add_filter( 'woocommerce_order_table_search_query_meta_keys', array( $this, 'add_invoice_number_search_field' ) );
+		}
+
+		/**
+		 * Make the admin order search also match the stored invoice number.
+		 *
+		 * Searches the raw sequential number; prefixes and date tokens from the
+		 * number format are applied at render time and are not stored.
+		 *
+		 * @param array $fields Meta keys included in the order search.
+		 * @return array
+		 */
+		public function add_invoice_number_search_field( $fields ) {
+			$fields[] = '_wpwing_wcpdf_invoice_number';
+			return $fields;
 		}
 
 		/**
