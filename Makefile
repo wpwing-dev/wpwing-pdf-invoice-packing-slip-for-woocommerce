@@ -7,6 +7,10 @@ PRO_SLUG    = wpwing-pdf-invoice-packing-slip-pro
 PRO_SRC     = pro
 PRO_BUILD   = $(DIST_DIR)/$(PRO_SLUG)
 
+# Dev tooling (PHPUnit 10, phpcs, phpstan) needs PHP 8.1+, independent of the system default php
+PHP      ?= php8.2
+COMPOSER ?= $(PHP) $(shell command -v composer)
+
 .DEFAULT_GOAL := help
 
 help: ## Show available commands
@@ -24,11 +28,11 @@ watch: ## Watch SCSS for changes (Ctrl+C to stop)
 .PHONY: watch
 
 phpcs: ## Run PHP_CodeSniffer and report errors
-	./vendor/bin/phpcs
+	$(PHP) ./vendor/bin/phpcs
 .PHONY: phpcs
 
 phpcbf: ## Auto-fix PHP code with PHP Code Beautifier and Fixer
-	./vendor/bin/phpcbf
+	$(PHP) ./vendor/bin/phpcbf
 .PHONY: phpcbf
 
 lint-js: ## Lint JavaScript with ESLint
@@ -43,7 +47,7 @@ lint-all: phpcs lint-js lint-css ## Run all linters (PHP, JS, SCSS)
 .PHONY: lint-all
 
 analyse: ## Run PHPStan static analysis
-	./vendor/bin/phpstan analyse
+	$(PHP) ./vendor/bin/phpstan analyse
 .PHONY: analyse
 
 pot: ## Regenerate the .pot translation file
@@ -63,7 +67,7 @@ version: ## Bump version strings — usage: make version V=1.6.0
 zip: clean-build assets ## Build distributable zip into dist/
 	mkdir -p $(BUILD_DIR)
 	rsync -r --exclude-from=.distignore $(SRC_DIR)/ $(BUILD_DIR)/
-	composer install --no-dev --optimize-autoloader --working-dir=$(BUILD_DIR)
+	$(COMPOSER) install --no-dev --optimize-autoloader --working-dir=$(BUILD_DIR)
 	rm -f $(BUILD_DIR)/composer.json $(BUILD_DIR)/composer.lock
 	cd $(DIST_DIR) && zip -r $(PLUGIN_SLUG).zip $(PLUGIN_SLUG)/
 	rm -rf $(BUILD_DIR)
@@ -82,7 +86,7 @@ release: ## Full release — usage: make release V=1.6.0
 .PHONY: release
 
 vendor-prod: ## Install Composer deps without dev packages
-	composer install --no-dev --optimize-autoloader --working-dir=$(SRC_DIR)
+	$(COMPOSER) install --no-dev --optimize-autoloader --working-dir=$(SRC_DIR)
 .PHONY: vendor-prod
 
 clean-build: ## Remove staging build dir
@@ -140,8 +144,8 @@ tag: ## Create annotated git tag — usage: make tag V=1.6.0
 .PHONY: tag
 
 setup: ## Bootstrap dev environment (first-time setup)
-	composer install --no-interaction
-	composer install --no-interaction --working-dir=$(SRC_DIR)
+	$(COMPOSER) install --no-interaction
+	$(COMPOSER) install --no-interaction --working-dir=$(SRC_DIR)
 	npm install
 	@printf '#!/bin/sh\nmake phpcs\n' > .git/hooks/pre-push
 	@chmod +x .git/hooks/pre-push
