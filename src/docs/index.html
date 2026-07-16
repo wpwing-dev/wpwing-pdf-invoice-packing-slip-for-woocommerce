@@ -299,8 +299,9 @@
     <p class="nav-section">More</p>
     <ul>
       <li><a href="#invoice-numbers">Invoice Numbers</a></li>
-      <li><a href="#bulk-actions">Bulk Actions</a></li>
+      <li><a href="#bulk-actions">Orders List &amp; Bulk Actions</a></li>
       <li><a href="#customer-account">Customer Account</a></li>
+      <li><a href="#shortcode">Shortcode</a></li>
     </ul>
 
     <p class="nav-section">Help</p>
@@ -320,7 +321,7 @@
         <span class="badge">WooCommerce 4.5+</span>
         <span class="badge">WordPress 4.8+</span>
         <span class="badge">HPOS Compatible</span>
-        <span class="badge">PHP 7.1+</span>
+        <span class="badge">PHP 7.4+</span>
       </div>
     </div>
 
@@ -429,6 +430,21 @@
             <td>Same choice applied independently to packing slips.</td>
           </tr>
           <tr>
+            <td><strong>Show QR code on invoice</strong></td>
+            <td>Off</td>
+            <td>Prints a QR code on every invoice. Reveals the two QR settings below when enabled. The code is generated at PDF creation time - no external service is contacted.</td>
+          </tr>
+          <tr>
+            <td><strong>QR code content</strong></td>
+            <td>Order view URL</td>
+            <td><em>Order view URL</em> encodes a link to the customer's order page in My Account - scanning the code opens the order. <em>Custom text</em> lets you encode your own content instead.</td>
+          </tr>
+          <tr>
+            <td><strong>QR custom text</strong></td>
+            <td>Empty</td>
+            <td>Used when QR code content is set to <em>Custom text</em>. Supports the placeholders <code>{order_number}</code> and <code>{invoice_number}</code> - for example <code>Order {order_number}</code>.</td>
+          </tr>
+          <tr>
             <td><strong>Show company name</strong></td>
             <td>Off</td>
             <td>Displays your company name in the invoice header. Reveals the <em>Company name</em> text field when enabled.</td>
@@ -472,6 +488,11 @@
             <td><strong>Show tax breakdown</strong></td>
             <td>On</td>
             <td>When on, each tax class (e.g. <em>GST 10%</em>, <em>PST 7%</em>) appears as its own row in the invoice totals. When off, a single combined <em>Tax</em> row is shown instead.</td>
+          </tr>
+          <tr>
+            <td><strong>Custom CSS</strong></td>
+            <td>Empty</td>
+            <td>Your own CSS rules, applied to both the invoice and the packing slip <em>after</em> the template styles - so your rules always win. Example: <code>.company-name { font-size: 18px; }</code>. Use the <strong>Preview Invoice</strong> button to test rules before saving. No template files need to be edited.</td>
           </tr>
         </tbody>
       </table>
@@ -601,11 +622,13 @@
       </div>
     </section>
 
-    <!-- Bulk Actions -->
+    <!-- Orders List & Bulk Actions -->
     <section id="bulk-actions">
-      <h2>Bulk Actions</h2>
-      <p>You can generate invoices or packing slips for many orders at once from the <strong>WooCommerce &rarr; Orders</strong> list — useful when migrating from another plugin or backfilling documents for existing orders.</p>
+      <h2>Orders List &amp; Bulk Actions</h2>
+      <p>The <strong>WooCommerce &rarr; Orders</strong> list is the hub for working with many documents at once: generate or download in bulk, see invoice status at a glance, and find orders by invoice number.</p>
 
+      <h3>Generating documents in bulk</h3>
+      <p>Useful when migrating from another plugin or backfilling documents for existing orders.</p>
       <ol class="steps">
         <li>Go to <strong>WooCommerce &rarr; Orders</strong>.</li>
         <li>Select the orders you want to process using the checkboxes on the left.</li>
@@ -613,8 +636,44 @@
         <li>Click <strong>Apply</strong>. A summary notice will tell you how many documents were created and how many were skipped (because a document already existed).</li>
       </ol>
 
+      <h3>Downloading documents in bulk</h3>
+      <p>The same dropdown offers four download actions:</p>
+      <table>
+        <thead>
+          <tr><th>Bulk action</th><th>What you get</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Download Invoices (ZIP)</strong></td>
+            <td>One ZIP archive containing each selected order's invoice as a separate PDF file.</td>
+          </tr>
+          <tr>
+            <td><strong>Download Invoices (Merged PDF)</strong></td>
+            <td>A single PDF with all selected invoices, one after another with page breaks - ready to print in one go.</td>
+          </tr>
+          <tr>
+            <td><strong>Download Packing Slips (ZIP)</strong></td>
+            <td>Same as above, for packing slips.</td>
+          </tr>
+          <tr>
+            <td><strong>Download Packing Slips (Merged PDF)</strong></td>
+            <td>Same as above, for packing slips.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Any selected order that does not have the document yet gets one generated automatically before the download starts - you never have to generate first and download second.</p>
+
+      <h3>Invoice status column</h3>
+      <p>The orders list has an <strong>Invoice</strong> column: a green check mark means the order already has an invoice; a <em>Create</em> link generates one with a single click.</p>
+
+      <h3>Search orders by invoice number</h3>
+      <p>Type an invoice number into the search box above the orders list and the matching order appears - on both the classic and HPOS orders screens.</p>
       <div class="callout">
-        <strong>50-order limit per run.</strong> To prevent timeouts, each bulk action processes a maximum of 50 orders at a time. If you selected more, run the action again — orders that already have a document are automatically skipped, so repeated runs are safe.
+        <strong>Search with the plain serial number.</strong> The search matches the stored sequential number (e.g. <code>42</code>), not the formatted number. If your format is <code>INV-{number}/{year}</code> and the invoice reads <code>INV-42/2026</code>, search for <code>42</code>.
+      </div>
+
+      <div class="callout">
+        <strong>50-order limit per run.</strong> To prevent timeouts, each bulk action processes a maximum of 50 orders at a time. If you selected more, run the action again — orders that already have a document are automatically skipped, so repeated generate runs are safe.
       </div>
     </section>
 
@@ -628,6 +687,42 @@
 
       <h3>Access control</h3>
       <p>Customers can only view invoices for their own orders. Attempting to access another customer's invoice URL will fail the ownership check. The <em>PDF button behaviour</em> setting (download vs. open) applies to customer downloads too.</p>
+    </section>
+
+    <!-- Shortcode -->
+    <section id="shortcode">
+      <h2>Shortcode</h2>
+      <p>Drop <code>[wpwing_invoice]</code> on any page or in any block that renders shortcodes to show a secure invoice download link.</p>
+
+      <h3>Attributes</h3>
+      <table>
+        <thead>
+          <tr><th>Attribute</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>order_id</code></td>
+            <td>Auto-detected</td>
+            <td>The order to link to. When omitted, the shortcode detects the order from the page context: on the <strong>Thank You</strong> page it uses the order just placed, and on the <strong>My Account &rarr; View order</strong> page it uses the order being viewed.</td>
+          </tr>
+          <tr>
+            <td><code>label</code></td>
+            <td>Download Invoice</td>
+            <td>The link text.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Examples</h3>
+      <ul>
+        <li><code>[wpwing_invoice]</code> - auto-detects the order on the Thank You or View-order page.</li>
+        <li><code>[wpwing_invoice label="Get your invoice (PDF)"]</code> - custom link text.</li>
+        <li><code>[wpwing_invoice order_id="1234"]</code> - link to a specific order.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Renders nothing rather than a broken link.</strong> The shortcode outputs nothing at all when the order cannot be determined, the invoice has not been generated yet, or the current visitor is not allowed to view that order's invoice. The same ownership checks as the My Account download apply.
+      </div>
     </section>
 
     <!-- FAQ -->
@@ -656,7 +751,17 @@
 
       <details>
         <summary>The PDF is blank or shows garbled characters — what do I do?</summary>
-        <p>This is typically a font cache problem. Delete the folder <code>wp-content/uploads/wpwing-pdf-fonts/</code> via FTP or your hosting file manager, then regenerate the invoice. The fonts will be re-registered on the next generation. If the problem persists, check that your server's PHP memory limit is at least 128 MB.</p>
+        <p>This is typically a font cache problem. The plugin detects and repairs a stale font cache automatically on the next generation, so first simply regenerate the document. If the problem persists, delete the folder <code>wp-content/uploads/wpwing-pdf-fonts/</code> via FTP or your hosting file manager and regenerate again - the fonts will be re-registered. Also check that your server's PHP memory limit is at least 128 MB.</p>
+      </details>
+
+      <details>
+        <summary>My currency symbol prints as an empty box — how do I fix it?</summary>
+        <p>You don't have to - this is handled automatically. The plugin bundles a currency font covering every WooCommerce currency symbol, including ones missing from common PDF fonts such as the Bangladeshi Taka (৳), Georgian Lari (₾), and Cambodian Riel (៛). If you still see a box on an old invoice, it was generated by an older plugin version - cancel and recreate the invoice and the symbol will render correctly.</p>
+      </details>
+
+      <details>
+        <summary>How can customers download their invoice from a custom page?</summary>
+        <p>Use the <code>[wpwing_invoice]</code> shortcode. Place it on any page - it automatically detects the order on the Thank You page and in My Account, or accepts an explicit <code>order_id</code> attribute. See the <a href="#shortcode">Shortcode</a> section for all options.</p>
       </details>
 
       <details>
