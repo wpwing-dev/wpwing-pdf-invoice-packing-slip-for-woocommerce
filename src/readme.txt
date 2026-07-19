@@ -6,7 +6,7 @@ Tags:               PDF, Invoice, Packing Slip, Packing List, WooCommerce
 Requires at least:  4.8
 Tested up to:       7.0
 Requires PHP:       7.4
-Stable tag: 1.11.0
+Stable tag:         1.12.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -28,6 +28,7 @@ Built strictly with performance, security, and modern WordPress standards in min
 
 * 📑 **Automated Email PDF Attachment:** Automatically generate and attach PDF invoices to specific WooCommerce order status emails, including Processing Order, Completed Order, or Customer Invoice / Order Details.
 * 📦 **Efficient Order Management & Bulk Actions:** Save time during busy shipping hours. Quickly generate, download, or print multiple invoices and packing slips directly from your WooCommerce orders list page - grab a whole batch as a single ZIP file or one merged PDF in a couple of clicks. Find any order instantly by typing its invoice number into the order search box.
+* 🚚 **Delivery Notes:** Generate a price-free delivery note that travels with the parcel - listing the items and shipping address, with an optional customer note. Create it manually, in bulk, or automatically on the order statuses you choose.
 * 🌍 **Full International Currency Support:** Every WooCommerce currency symbol renders perfectly on your PDFs - including the Bangladeshi Taka (৳), Indian Rupee (₹), Thai Baht (฿), and dozens more that other plugins leave as blank boxes.
 * 🎨 **Multiple Beautiful Templates:** Switch between beautifully formatted layouts including our crisp "Default" and modern minimalist designs that print perfectly on standard A4 or Letter sizes. Add your own Custom CSS to fine-tune any detail.
 * 📱 **QR Code on Invoice:** Add a scannable QR code to your invoices - link straight to the customer's order page, or encode your own custom text with order and invoice number placeholders.
@@ -39,12 +40,11 @@ Built strictly with performance, security, and modern WordPress standards in min
 ### 💡 WHY CHOOSE THIS PLUGIN? ###
 Many alternative WooCommerce invoice layout tools suffer from extreme feature bloat, heavy database queries, or outdated user interfaces that confuse shop managers.
 
-This plugin cuts through the noise by focusing purely on doing two essential tasks perfectly: delivering flawless, elegant PDF invoices and generating accurate packing slips - fast. We don't bundle unnecessary scripts or tracking codes. You get a reliable, high-speed automation tool engineered to help you run your business efficiently.
+This plugin cuts through the noise by focusing purely on the essentials: delivering flawless, elegant PDF invoices, accurate packing slips, and delivery notes - fast. We don't bundle unnecessary scripts or tracking codes. You get a reliable, high-speed automation tool engineered to help you run your business efficiently.
 
 ### 🛣️ FUTURE ROADMAP ###
 We are actively building features to make your shop management even smoother. Look out for these upcoming documentation formats in future releases:
 * Proforma Invoice generation
-* Delivery Notes customization
 * Print-ready Shipping Labels
 
 ### 🧑‍💻 Dedicated Support
@@ -93,6 +93,14 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 
 == Changelog ==
+
+= 1.12.0 - 19/07/2026 =
+
+* New: Delivery Note document type - a price-free document listing the items and shipping address, made to travel with the parcel. Create, view, or cancel it from the order page metabox, just like invoices and packing slips.
+* New: Auto-generate delivery notes on the order statuses you choose, with the same once-per-order behaviour as invoices and packing slips.
+* New: Delivery note bulk actions on the orders list - generate for selected orders, or download them as a ZIP or one merged PDF.
+* New: Delivery note template setting (Default or Modern) and an option to print the customer's checkout note on the delivery note.
+* Improvement: The Custom CSS box now also applies to delivery notes.
 
 = 1.11.0 - 12/07/2026 =
 

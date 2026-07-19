@@ -4,16 +4,17 @@ Working plan for the weekly release cadence (Sunday releases). Month 1 is planne
 detail; months 2-6 are a directional arc, re-planned monthly against
 [COMPETITORS.md](COMPETITORS.md) (re-fetch the live pages each time).
 
-- Current shipped version: 1.10.0 (2026-07-05)
+- Current shipped version: 1.12.0 (2026-07-19)
 - Feature IDs (A.3, B.1, C.4, ...) refer to `DOC/Future Plan.md`
 - Status: A.1, A.2 and most of Phase B-adjacent quick wins through 1.10.0 are done;
-  bulk ZIP/merged-PDF download shipped free in 1.10.0 (competitors gate this to Pro)
+  bulk ZIP/merged-PDF download shipped free in 1.10.0 (competitors gate this to Pro);
+  1.11.0 (shortcode + invoice search) and 1.12.0 (Delivery Note) shipped on schedule
 
 ---
 
 ## Month 1 (detailed) - close free-tier gaps, honor public roadmap
 
-### 1.11.0 - 2026-07-12 - Quick wins bundle
+### 1.11.0 - 2026-07-12 - Quick wins bundle [SHIPPED]
 
 Two small, self-contained features (A.3 + B.4). Can slip to mid-week without
 breaking cadence.
@@ -26,16 +27,17 @@ breaking cadence.
 - Housekeeping: close GitHub issues #3 and #4 (shipped in 1.5.0, still open per
   COMPETITORS.md TODO).
 
-### 1.12.0 - 2026-07-19 - Delivery Note document type
+### 1.12.0 - 2026-07-19 - Delivery Note document type [SHIPPED]
 
 First of the three public readme roadmap promises (Proforma, Delivery Notes,
 Shipping Labels). Challan ships this free - closest-peer parity.
 
 - New free document type `Delivery Note` extending the base document class.
-- Templates in `templates/default/delivery-note/` and `templates/modern/delivery-note/`.
-- Metabox button, orders-list bulk action, auto-generate statuses, email attachment
-  option - same surface as the packing slip.
+- Templates landed in `templates/default/delivery/` and `templates/modern/delivery/`.
+- Metabox buttons, orders-list bulk actions (generate/ZIP/merged PDF),
+  auto-generate statuses - same surface as the packing slip.
 - No prices shown (like packing slip), optional customer note block.
+- Not included: email attachment option (invoice-only today; revisit if requested).
 
 ### 1.13.0 - 2026-07-26 - Support-load reducers
 

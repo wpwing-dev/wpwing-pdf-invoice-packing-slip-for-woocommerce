@@ -288,6 +288,7 @@
     <ul>
       <li><a href="#invoice">Invoice</a></li>
       <li><a href="#packing-slip">Packing Slip</a></li>
+      <li><a href="#delivery-note">Delivery Note</a></li>
     </ul>
 
     <p class="nav-section">Automation</p>
@@ -316,7 +317,7 @@
     <!-- Hero -->
     <div class="hero">
       <h1>PDF Invoice and Packing Slip for WooCommerce</h1>
-      <p>Generate professional PDF invoices and packing slips for every WooCommerce order — automatically, in bulk, or on demand.</p>
+      <p>Generate professional PDF invoices, packing slips, and delivery notes for every WooCommerce order — automatically, in bulk, or on demand.</p>
       <div class="badges">
         <span class="badge">WooCommerce 4.5+</span>
         <span class="badge">WordPress 4.8+</span>
@@ -402,6 +403,11 @@
             <td>Same as above but for packing slips.</td>
           </tr>
           <tr>
+            <td><strong>Auto-generate delivery note on status</strong></td>
+            <td>None</td>
+            <td>Same as above but for delivery notes.</td>
+          </tr>
+          <tr>
             <td><strong>Attach invoice PDF to emails</strong></td>
             <td>None</td>
             <td>The invoice PDF is attached to the selected WooCommerce transactional emails. If no invoice exists yet it is automatically generated at send time. Options: Processing Order, Completed Order, Customer Invoice / Order Details, Order On-Hold.</td>
@@ -428,6 +434,16 @@
             <td><strong>Packing slip template</strong></td>
             <td>Default</td>
             <td>Same choice applied independently to packing slips.</td>
+          </tr>
+          <tr>
+            <td><strong>Delivery note template</strong></td>
+            <td>Default</td>
+            <td>Same choice applied independently to delivery notes.</td>
+          </tr>
+          <tr>
+            <td><strong>Show customer order note on delivery note</strong></td>
+            <td>Off</td>
+            <td>Prints the note the customer entered at checkout in a shaded box on the delivery note.</td>
           </tr>
           <tr>
             <td><strong>Show QR code on invoice</strong></td>
@@ -492,7 +508,7 @@
           <tr>
             <td><strong>Custom CSS</strong></td>
             <td>Empty</td>
-            <td>Your own CSS rules, applied to both the invoice and the packing slip <em>after</em> the template styles - so your rules always win. Example: <code>.company-name { font-size: 18px; }</code>. Use the <strong>Preview Invoice</strong> button to test rules before saving. No template files need to be edited.</td>
+            <td>Your own CSS rules, applied to the invoice, packing slip, and delivery note <em>after</em> the template styles - so your rules always win. Example: <code>.company-name { font-size: 18px; }</code>. Use the <strong>Preview Invoice</strong> button to test rules before saving. No template files need to be edited.</td>
           </tr>
         </tbody>
       </table>
@@ -510,7 +526,7 @@
       <p>Once an invoice exists, click <strong>View</strong> in the metabox. Whether it downloads or opens inline depends on the <em>PDF button behaviour</em> setting.</p>
 
       <h3>Previewing as HTML</h3>
-      <p>Click the small code icon next to the View button to open the invoice or packing slip as a plain HTML page in a new tab. This lets you check the layout instantly without generating a PDF - useful when fine-tuning a custom template.</p>
+      <p>Click the small code icon next to the View button to open the invoice, packing slip, or delivery note as a plain HTML page in a new tab. This lets you check the layout instantly without generating a PDF - useful when fine-tuning a custom template.</p>
 
       <h3>Cancelling an invoice</h3>
       <p>Click <strong>Cancel</strong> (red button) in the metabox. This deletes the stored PDF and removes the invoice metadata from the order. The order itself is not affected — only the invoice document is removed. You can create a new invoice for the same order afterwards.</p>
@@ -533,6 +549,19 @@
       </div>
     </section>
 
+    <!-- Delivery Note -->
+    <section id="delivery-note">
+      <h2>Delivery Note</h2>
+      <p>A delivery note is a price-free document made to travel with the parcel. It lists the ordered items with quantities and the shipping address — no prices, taxes, or totals — so the recipient can check the delivery against its contents. Optionally, the customer's checkout note can be printed on it.</p>
+
+      <h3>Creating, viewing, and cancelling</h3>
+      <p>The workflow is identical to invoices and packing slips: use the <strong>Create</strong>, <strong>View</strong>, and <strong>Cancel</strong> buttons in the <strong>PDF Invoice by WPWing</strong> metabox, in the Delivery Note row. Delivery notes can also be generated automatically (see <a href="#auto-generation">Auto-Generation</a>) or in bulk from the Orders list.</p>
+
+      <div class="callout">
+        <strong>Delivery notes use the order number.</strong> Like packing slips, delivery notes are not part of the sequential invoice numbering — cancelling and recreating one reuses the same order number.
+      </div>
+    </section>
+
     <!-- Auto-Generation -->
     <section id="auto-generation">
       <h2>Auto-Generation</h2>
@@ -541,7 +570,7 @@
       <h3>How it works</h3>
       <ul>
         <li>The check fires on the <code>woocommerce_order_status_changed</code> action.</li>
-        <li>If an invoice (or packing slip) already exists for the order, a new one is <strong>not</strong> created — auto-generation is idempotent.</li>
+        <li>If an invoice (or packing slip, or delivery note) already exists for the order, a new one is <strong>not</strong> created — auto-generation is idempotent.</li>
         <li>If <em>Disable invoice for free orders</em> is on, free orders are skipped even if the status matches.</li>
         <li>Auto-generation and email attachment can both be active at the same time. Only one invoice is ever created per order regardless of how many triggers fire.</li>
       </ul>
@@ -632,12 +661,12 @@
       <ol class="steps">
         <li>Go to <strong>WooCommerce &rarr; Orders</strong>.</li>
         <li>Select the orders you want to process using the checkboxes on the left.</li>
-        <li>Open the <strong>Bulk actions</strong> dropdown and choose <em>Generate Invoices</em> or <em>Generate Packing Slips</em>.</li>
+        <li>Open the <strong>Bulk actions</strong> dropdown and choose <em>Generate Invoices</em>, <em>Generate Packing Slips</em>, or <em>Generate Delivery Notes</em>.</li>
         <li>Click <strong>Apply</strong>. A summary notice will tell you how many documents were created and how many were skipped (because a document already existed).</li>
       </ol>
 
       <h3>Downloading documents in bulk</h3>
-      <p>The same dropdown offers four download actions:</p>
+      <p>The same dropdown offers six download actions:</p>
       <table>
         <thead>
           <tr><th>Bulk action</th><th>What you get</th></tr>
@@ -658,6 +687,14 @@
           <tr>
             <td><strong>Download Packing Slips (Merged PDF)</strong></td>
             <td>Same as above, for packing slips.</td>
+          </tr>
+          <tr>
+            <td><strong>Download Delivery Notes (ZIP)</strong></td>
+            <td>Same as above, for delivery notes.</td>
+          </tr>
+          <tr>
+            <td><strong>Download Delivery Notes (Merged PDF)</strong></td>
+            <td>Same as above, for delivery notes.</td>
           </tr>
         </tbody>
       </table>
