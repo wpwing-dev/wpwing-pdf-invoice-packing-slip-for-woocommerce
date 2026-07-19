@@ -238,6 +238,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'default' => array(),
 									),
 									array(
+										'id'      => 'delivery_auto_statuses',
+										'type'    => 'checkboxgroup',
+										'title'   => esc_html__( 'Auto-generate delivery note on status:', 'wpwing-wcpdf' ),
+										'desc'    => esc_html__( 'Delivery note is created automatically when an order reaches one of these statuses. Only created once per order.', 'wpwing-wcpdf' ),
+										'options' => $order_statuses,
+										'default' => array(),
+									),
+									array(
 										'id'      => 'invoice_attach_to_emails',
 										'type'    => 'checkboxgroup',
 										'title'   => esc_html__( 'Attach invoice PDF to emails:', 'wpwing-wcpdf' ),
@@ -285,6 +293,20 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'title'   => esc_html__( 'Packing slip template:', 'wpwing-wcpdf' ),
 										'options' => $templates,
 										'default' => 'default',
+									),
+									array(
+										'id'      => 'delivery_template',
+										'type'    => 'select',
+										'title'   => esc_html__( 'Delivery note template:', 'wpwing-wcpdf' ),
+										'options' => $templates,
+										'default' => 'default',
+									),
+									array(
+										'id'      => 'delivery_show_customer_note',
+										'type'    => 'checkbox',
+										'title'   => esc_html__( 'Show customer order note on delivery note:', 'wpwing-wcpdf' ),
+										'desc'    => 'Yes',
+										'default' => false,
 									),
 									array(
 										'id'    => 'invoice_preview_btn',
@@ -460,7 +482,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'id'          => 'template_custom_css',
 										'type'        => 'textarea',
 										'title'       => esc_html__( 'Custom CSS:', 'wpwing-wcpdf' ),
-										'desc'        => esc_html__( 'Applied to both invoice and packing slip, after the template styles. Example: .company-name { font-size: 18px; }', 'wpwing-wcpdf' ),
+										'desc'        => esc_html__( 'Applied to invoice, packing slip and delivery note, after the template styles. Example: .company-name { font-size: 18px; }', 'wpwing-wcpdf' ),
 										'placeholder' => '.company-name { font-size: 18px; }',
 									),
 								)

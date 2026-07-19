@@ -86,6 +86,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 			$order_id = $post instanceof WC_Order ? $post->get_id() : $post->ID;
 			$invoice  = $this->plugin->get_document_by_type( $order_id, 'invoice' );
 			$packing  = $this->plugin->get_document_by_type( $order_id, 'packing' );
+			$delivery = $this->plugin->get_document_by_type( $order_id, 'delivery' );
 			?>
 			<div class="wpwing-wcpdf-metabox">
 
@@ -165,6 +166,39 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 					</div>
 				</div>
 
+				<div class="wpwing-wcpdf-doc-row">
+					<span class="dashicons dashicons-car wpwing-wcpdf-doc-icon"></span>
+					<span class="wpwing-wcpdf-doc-label"><?php esc_html_e( 'Delivery Note:', 'wpwing-wcpdf' ); ?></span>
+					<div class="wpwing-wcpdf-doc-actions">
+						<?php if ( ( null !== $delivery ) && $delivery->exists ) : ?>
+							<a class="button tips wpwing_wcpdf_view_invoice"
+								data-tip="<?php esc_attr_e( 'View Delivery Note', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-view-delivery', $delivery->order->get_id() ), 'wpwing_view_delivery_' . $delivery->order->get_id() ) ); ?>"
+								target="_blank">
+								<?php esc_html_e( 'View', 'wpwing-wcpdf' ); ?>
+							</a>
+							<a class="button tips wpwing_wcpdf_preview_html"
+								data-tip="<?php esc_attr_e( 'Preview delivery note template as HTML', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-preview-html-delivery', $delivery->order->get_id() ), 'wpwing_preview_html_delivery_' . $delivery->order->get_id() ) ); ?>"
+								target="_blank">
+								<?php esc_html_e( 'Preview HTML', 'wpwing-wcpdf' ); ?>
+							</a>
+							<a class="button tips wpwing_wcpdf_cancel_invoice wpwing-btn-cancel"
+								data-tip="<?php esc_attr_e( 'Cancel Delivery Note', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-delivery', $delivery->order->get_id() ), 'wpwing_reset_delivery_' . $delivery->order->get_id() ) ); ?>"
+								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to cancel this delivery note?', 'wpwing-wcpdf' ); ?>')">
+								<span class="dashicons dashicons-dismiss"></span><?php esc_html_e( 'Cancel', 'wpwing-wcpdf' ); ?>
+							</a>
+						<?php else : ?>
+							<a class="button tips wpwing_wcpdf_create_invoice"
+								data-tip="<?php esc_attr_e( 'Create Delivery Note', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-delivery', $order_id ), 'wpwing_create_delivery_' . $order_id ) ); ?>">
+								<?php esc_html_e( 'Create', 'wpwing-wcpdf' ); ?>
+							</a>
+						<?php endif; ?>
+					</div>
+				</div>
+
 			</div>
 			<?php
 		}
@@ -190,10 +224,12 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 				$notice = sanitize_key( $_GET['wpwing_notice'] );
 
 				$messages = array(
-					'invoice_created'   => array( 'success', __( 'Invoice created successfully.', 'wpwing-wcpdf' ) ),
-					'invoice_cancelled' => array( 'warning', __( 'Invoice has been cancelled.', 'wpwing-wcpdf' ) ),
-					'packing_created'   => array( 'success', __( 'Packing slip created successfully.', 'wpwing-wcpdf' ) ),
-					'packing_cancelled' => array( 'warning', __( 'Packing slip has been cancelled.', 'wpwing-wcpdf' ) ),
+					'invoice_created'    => array( 'success', __( 'Invoice created successfully.', 'wpwing-wcpdf' ) ),
+					'invoice_cancelled'  => array( 'warning', __( 'Invoice has been cancelled.', 'wpwing-wcpdf' ) ),
+					'packing_created'    => array( 'success', __( 'Packing slip created successfully.', 'wpwing-wcpdf' ) ),
+					'packing_cancelled'  => array( 'warning', __( 'Packing slip has been cancelled.', 'wpwing-wcpdf' ) ),
+					'delivery_created'   => array( 'success', __( 'Delivery note created successfully.', 'wpwing-wcpdf' ) ),
+					'delivery_cancelled' => array( 'warning', __( 'Delivery note has been cancelled.', 'wpwing-wcpdf' ) ),
 				);
 
 				if ( isset( $messages[ $notice ] ) ) {
@@ -213,7 +249,12 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 				$count   = intval( $_GET['wpwing_bulk_created'] );
 				$skipped = isset( $_GET['wpwing_bulk_skipped'] ) ? intval( $_GET['wpwing_bulk_skipped'] ) : 0;
 				$type    = isset( $_GET['wpwing_bulk_type'] ) ? sanitize_key( $_GET['wpwing_bulk_type'] ) : 'invoice';
-				$label   = 'invoice' === $type ? __( 'invoice', 'wpwing-wcpdf' ) : __( 'packing slip', 'wpwing-wcpdf' );
+				$labels  = array(
+					'invoice'  => __( 'invoice', 'wpwing-wcpdf' ),
+					'packing'  => __( 'packing slip', 'wpwing-wcpdf' ),
+					'delivery' => __( 'delivery note', 'wpwing-wcpdf' ),
+				);
+				$label   = isset( $labels[ $type ] ) ? $labels[ $type ] : $labels['invoice'];
 
 				// translators: %1$d: count of generated documents, %2$s: document type label.
 				$message = sprintf( _n( '%1$d %2$s generated.', '%1$d %2$ss generated.', $count, 'wpwing-wcpdf' ), $count, $label );

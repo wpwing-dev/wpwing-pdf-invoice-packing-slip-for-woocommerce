@@ -110,6 +110,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 						$this->plugin->save_document( $packing );
 					}
 				}
+
+				$delivery_statuses = $this->settings->get_option( 'delivery_auto_statuses' );
+				if ( is_array( $delivery_statuses ) && in_array( $new_status, $delivery_statuses, true ) ) {
+					$delivery = $this->plugin->get_document_by_type( $order_id, 'delivery' );
+					if ( null !== $delivery && ! $delivery->exists ) {
+						$this->plugin->save_document( $delivery );
+					}
+				}
 			} finally {
 				$running = false;
 			}

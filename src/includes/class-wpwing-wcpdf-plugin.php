@@ -72,14 +72,18 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 
 			// Each entry: GET param key => [ doc type, operation, admin-only, notice key ].
 			$document_actions = array(
-				'wpwing-create-invoice'       => array( 'invoice', 'create', true, 'invoice_created' ),
-				'wpwing-view-invoice'         => array( 'invoice', 'view', false, '' ),
-				'wpwing-reset-invoice'        => array( 'invoice', 'reset', true, 'invoice_cancelled' ),
-				'wpwing-preview-html-invoice' => array( 'invoice', 'preview_html', true, '' ),
-				'wpwing-create-packing'       => array( 'packing', 'create', true, 'packing_created' ),
-				'wpwing-view-packing'         => array( 'packing', 'view', false, '' ),
-				'wpwing-reset-packing'        => array( 'packing', 'reset', true, 'packing_cancelled' ),
-				'wpwing-preview-html-packing' => array( 'packing', 'preview_html', true, '' ),
+				'wpwing-create-invoice'        => array( 'invoice', 'create', true, 'invoice_created' ),
+				'wpwing-view-invoice'          => array( 'invoice', 'view', false, '' ),
+				'wpwing-reset-invoice'         => array( 'invoice', 'reset', true, 'invoice_cancelled' ),
+				'wpwing-preview-html-invoice'  => array( 'invoice', 'preview_html', true, '' ),
+				'wpwing-create-packing'        => array( 'packing', 'create', true, 'packing_created' ),
+				'wpwing-view-packing'          => array( 'packing', 'view', false, '' ),
+				'wpwing-reset-packing'         => array( 'packing', 'reset', true, 'packing_cancelled' ),
+				'wpwing-preview-html-packing'  => array( 'packing', 'preview_html', true, '' ),
+				'wpwing-create-delivery'       => array( 'delivery', 'create', true, 'delivery_created' ),
+				'wpwing-view-delivery'         => array( 'delivery', 'view', false, '' ),
+				'wpwing-reset-delivery'        => array( 'delivery', 'reset', true, 'delivery_cancelled' ),
+				'wpwing-preview-html-delivery' => array( 'delivery', 'preview_html', true, '' ),
 			);
 
 			$notice = '';
@@ -151,7 +155,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 		 * Return a new document of the requested type for a specific order.
 		 *
 		 * @param int    $order_id      The order ID.
-		 * @param string $document_type 'invoice' or 'packing'.
+		 * @param string $document_type 'invoice', 'packing' or 'delivery'.
 		 * @return WPWing_WcPdf_Document|null
 		 * @since 1.0.0
 		 */
@@ -161,6 +165,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 					return new WPWing_WcPdf_Invoice( $order_id );
 				case 'packing':
 					return new WPWing_WcPdf_Packing( $order_id );
+				case 'delivery':
+					return new WPWing_WcPdf_Delivery( $order_id );
 				default:
 					return null;
 			}

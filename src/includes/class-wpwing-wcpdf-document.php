@@ -92,7 +92,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 		public function get_theme_dir() {
 
 			$settings   = WPWing_WcPdf_Settings::get_instance();
-			$option_key = 'invoice' === $this->document_type ? 'invoice_template' : 'packing_template';
+			$option_key = $this->document_type . '_template';
 			$theme      = $settings->get_option( $option_key );
 			$theme_dir  = WPWING_WCPDF_TEMPLATE_DIR . trailingslashit( $theme ? $theme : 'default' );
 

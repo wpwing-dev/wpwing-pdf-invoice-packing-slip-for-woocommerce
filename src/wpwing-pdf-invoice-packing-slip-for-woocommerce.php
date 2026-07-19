@@ -127,6 +127,7 @@ function wpwing_wcpdf_init() {
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-document.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-invoice.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-packing.php';
+	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-delivery.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-settings.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-admin.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-orders-list.php';
