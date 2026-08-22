@@ -1,11 +1,21 @@
 # Weekly Update Plan - H2 2026
 
-Working plan for the weekly release cadence (Sunday releases). Month 1 is planned in
-detail; months 2-6 are a directional arc, re-planned monthly against
-[COMPETITORS.md](COMPETITORS.md) (re-fetch the live pages each time).
+Working plan for the weekly release cadence (**Monday releases**, changed from
+Sunday - see status note). Month 1 is planned in detail; months 2-6 are a
+directional arc, re-planned monthly against [COMPETITORS.md](COMPETITORS.md)
+(re-fetch the live pages each time).
 
 - Current shipped version: 1.12.0 (2026-07-19)
-- Feature IDs (A.3, B.1, C.4, ...) refer to `DOC/Future Plan.md`
+- Feature IDs (A.3, B.1, C.4, ...) refer to `DOC/Future Plan.md` (file no longer
+  in repo - IDs are kept for continuity, described inline in [TODO.md](TODO.md))
+- **Status note 2026-08-22:** cadence stalled after 1.12.0 - 1.13.0 (planned
+  07-26) and 1.14.0 (planned 08-02) are unshipped. Competitor snapshot refreshed
+  in [COMPETITORS.md](COMPETITORS.md) (adds WebToffee 50k+ and Tyche 30k+);
+  re-prioritized backlog in [TODO.md](TODO.md); growth plan in
+  [MARKETING-PLAN.md](MARKETING-PLAN.md). **Cadence day moved from Sunday to
+  Monday**: the two missed releases both fell on a Sunday, which meant shipping
+  required weekend work and left no weekday support runway if something broke.
+  1.13.0 is re-dated to Mon 2026-08-24 to resume the cycle.
 - Status: A.1, A.2 and most of Phase B-adjacent quick wins through 1.10.0 are done;
   bulk ZIP/merged-PDF download shipped free in 1.10.0 (competitors gate this to Pro);
   1.11.0 (shortcode + invoice search) and 1.12.0 (Delivery Note) shipped on schedule
@@ -39,18 +49,23 @@ Shipping Labels). Challan ships this free - closest-peer parity.
 - No prices shown (like packing slip), optional customer note block.
 - Not included: email attachment option (invoice-only today; revisit if requested).
 
-### 1.13.0 - 2026-07-26 - Support-load reducers
+### 1.13.0 - 2026-08-24 (Mon) - Support-load reducers [RESCHEDULED from 07-26]
 
 B.2 + B.5 together - both live in the settings screen and reduce support burden
-ahead of the Pro launch.
+ahead of the Pro launch. First release of the restored (Monday) cadence.
 
 - **System status tab** (B.2): PHP/WP/WC/Dompdf versions, temp folder path and
   writability, font cache status, active document types, plugin version. One-click
   "Copy system info" button.
 - **Settings search** (B.5): client-side filter input that hides non-matching
   setting rows in real time.
+- **Tested up to: 7.1** in readme.txt (was 7.0; leaders already declare 7.1/WC
+  11.0 per the 2026-08-22 COMPETITORS.md refresh - stale values get demoted in
+  directory search).
+- At least one Fix/Improvement line per the standing checklist - check open
+  GitHub issues and the support forum before cutting the release.
 
-### 1.14.0 - 2026-08-02 - Setup wizard
+### 1.14.0 - 2026-08-31 (Mon) - Setup wizard [RESCHEDULED from 08-02]
 
 B.1 - the biggest remaining free-tier polish item, gets a full week. WP Overnight
 has one; first-run experience matters for converting new installs into reviews.
