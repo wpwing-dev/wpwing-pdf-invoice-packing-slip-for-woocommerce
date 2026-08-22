@@ -34,14 +34,22 @@ else
 
     echo "Activating plugin..."
     wp --path="$WP_PATH" plugin activate wpwing-pdf-invoice-packing-slip-for-woocommerce --allow-root
+
+    echo "Seeding dummy WooCommerce orders..."
+    wp --path="$WP_PATH" eval-file /docker/wordpress/seed-orders.php --allow-root
 fi
 
-# This script runs as root, so uploads ends up root-owned and the web server
-# cannot write PDFs or font caches. Use numeric 33 (www-data in the Debian
-# wordpress image - this Alpine CLI image maps www-data to 82). Only uploads is
-# chowned - wp-content/plugins holds a bind mount of the host working tree.
-echo "Fixing uploads ownership..."
-mkdir -p "$WP_PATH/wp-content/uploads"
-chown -R 33:33 "$WP_PATH/wp-content/uploads"
+# This script runs as root, so everything it creates under wp-content (uploads,
+# the upgrade/ staging dir every `wp plugin install` uses, and the installed
+# plugins themselves) ends up root-owned, and the web server can't write PDFs,
+# font caches, or install/update plugins through wp-admin afterwards. Use
+# numeric 33 (www-data in the Debian wordpress image - this Alpine CLI image
+# maps www-data to 82). Everything under wp-content is chowned EXCEPT this
+# plugin's own directory, which is a bind mount of the host working tree.
+echo "Fixing wp-content ownership..."
+mkdir -p "$WP_PATH/wp-content/uploads" "$WP_PATH/wp-content/upgrade"
+find "$WP_PATH/wp-content" -mindepth 1 -maxdepth 1 -not -name plugins -exec chown -R 33:33 {} +
+find "$WP_PATH/wp-content/plugins" -mindepth 1 -maxdepth 1 \
+    -not -name wpwing-pdf-invoice-packing-slip-for-woocommerce -exec chown -R 33:33 {} +
 
 echo "Done. Visit https://pdf-invoice.local/wp-admin (admin / password)"
