@@ -318,6 +318,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 						'preview_btn'     => esc_html__( 'Preview Invoice', 'wpwing-wcpdf' ),
 						'preview_title'   => esc_html__( 'Invoice Preview', 'wpwing-wcpdf' ),
 						'preview_loading' => esc_html__( 'Loading…', 'wpwing-wcpdf' ),
+						'copy_success'    => esc_html__( 'Copied to clipboard.', 'wpwing-wcpdf' ),
+						'copy_failed'     => esc_html__( 'Could not copy — please select and copy manually.', 'wpwing-wcpdf' ),
 					)
 				)
 			);

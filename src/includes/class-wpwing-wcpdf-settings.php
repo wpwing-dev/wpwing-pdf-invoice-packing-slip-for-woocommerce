@@ -89,6 +89,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 
 			$this->add_general_settings( $order_statuses, $email_options );
 			$this->add_template_settings( $templates );
+			$this->add_status_settings();
 
 			do_action( 'after_wpwing_wcpdf_settings', $this );
 		}
@@ -492,6 +493,219 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 				),
 				apply_filters( 'wpwing_wcpdf_template_settings_default_active', false )
 			);
+		}
+
+		/**
+		 * Register the System Status tab: a read-only diagnostics table plus a
+		 * "Copy system info" button, useful when contacting support.
+		 */
+		private function add_status_settings() {
+			$this->add_setting(
+				'wpwing_pdf_status',
+				esc_html__( 'System Status', 'wpwing-wcpdf' ),
+				array(
+					array(
+						'title'  => esc_html__( 'System Information', 'wpwing-wcpdf' ),
+						'desc'   => esc_html__( 'Useful information to include when contacting support.', 'wpwing-wcpdf' ),
+						'fields' => array(
+							array(
+								'id'       => 'system_status_info',
+								'type'     => 'html',
+								'title'    => '',
+								'callback' => array( $this, 'render_system_status' ),
+							),
+						),
+					),
+				),
+				false
+			);
+		}
+
+		/**
+		 * Render the System Status tab content: a diagnostics table and a
+		 * "Copy system info" button that copies a plain-text summary.
+		 *
+		 * @return string
+		 */
+		public function render_system_status() {
+			$rows = $this->get_system_status_rows();
+
+			$plain_text = '';
+			foreach ( $rows as $row ) {
+				$line        = str_replace( array( '<br />', '&mdash;' ), array( ' - ', '-' ), $row['value_html'] );
+				$plain_text .= $row['label'] . ': ' . trim( wp_strip_all_tags( $line ) ) . "\n";
+			}
+
+			ob_start();
+			?>
+			<table class="wpwing-status-table">
+				<tbody>
+					<?php foreach ( $rows as $row ) : ?>
+						<tr>
+							<th scope="row"><?php echo esc_html( $row['label'] ); ?></th>
+							<td>
+							<?php
+							echo wp_kses(
+								$row['value_html'],
+								array(
+									'code' => array(),
+									'br'   => array(),
+									'span' => array( 'class' => array() ),
+								)
+							);
+							?>
+								</td>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+			<p class="wpwing-status-actions">
+				<button type="button" id="wpwing-copy-system-info" class="button"><?php esc_html_e( 'Copy system info', 'wpwing-wcpdf' ); ?></button>
+				<span id="wpwing-copy-system-info-status" class="description"></span>
+			</p>
+			<textarea id="wpwing-status-copy-source" class="wpwing-status-copy-source" readonly><?php echo esc_textarea( $plain_text ); ?></textarea>
+			<?php
+			return ob_get_clean();
+		}
+
+		/**
+		 * Build the System Status rows: label plus a small pre-escaped HTML fragment.
+		 *
+		 * @return array[]
+		 */
+		private function get_system_status_rows() {
+			global $wp_version;
+
+			$wc_version     = defined( 'WC_VERSION' ) ? WC_VERSION : esc_html__( 'Not detected', 'wpwing-wcpdf' );
+			$dompdf_version = $this->get_dompdf_version();
+
+			$save_dir      = defined( 'WPWING_WCPDF_DOCUMENT_SAVE_DIR' ) ? WPWING_WCPDF_DOCUMENT_SAVE_DIR : '';
+			$save_writable = $save_dir && wp_is_writable( $save_dir );
+
+			$font_cache_dir   = trailingslashit( wp_upload_dir()['basedir'] ) . 'wpwing-pdf-fonts/';
+			$font_cache_ready = is_dir( $font_cache_dir ) && file_exists( $font_cache_dir . 'fonts_ready_2' );
+
+			// The folder is created on first PDF generation, so on a fresh install
+			// it won't exist yet - that's not a writability problem, so check the
+			// parent (uploads) directory in that case rather than reporting a false alarm.
+			$font_cache_writable = is_dir( $font_cache_dir )
+				? wp_is_writable( $font_cache_dir )
+				: wp_is_writable( dirname( $font_cache_dir ) );
+
+			if ( ! $font_cache_writable ) {
+				$font_cache_status = esc_html__( 'Not writable - using bundled fonts (extended currency symbols may not render)', 'wpwing-wcpdf' );
+			} elseif ( $font_cache_ready ) {
+				$font_cache_status = esc_html__( 'Ready', 'wpwing-wcpdf' );
+			} else {
+				$font_cache_status = esc_html__( 'Not generated yet - registers on first PDF', 'wpwing-wcpdf' );
+			}
+
+			return array(
+				array(
+					'label'      => esc_html__( 'Plugin version', 'wpwing-wcpdf' ),
+					'value_html' => '<code>' . esc_html( WPWING_WCPDF_VERSION ) . '</code>',
+				),
+				array(
+					'label'      => esc_html__( 'WordPress version', 'wpwing-wcpdf' ),
+					'value_html' => '<code>' . esc_html( $wp_version ) . '</code>',
+				),
+				array(
+					'label'      => esc_html__( 'PHP version', 'wpwing-wcpdf' ),
+					'value_html' => '<code>' . esc_html( PHP_VERSION ) . '</code>',
+				),
+				array(
+					'label'      => esc_html__( 'WooCommerce version', 'wpwing-wcpdf' ),
+					'value_html' => '<code>' . esc_html( $wc_version ) . '</code>',
+				),
+				array(
+					'label'      => esc_html__( 'Dompdf version', 'wpwing-wcpdf' ),
+					'value_html' => '<code>' . esc_html( $dompdf_version ) . '</code>',
+				),
+				array(
+					'label'      => esc_html__( 'Document save folder', 'wpwing-wcpdf' ),
+					'value_html' => $this->format_path_status( $save_dir, $save_writable ),
+				),
+				array(
+					'label'      => esc_html__( 'Font cache folder', 'wpwing-wcpdf' ),
+					'value_html' => $this->format_path_status( $font_cache_dir, $font_cache_writable ) . '<br />' . $font_cache_status,
+				),
+				array(
+					'label'      => esc_html__( 'Active document types', 'wpwing-wcpdf' ),
+					'value_html' => esc_html( implode( ', ', $this->get_active_document_types() ) ),
+				),
+			);
+		}
+
+		/**
+		 * Format a folder path with a writable/not-writable status badge.
+		 *
+		 * @param string $path     Folder path.
+		 * @param bool   $writable Whether the folder is writable.
+		 * @return string
+		 */
+		private function format_path_status( $path, $writable ) {
+			$badge_class = $writable ? 'wpwing-status-ok' : 'wpwing-status-warn';
+			$badge_text  = $writable ? esc_html__( 'Writable', 'wpwing-wcpdf' ) : esc_html__( 'Not writable', 'wpwing-wcpdf' );
+
+			return '<code>' . esc_html( $path ) . '</code> &mdash; <span class="' . esc_attr( $badge_class ) . '">' . $badge_text . '</span>';
+		}
+
+		/**
+		 * Return the display labels of document type classes currently loaded.
+		 *
+		 * @return string[]
+		 */
+		private function get_active_document_types() {
+			$types = array(
+				array(
+					'label' => esc_html__( 'Invoice', 'wpwing-wcpdf' ),
+					'class' => 'WPWing_WcPdf_Invoice',
+				),
+				array(
+					'label' => esc_html__( 'Packing Slip', 'wpwing-wcpdf' ),
+					'class' => 'WPWing_WcPdf_Packing',
+				),
+				array(
+					'label' => esc_html__( 'Delivery Note', 'wpwing-wcpdf' ),
+					'class' => 'WPWing_WcPdf_Delivery',
+				),
+			);
+
+			$active = array();
+			foreach ( $types as $type ) {
+				if ( class_exists( $type['class'] ) ) {
+					$active[] = $type['label'];
+				}
+			}
+
+			return $active;
+		}
+
+		/**
+		 * Return the installed dompdf/dompdf version from the Composer install manifest.
+		 *
+		 * @return string
+		 */
+		private function get_dompdf_version() {
+			$manifest = WPWING_WCPDF_VENDOR_DIR . 'composer/installed.json';
+
+			if ( ! file_exists( $manifest ) ) {
+				return esc_html__( 'Unknown', 'wpwing-wcpdf' );
+			}
+
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local vendor manifest, not a remote request.
+			$data     = json_decode( (string) file_get_contents( $manifest ), true );
+			$packages = isset( $data['packages'] ) ? $data['packages'] : $data; // Composer 1.x had no 'packages' wrapper.
+
+			if ( is_array( $packages ) ) {
+				foreach ( $packages as $package ) {
+					if ( isset( $package['name'], $package['version'] ) && 'dompdf/dompdf' === $package['name'] ) {
+						return ltrim( $package['version'], 'v' );
+					}
+				}
+			}
+
+			return esc_html__( 'Unknown', 'wpwing-wcpdf' );
 		}
 
 		/**

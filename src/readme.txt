@@ -4,9 +4,9 @@ Contributors:       wpwing, voboghure
 Donate link:        https://wpwing.com/
 Tags:               PDF, Invoice, Packing Slip, Packing List, WooCommerce
 Requires at least:  4.8
-Tested up to:       7.0
+Tested up to:       7.1
 Requires PHP:       7.4
-Stable tag:         1.12.0
+Stable tag:         1.13.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -93,6 +93,13 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 
 == Changelog ==
+
+= 1.13.0 - 24/08/2026 =
+
+* New: System Status tab in Settings - shows plugin, WordPress, PHP, WooCommerce and Dompdf versions, the document save folder and font cache folder with a writable check, and the active document types. Includes a one-click "Copy system info" button for support requests.
+* New: Settings search - a search box above the settings tabs filters the visible tab's rows in real time as you type, and stays applied when you switch tabs.
+* Fix: A brand-new install could trigger a PHP deprecation notice ("Passing null to parameter of type string") the first time the Settings page was opened, before Save Changes had ever been clicked.
+* Compatibility: Tested up to WordPress 7.1.
 
 = 1.12.0 - 19/07/2026 =
 

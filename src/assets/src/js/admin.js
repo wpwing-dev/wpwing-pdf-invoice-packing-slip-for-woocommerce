@@ -134,4 +134,51 @@ jQuery(function($) {
     $frame.show();
   }
 
+  // ── Settings search ───────────────────────────────────────────────────────
+  var $settingsSearch = $('#wpwing-settings-search');
+
+  function filterSettingsRows(query) {
+    var q = $.trim(query).toLowerCase();
+    $('.wpwing-wcpdf-setting-tab table tr').each(function() {
+      var $row = $(this);
+      $row.toggle(!q || $row.text().toLowerCase().indexOf(q) !== -1);
+    });
+  }
+
+  $settingsSearch.on('input', function() {
+    filterSettingsRows($(this).val());
+  });
+
+  // Re-apply the current search when switching tabs, so it stays live.
+  $('body').on('click', '.wpwing-wcpdf-setting-nav-tab', function() {
+    filterSettingsRows($settingsSearch.val());
+  });
+
+  // ── Copy system info (System Status tab) ────────────────────────────────────
+  $('body').on('click', '#wpwing-copy-system-info', function() {
+    var $btn    = $(this);
+    var $status = $('#wpwing-copy-system-info-status');
+    var source  = document.getElementById('wpwing-status-copy-source');
+
+    if (!source) return;
+
+    source.focus();
+    source.select();
+
+    var copied = false;
+    try {
+      copied = document.execCommand('copy');
+    } catch (e) {
+      copied = false;
+    }
+
+    if (window.getSelection) {
+      window.getSelection().removeAllRanges();
+    }
+    $btn.blur();
+
+    $status.text(copied ? wpwing_wcpdf_object.copy_success : wpwing_wcpdf_object.copy_failed);
+    setTimeout(function() { $status.text(''); }, 2000);
+  });
+
 });

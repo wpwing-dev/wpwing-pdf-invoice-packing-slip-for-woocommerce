@@ -159,6 +159,16 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 				'name'     => array(),
 				'disabled' => array(),
 			),
+			'span'     => array(
+				'id'    => array(),
+				'class' => array(),
+			),
+			'table'    => array( 'class' => array() ),
+			'tbody'    => array(),
+			'tr'       => array(),
+			'th'       => array( 'scope' => array() ),
+			'td'       => array(),
+			'code'     => array(),
 		);
 
 		/**
@@ -695,7 +705,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 						// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- kept for reference during development.
 						// $this->set_default( $field[ 'id' ], $field[ 'default' ] );
 
-						if ( 'checkbox' === $field['type'] || 'radio' === $field['type'] || 'checkboxgroup' === $field['type'] ) {
+						if ( 'checkbox' === $field['type'] || 'radio' === $field['type'] || 'checkboxgroup' === $field['type'] || 'html' === $field['type'] ) {
 							unset( $field['label_for'] );
 						}
 
@@ -862,6 +872,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 					$html .= $desc;
 					break;
 
+				case 'html':
+					$html = isset( $args['callback'] ) && is_callable( $args['callback'] ) ? (string) call_user_func( $args['callback'] ) : '';
+					break;
+
 				case 'upload':
 					$value = esc_attr( $this->get_option( $id ) );
 					$html  = sprintf( '<input %s type="text" class="%s-text" id="%s-field" name="%s[%s]" placeholder="%s" value="%s" />', esc_attr( $attrs ), esc_html( $size ), esc_attr( $id ), esc_html( $name ), esc_attr( $id ), esc_html( $args['placeholder'] ), esc_html( $value ) );
@@ -922,6 +936,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			<div id="<?php echo esc_attr( $this->slug ); ?>-wrap" class="wrap settings-wrap">
 
 				<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+
+				<p class="wpwing-wcpdf-settings-search">
+					<input type="search" id="wpwing-settings-search" class="regular-text" placeholder="<?php esc_attr_e( 'Search settings…', 'wpwing-wcpdf' ); ?>" />
+				</p>
 
 				<div class="wpwing-settings-layout">
 
@@ -1063,7 +1081,9 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 		 */
 		private function get_last_active_tab() {
 
-			$last_tab = trim( $this->get_option( '_last_active_tab' ) );
+			// Cast to string: on a brand-new install (before the first Save Changes),
+			// get_option() returns null here, and trim( null ) is deprecated on PHP 8.1+.
+			$last_tab = trim( (string) $this->get_option( '_last_active_tab' ) );
 
 			$default_tab = '';
 			foreach ( $this->fields as $tabs ) {

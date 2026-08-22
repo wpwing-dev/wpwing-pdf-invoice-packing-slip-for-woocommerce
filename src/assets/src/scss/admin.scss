@@ -238,3 +238,65 @@ fieldset.wpwing-checkboxgroup {
     padding: 20px;
     text-align: center;
 }
+
+// Settings — search box (sits above the tabs, outside the form)
+.wpwing-wcpdf-settings-search {
+    margin: 12px 0 16px;
+
+    input[type="search"] {
+        width: 320px;
+        max-width: 100%;
+    }
+}
+
+// System Status tab
+.wpwing-status-table {
+    width: 100%;
+    max-width: 640px;
+    border-collapse: collapse;
+
+    th, td {
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    th {
+        width: 220px;
+        font-weight: 600;
+    }
+
+    code {
+        background: #f6f7f7;
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-size: 12px;
+    }
+}
+
+.wpwing-status-ok {
+    color: #00a32a;
+    font-weight: 600;
+}
+
+.wpwing-status-warn {
+    color: #d63638;
+    font-weight: 600;
+}
+
+.wpwing-status-actions {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wpwing-status-copy-source {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+}
