@@ -115,13 +115,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 								data-tip="<?php esc_attr_e( 'Preview invoice template as HTML', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-preview-html-invoice', $invoice->order->get_id() ), 'wpwing_preview_html_invoice_' . $invoice->order->get_id() ) ); ?>"
 								target="_blank">
-								<?php esc_html_e( 'Preview HTML', 'wpwing-wcpdf' ); ?>
+								<?php esc_html_e( 'Preview', 'wpwing-wcpdf' ); ?>
 							</a>
 							<a class="button tips wpwing_wcpdf_cancel_invoice wpwing-btn-cancel"
-								data-tip="<?php esc_attr_e( 'Cancel Invoice', 'wpwing-wcpdf' ); ?>"
+								data-tip="<?php esc_attr_e( 'Delete Invoice', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-invoice', $invoice->order->get_id() ), 'wpwing_reset_invoice_' . $invoice->order->get_id() ) ); ?>"
-								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to cancel this invoice?', 'wpwing-wcpdf' ); ?>')">
-								<span class="dashicons dashicons-dismiss"></span><?php esc_html_e( 'Cancel', 'wpwing-wcpdf' ); ?>
+								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this invoice?', 'wpwing-wcpdf' ); ?>')">
+								<span class="dashicons dashicons-trash"></span><?php esc_html_e( 'Delete', 'wpwing-wcpdf' ); ?>
 							</a>
 						<?php else : ?>
 							<a class="button tips wpwing_wcpdf_create_invoice"
@@ -148,13 +148,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 								data-tip="<?php esc_attr_e( 'Preview packing slip template as HTML', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-preview-html-packing', $packing->order->get_id() ), 'wpwing_preview_html_packing_' . $packing->order->get_id() ) ); ?>"
 								target="_blank">
-								<?php esc_html_e( 'Preview HTML', 'wpwing-wcpdf' ); ?>
+								<?php esc_html_e( 'Preview', 'wpwing-wcpdf' ); ?>
 							</a>
 							<a class="button tips wpwing_wcpdf_cancel_invoice wpwing-btn-cancel"
-								data-tip="<?php esc_attr_e( 'Cancel Packing Slip', 'wpwing-wcpdf' ); ?>"
+								data-tip="<?php esc_attr_e( 'Delete Packing Slip', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-packing', $packing->order->get_id() ), 'wpwing_reset_packing_' . $packing->order->get_id() ) ); ?>"
-								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to cancel this packing slip?', 'wpwing-wcpdf' ); ?>')">
-								<span class="dashicons dashicons-dismiss"></span><?php esc_html_e( 'Cancel', 'wpwing-wcpdf' ); ?>
+								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this packing slip?', 'wpwing-wcpdf' ); ?>')">
+								<span class="dashicons dashicons-trash"></span><?php esc_html_e( 'Delete', 'wpwing-wcpdf' ); ?>
 							</a>
 						<?php else : ?>
 							<a class="button tips wpwing_wcpdf_create_invoice"
@@ -181,13 +181,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 								data-tip="<?php esc_attr_e( 'Preview delivery note template as HTML', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-preview-html-delivery', $delivery->order->get_id() ), 'wpwing_preview_html_delivery_' . $delivery->order->get_id() ) ); ?>"
 								target="_blank">
-								<?php esc_html_e( 'Preview HTML', 'wpwing-wcpdf' ); ?>
+								<?php esc_html_e( 'Preview', 'wpwing-wcpdf' ); ?>
 							</a>
 							<a class="button tips wpwing_wcpdf_cancel_invoice wpwing-btn-cancel"
-								data-tip="<?php esc_attr_e( 'Cancel Delivery Note', 'wpwing-wcpdf' ); ?>"
+								data-tip="<?php esc_attr_e( 'Delete Delivery Note', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-delivery', $delivery->order->get_id() ), 'wpwing_reset_delivery_' . $delivery->order->get_id() ) ); ?>"
-								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to cancel this delivery note?', 'wpwing-wcpdf' ); ?>')">
-								<span class="dashicons dashicons-dismiss"></span><?php esc_html_e( 'Cancel', 'wpwing-wcpdf' ); ?>
+								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this delivery note?', 'wpwing-wcpdf' ); ?>')">
+								<span class="dashicons dashicons-trash"></span><?php esc_html_e( 'Delete', 'wpwing-wcpdf' ); ?>
 							</a>
 						<?php else : ?>
 							<a class="button tips wpwing_wcpdf_create_invoice"
@@ -225,11 +225,11 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 
 				$messages = array(
 					'invoice_created'    => array( 'success', __( 'Invoice created successfully.', 'wpwing-wcpdf' ) ),
-					'invoice_cancelled'  => array( 'warning', __( 'Invoice has been cancelled.', 'wpwing-wcpdf' ) ),
+					'invoice_cancelled'  => array( 'warning', __( 'Invoice has been deleted.', 'wpwing-wcpdf' ) ),
 					'packing_created'    => array( 'success', __( 'Packing slip created successfully.', 'wpwing-wcpdf' ) ),
-					'packing_cancelled'  => array( 'warning', __( 'Packing slip has been cancelled.', 'wpwing-wcpdf' ) ),
+					'packing_cancelled'  => array( 'warning', __( 'Packing slip has been deleted.', 'wpwing-wcpdf' ) ),
 					'delivery_created'   => array( 'success', __( 'Delivery note created successfully.', 'wpwing-wcpdf' ) ),
-					'delivery_cancelled' => array( 'warning', __( 'Delivery note has been cancelled.', 'wpwing-wcpdf' ) ),
+					'delivery_cancelled' => array( 'warning', __( 'Delivery note has been deleted.', 'wpwing-wcpdf' ) ),
 				);
 
 				if ( isset( $messages[ $notice ] ) ) {
