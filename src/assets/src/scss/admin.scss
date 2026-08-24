@@ -124,8 +124,8 @@
     width: 2em;
 }
 
-.widefat .column-order_actions a.button.wpwing_wcpdf_buttons:after,
-.widefat .column-wc_actions a.button.wpwing_wcpdf_buttons:after {
+.widefat .column-order_actions a.button.wpwing_wcpdf_buttons::after,
+.widefat .column-wc_actions a.button.wpwing_wcpdf_buttons::after {
     display: none;
 }
 
@@ -133,7 +133,7 @@
 .widefat .column-order_actions a.button.wpwing_wcpdf_create_invoice,
 .widefat .column-wc_actions a.button.wpwing_wcpdf_create_invoice {
     &::before {
-        font-family: dashicons;
+        font-family: dashicons, sans-serif;
         content: "\f132";
         font-size: 16px;
         line-height: 1;
@@ -149,7 +149,7 @@
 .widefat .column-order_actions a.button.wpwing_wcpdf_view_invoice,
 .widefat .column-wc_actions a.button.wpwing_wcpdf_view_invoice {
     &::before {
-        font-family: dashicons;
+        font-family: dashicons, sans-serif;
         content: "\f177";
         font-size: 16px;
         line-height: 1;
