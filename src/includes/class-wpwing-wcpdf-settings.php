@@ -115,7 +115,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 		 *
 		 * @return array
 		 */
-		private function get_order_statuses() {
+		public function get_order_statuses() {
 			$statuses = array();
 			if ( function_exists( 'wc_get_order_statuses' ) ) {
 				foreach ( wc_get_order_statuses() as $status => $label ) {
@@ -130,7 +130,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 		 *
 		 * @return array
 		 */
-		private function get_email_options() {
+		public function get_email_options() {
 			return array(
 				'customer_processing_order' => esc_html__( 'Processing Order', 'wpwing-wcpdf' ),
 				'customer_completed_order'  => esc_html__( 'Completed Order', 'wpwing-wcpdf' ),

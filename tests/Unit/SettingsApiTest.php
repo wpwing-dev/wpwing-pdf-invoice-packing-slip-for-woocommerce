@@ -89,4 +89,84 @@ class SettingsApiTest extends TestCase {
 
 		$this->assertSame( array( 'invoice_number' => 1 ), $saved );
 	}
+
+	/**
+	 * Build an API instance with a small fixed schema (one field per type) registered as
+	 * defaults, so sanitize_value()/sanitize_callback() have real type lookups to work with.
+	 */
+	private function make_api_with_defaults(): WPWing_WcPdf_Settings_API {
+		Functions\when( 'apply_filters' )->alias( function ( $tag, $value ) {
+			if ( 'wpwing_wcpdf_settings' === $tag ) {
+				return array(
+					array(
+						'id'       => 'tab',
+						'sections' => array(
+							array(
+								'fields' => array(
+									array( 'id' => 'a_text', 'type' => 'text' ),
+									array( 'id' => 'a_textarea', 'type' => 'textarea' ),
+									array( 'id' => 'a_upload', 'type' => 'upload' ),
+									array( 'id' => 'a_number', 'type' => 'number' ),
+									array( 'id' => 'a_checkbox', 'type' => 'checkbox' ),
+									array( 'id' => 'a_group', 'type' => 'checkboxgroup' ),
+								),
+							),
+						),
+					),
+				);
+			}
+			return $value;
+		} );
+
+		$api = new WPWing_WcPdf_Settings_API();
+		$api->set_defaults();
+
+		return $api;
+	}
+
+	public function test_sanitize_value_text_strips_tags(): void {
+		$api = $this->make_api_with_defaults();
+		$this->assertSame( 'bold', $api->sanitize_value( 'a_text', '<b>bold</b>' ) );
+	}
+
+	public function test_sanitize_value_upload_escapes_as_url(): void {
+		$api = $this->make_api_with_defaults();
+		$this->assertSame( 'https://example.com/logo.png', $api->sanitize_value( 'a_upload', 'https://example.com/logo.png' ) );
+	}
+
+	public function test_sanitize_value_number_casts_to_absint(): void {
+		$api = $this->make_api_with_defaults();
+		$this->assertSame( 5, $api->sanitize_value( 'a_number', '5abc' ) );
+	}
+
+	public function test_sanitize_value_checkbox_coerces_to_one_or_zero(): void {
+		$api = $this->make_api_with_defaults();
+		$this->assertSame( 1, $api->sanitize_value( 'a_checkbox', '1' ) );
+		$this->assertSame( 0, $api->sanitize_value( 'a_checkbox', '' ) );
+	}
+
+	public function test_sanitize_value_checkboxgroup_sanitizes_each_key(): void {
+		$api = $this->make_api_with_defaults();
+		$this->assertSame(
+			array( 'processing', 'on-hold' ),
+			$api->sanitize_value( 'a_group', array( 'Processing!', 'on-hold' ) )
+		);
+	}
+
+	/**
+	 * Regression test: sanitize_callback() walks every registered field, not just the ones
+	 * present in the given array, and forces any missing checkbox/checkboxgroup field to its
+	 * "unchecked" value. A caller that only has a subset of fields (e.g. the Setup Wizard
+	 * saving one step at a time) must never pass a partial array through this method directly -
+	 * it would silently zero out every other checkbox/checkboxgroup setting in the plugin.
+	 * Use sanitize_value() per-field instead. See class-wpwing-wcpdf-wizard.php::save_step().
+	 */
+	public function test_sanitize_callback_forces_missing_checkbox_fields_to_unchecked(): void {
+		$api = $this->make_api_with_defaults();
+
+		$result = $api->sanitize_callback( array( 'a_text' => 'hello' ) );
+
+		$this->assertSame( 0, $result['a_checkbox'] );
+		$this->assertSame( array(), $result['a_group'] );
+	}
 }

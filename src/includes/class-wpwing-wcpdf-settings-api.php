@@ -510,6 +510,17 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 		}
 
 		/**
+		 * Return the filtered settings option name used as the form field name prefix.
+		 *
+		 * @since 1.14.0
+		 * @return string
+		 */
+		public function get_settings_name() {
+
+			return $this->settings_name;
+		}
+
+		/**
 		 * Retrieve a single option value, falling back to its registered default.
 		 *
 		 * @param string $option Option key.
@@ -593,32 +604,48 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 					continue;
 				}
 
-				switch ( $type ) {
-					case 'text':
-					case 'select':
-					case 'radio':
-						$options[ $id ] = sanitize_text_field( $options[ $id ] );
-						break;
-					case 'textarea':
-						$options[ $id ] = sanitize_textarea_field( $options[ $id ] );
-						break;
-					case 'upload':
-						$options[ $id ] = esc_url_raw( $options[ $id ] );
-						break;
-					case 'number':
-						$options[ $id ] = absint( $options[ $id ] );
-						break;
-					case 'checkbox':
-						$options[ $id ] = absint( $options[ $id ] ) ? 1 : 0;
-						break;
-					case 'multiselect':
-					case 'checkboxgroup':
-						$options[ $id ] = array_map( 'sanitize_key', (array) $options[ $id ] );
-						break;
-				}
+				$options[ $id ] = $this->sanitize_value( $id, $options[ $id ] );
 			}
 
 			return $options;
+		}
+
+		/**
+		 * Sanitize a single field's value according to its registered type.
+		 *
+		 * Safe to call for one field in isolation (unlike sanitize_callback(),
+		 * which walks every registered field and zeroes out any that are
+		 * missing from the given array).
+		 *
+		 * @since 1.14.0
+		 * @param string $id    Field ID.
+		 * @param mixed  $value Raw value.
+		 * @return mixed
+		 */
+		public function sanitize_value( $id, $value ) {
+
+			$default = $this->get_default( $id );
+			$type    = $default ? $default['type'] : 'text';
+
+			switch ( $type ) {
+				case 'text':
+				case 'select':
+				case 'radio':
+					return sanitize_text_field( $value );
+				case 'textarea':
+					return sanitize_textarea_field( $value );
+				case 'upload':
+					return esc_url_raw( $value );
+				case 'number':
+					return absint( $value );
+				case 'checkbox':
+					return absint( $value ) ? 1 : 0;
+				case 'multiselect':
+				case 'checkboxgroup':
+					return array_map( 'sanitize_key', (array) $value );
+				default:
+					return sanitize_text_field( $value );
+			}
 		}
 
 		/**
@@ -936,6 +963,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			<div id="<?php echo esc_attr( $this->slug ); ?>-wrap" class="wrap settings-wrap">
 
 				<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+
+				<?php do_action( 'wpwing_wcpdf_settings_before_form', $this ); ?>
 
 				<p class="wpwing-wcpdf-settings-search">
 					<input type="search" id="wpwing-settings-search" class="regular-text" placeholder="<?php esc_attr_e( 'Search settings…', 'wpwing-wcpdf' ); ?>" />

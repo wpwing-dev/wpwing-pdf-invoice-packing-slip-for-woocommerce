@@ -3,7 +3,7 @@
  * Plugin Name:           PDF Invoice and Packing Slip for WooCommerce
  * Plugin URI:            https://wpwing.com/
  * Description:           Automatically generate, print, and attach professional PDF invoices and packing slips to WooCommerce emails. Clean, lightweight, and fast.
- * Version:               1.13.0
+ * Version:               1.14.0
  * Author:                WPWing
  * Author URI:            https://wpwing.com/
  * Requires PHP:          7.4
@@ -26,7 +26,7 @@ $wp_upload_dir = wp_upload_dir();
 // Define constants.
 defined( 'WPWING_WCPDF_DOCUMENT_SAVE_DIR' ) || define( 'WPWING_WCPDF_DOCUMENT_SAVE_DIR', $wp_upload_dir['basedir'] . '/wpwing-pdf-invoices/' );
 
-defined( 'WPWING_WCPDF_VERSION' ) || define( 'WPWING_WCPDF_VERSION', '1.13.0' );
+defined( 'WPWING_WCPDF_VERSION' ) || define( 'WPWING_WCPDF_VERSION', '1.14.0' );
 
 defined( 'WPWING_WCPDF_FILE' ) || define( 'WPWING_WCPDF_FILE', __FILE__ );
 
@@ -130,6 +130,7 @@ function wpwing_wcpdf_init() {
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-delivery.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-settings.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-admin.php';
+	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-wizard.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-orders-list.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-wc-hooks.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-shortcodes.php';
@@ -165,6 +166,23 @@ function wpwing_wcpdf_install() {
 }
 
 add_action( 'plugins_loaded', 'wpwing_wcpdf_install', 11 );
+
+/**
+ * Schedule a one-time redirect to the Setup Wizard on activation.
+ *
+ * Registered as a plain function (not a class method) because this callback
+ * runs before `wpwing_wcpdf_init()` has loaded the plugin's classes.
+ *
+ * @since 1.14.0
+ * @param bool $network_wide Whether the plugin was network-activated.
+ */
+function wpwing_wcpdf_schedule_wizard_redirect( $network_wide ) {
+	if ( $network_wide || is_network_admin() || ! function_exists( 'WC' ) ) {
+		return;
+	}
+	set_transient( 'wpwing_wcpdf_wizard_redirect', 1, 30 );
+}
+register_activation_hook( __FILE__, 'wpwing_wcpdf_schedule_wizard_redirect' );
 
 if ( ! function_exists( 'log_it' ) ) {
 	/**

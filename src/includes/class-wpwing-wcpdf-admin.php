@@ -65,7 +65,9 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 			}
 			$order_screen    = function_exists( 'wc_get_page_screen_id' ) ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
 			$settings_screen = 'wpwing_page_' . sprintf( '%s-settings', sanitize_key( WPWING_WCPDF_DIR_NAME ) );
-			$allowed         = array( 'wpwing-pdf-invoice', $settings_screen, $order_screen, 'woocommerce_page_wc-orders' );
+			// Hidden page (empty parent slug) registered by WPWing_WcPdf_Wizard::SLUG - WP prefixes hidden pages with 'admin_page_'.
+			$wizard_screen = 'admin_page_wpwing-wcpdf-wizard';
+			$allowed       = array( 'wpwing-pdf-invoice', $settings_screen, $order_screen, 'woocommerce_page_wc-orders', $wizard_screen );
 			return in_array( $screen->id, $allowed, true );
 		}
 

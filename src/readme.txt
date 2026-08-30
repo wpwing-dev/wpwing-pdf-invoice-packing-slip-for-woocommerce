@@ -6,7 +6,7 @@ Tags:               PDF, Invoice, Packing Slip, Packing List, WooCommerce
 Requires at least:  4.8
 Tested up to:       7.1
 Requires PHP:       7.4
-Stable tag:         1.13.0
+Stable tag:         1.14.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -93,6 +93,13 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 
 == Changelog ==
+
+= 1.14.0 - 31/08/2026 =
+
+* New: Setup Wizard - a first-run wizard walks you through shop name and address, logo upload, paper size, auto-generate statuses, and invoice email attachments. Launches automatically the first time you activate the plugin, is skippable at every step, and can be re-launched any time from a link on the Settings page.
+* Fix: The company logo could fail to appear on generated PDFs (showing "Image not found" instead) on some hosts, including most local dev environments. The logo is now embedded directly rather than fetched back over the network.
+* Fix: Order metabox action buttons could overflow the sidebar on narrow screens. The destructive action is now labeled "Delete" instead of "Cancel" for clarity.
+* Fix: The invoice preview panel in Settings could clip the right side of the invoice on narrower screens instead of showing a scrollbar.
 
 = 1.13.0 - 24/08/2026 =
 

@@ -105,7 +105,10 @@ if ( ! class_exists( 'WPWing_WcPdf_ProDocument' ) ) {
 				return;
 			}
 
-			echo '<div class="company-logo"><img src="' . esc_url( apply_filters( 'wpwing_wcpdf_company_image_path', $company_logo ) ) . '"></div>';
+			$src = $this->resolve_local_image_src( apply_filters( 'wpwing_wcpdf_company_image_path', $company_logo ) );
+
+			// esc_attr(), not esc_url() - esc_url() strips data: URIs by default, and $src may be one.
+			echo '<div class="company-logo"><img src="' . esc_attr( $src ) . '"></div>';
 		}
 
 		/**

@@ -488,7 +488,64 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 				return;
 			}
 
-			echo '<div class="company-logo"><img src="' . esc_url( apply_filters( 'wpwing_wcpdf_company_image_path', $company_logo ) ) . '"></div>';
+			$src = $this->resolve_local_image_src( apply_filters( 'wpwing_wcpdf_company_image_path', $company_logo ) );
+
+			// esc_attr(), not esc_url() - esc_url() strips data: URIs by default, and $src may be one.
+			echo '<div class="company-logo"><img src="' . esc_attr( $src ) . '"></div>';
+		}
+
+		/**
+		 * Resolve an uploaded image URL to an inline base64 data URI when the file can be found
+		 * on local disk, so Dompdf never has to fetch it over HTTP(S). A self-fetch of the
+		 * site's own URL is unreliable across environments (fails outright in this project's
+		 * docker dev stack, where the site's local domain resolves to a different loopback
+		 * address inside the container than outside it; on real hosts it can fail on
+		 * self-signed/internal certs, restrictive firewalls, or outbound requests being
+		 * disabled) even though the file sits right there on disk. Falls back to the original
+		 * URL when it can't be resolved locally (e.g. a genuinely external image).
+		 *
+		 * @since 1.14.0
+		 * @param string $url Image URL, typically from an uploaded media attachment.
+		 * @return string Data URI, or the original URL unchanged if it can't be resolved locally.
+		 */
+		protected function resolve_local_image_src( $url ) {
+
+			if ( ! $url ) {
+				return $url;
+			}
+
+			$path = null;
+
+			$attachment_id = attachment_url_to_postid( $url );
+			if ( $attachment_id ) {
+				$path = get_attached_file( $attachment_id );
+			}
+
+			if ( ! $path || ! file_exists( $path ) ) {
+				$upload_dir = wp_upload_dir();
+				if ( 0 === strpos( $url, $upload_dir['baseurl'] ) ) {
+					$candidate = $upload_dir['basedir'] . substr( $url, strlen( $upload_dir['baseurl'] ) );
+					if ( file_exists( $candidate ) ) {
+						$path = $candidate;
+					}
+				}
+			}
+
+			if ( ! $path || ! file_exists( $path ) ) {
+				return $url;
+			}
+
+			$filetype = wp_check_filetype( $path );
+			$mime     = ! empty( $filetype['type'] ) ? $filetype['type'] : 'image/png';
+
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local file read, not a remote request.
+			$contents = file_get_contents( $path );
+			if ( false === $contents ) {
+				return $url;
+			}
+
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- embedding image bytes as a data URI, not obfuscation.
+			return 'data:' . $mime . ';base64,' . base64_encode( $contents );
 		}
 
 		/**

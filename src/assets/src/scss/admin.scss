@@ -331,3 +331,66 @@ fieldset.wpwing-checkboxgroup {
     width: 1px;
     overflow: hidden;
 }
+
+// Setup Wizard
+.wpwing-wizard-wrap {
+    max-width: 720px;
+}
+
+.wpwing-wizard-skip-all {
+    text-align: right;
+    margin: 0 0 10px;
+
+    a {
+        color: #646970;
+
+        &:hover, &:focus {
+            color: #d63638;
+        }
+    }
+}
+
+.wpwing-wizard-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+
+    li {
+        font-size: 13px;
+        color: #646970;
+    }
+
+    .wpwing-wizard-step-current {
+        color: #2271b1;
+        font-weight: 600;
+    }
+}
+
+.wpwing-wizard-card {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    padding: 24px;
+}
+
+.wpwing-wizard-actions {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    .wpwing-wizard-skip-step {
+        color: #646970;
+
+        &:hover, &:focus {
+            color: #2271b1;
+        }
+    }
+}
+
+.wpwing-wcpdf-wizard-relaunch {
+    margin: 4px 0 0;
+}

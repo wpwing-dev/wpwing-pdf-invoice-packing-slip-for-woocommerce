@@ -37,3 +37,21 @@ if ( ! function_exists( 'esc_html_e' ) ) {
 if ( ! function_exists( 'wc_doing_it_wrong' ) ) {
 	function wc_doing_it_wrong( $function, $message, $version ) {}
 }
+
+if ( ! function_exists( 'sanitize_text_field' ) ) {
+	function sanitize_text_field( $str ) {
+		return trim( strip_tags( (string) $str ) );
+	}
+}
+
+if ( ! function_exists( 'sanitize_textarea_field' ) ) {
+	function sanitize_textarea_field( $str ) {
+		return trim( strip_tags( (string) $str ) );
+	}
+}
+
+if ( ! function_exists( 'esc_url_raw' ) ) {
+	function esc_url_raw( $url ) {
+		return trim( (string) $url );
+	}
+}
