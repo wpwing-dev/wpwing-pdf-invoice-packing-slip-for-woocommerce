@@ -23,7 +23,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 		/**
 		 * Settings API instance.
 		 *
-		 * @var WPWing_WcPdf_Settings_API
+		 * @var WPWing_WcPdf_Settings_API|null
 		 */
 		protected $_api; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- legacy name kept for backward compatibility.
 
@@ -50,17 +50,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 		}
 
 		/**
-		 * Lazily instantiate and return the settings API object.
-		 *
-		 * @return $this
+		 * Lazily instantiate the settings API object.
 		 */
 		public function load_api() {
 			if ( ! $this->_api ) {
 				require_once 'class-wpwing-wcpdf-settings-api.php';
 				$this->_api = new WPWing_WcPdf_Settings_API();
 			}
-
-			return $this;
 		}
 
 		/**

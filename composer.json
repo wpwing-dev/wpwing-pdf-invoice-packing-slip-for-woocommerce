@@ -6,7 +6,8 @@
 		"phpunit/phpunit": "^10.0",
 		"brain/monkey": "^2.6",
 		"phpstan/phpstan": "^1.0",
-		"szepeviktor/phpstan-wordpress": "^1.0"
+		"szepeviktor/phpstan-wordpress": "^1.0",
+		"php-stubs/woocommerce-stubs": "^11.0"
 	},
 	"config": {
 		"allow-plugins": {

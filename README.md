@@ -99,7 +99,7 @@ make env-reset
 | `make lint-js` | Lint JavaScript with ESLint |
 | `make lint-css` | Lint SCSS with Stylelint |
 | `make lint-all` | Run all linters (PHP, JS, SCSS) |
-| `make analyse` | Run PHPStan static analysis |
+| `make phpstan` | Run PHPStan static analysis |
 | `make test-unit` | Run PHPUnit tests (no WP stack needed) |
 | `make test-e2e` | Run Playwright E2E tests (full stack) |
 | `make check` | Verify version strings are consistent |
@@ -173,7 +173,7 @@ Before submitting, run:
 
 ```bash
 make lint-all
-make analyse
+make phpstan
 make check
 make test-unit
 ```

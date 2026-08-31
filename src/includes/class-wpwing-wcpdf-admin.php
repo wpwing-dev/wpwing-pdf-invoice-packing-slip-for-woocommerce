@@ -25,21 +25,12 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 		private $plugin;
 
 		/**
-		 * Settings instance.
-		 *
-		 * @var WPWing_WcPdf_Settings
-		 */
-		private $settings;
-
-		/**
 		 * Constructor.
 		 *
-		 * @param WPWing_WcPdf_Plugin   $plugin   Plugin instance.
-		 * @param WPWing_WcPdf_Settings $settings Settings instance.
+		 * @param WPWing_WcPdf_Plugin $plugin Plugin instance.
 		 */
-		public function __construct( WPWing_WcPdf_Plugin $plugin, WPWing_WcPdf_Settings $settings ) {
-			$this->plugin   = $plugin;
-			$this->settings = $settings;
+		public function __construct( WPWing_WcPdf_Plugin $plugin ) {
+			$this->plugin = $plugin;
 		}
 
 		/**
@@ -98,7 +89,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 					<strong><?php echo esc_html( $invoice->get_formatted_date() ); ?></strong>
 					<span class="wpwing-wcpdf-sep">|</span>
 					<?php esc_html_e( 'Invoice:', 'wpwing-wcpdf' ); ?>
-					<strong><?php echo esc_html( $invoice->get_formatted_invoice_number() ); ?></strong>
+					<strong><?php echo esc_html( $invoice->get_formatted_invoice_number() ); // @phpstan-ignore method.notFound (get_document_by_type() with 'invoice' always returns a WPWing_WcPdf_Invoice here) ?></strong>
 				</div>
 				<?php endif; ?>
 
@@ -383,7 +374,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 			$theme_dir = $document->get_theme_dir();
 
 			ob_start();
-			wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
+			wc_get_template( 'template.php', array(), $theme_dir, $theme_dir );
 			$html = ob_get_clean();
 
 			$document->flush_template();

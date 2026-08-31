@@ -28,7 +28,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Delivery' ) ) {
 		/**
 		 * Order Number
 		 *
-		 * @var string
+		 * @var int
 		 */
 		public $number;
 
@@ -42,7 +42,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Delivery' ) ) {
 		/**
 		 * Settings API instance
 		 *
-		 * @var Object
+		 * @var WPWing_WcPdf_Settings
 		 */
 		public $settings;
 

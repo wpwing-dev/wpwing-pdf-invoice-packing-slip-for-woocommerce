@@ -46,9 +46,9 @@ lint-css: ## Lint SCSS with Stylelint
 lint-all: phpcs lint-js lint-css ## Run all linters (PHP, JS, SCSS)
 .PHONY: lint-all
 
-analyse: ## Run PHPStan static analysis
+phpstan: ## Run PHPStan static analysis
 	$(PHP) ./vendor/bin/phpstan analyse
-.PHONY: analyse
+.PHONY: phpstan
 
 pot: ## Regenerate the .pot translation file
 	wp i18n make-pot $(SRC_DIR) $(SRC_DIR)/languages/wpwing-wcpdf.pot \

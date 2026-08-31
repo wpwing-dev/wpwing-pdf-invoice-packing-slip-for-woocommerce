@@ -37,7 +37,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 
 			add_action( 'init', array( $this, 'init_plugin_actions' ) );
 
-			( new WPWing_WcPdf_Admin( $this, $this->settings ) )->register();
+			( new WPWing_WcPdf_Admin( $this ) )->register();
 			( new WPWing_WcPdf_Wizard( $this->settings ) )->register();
 			( new WPWing_WcPdf_Orders_List( $this ) )->register();
 			( new WPWing_WcPdf_Wc_Hooks( $this, $this->settings ) )->register();
@@ -277,7 +277,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 				$document->init_template();
 				$document->init_template_generation_actions();
 				ob_start();
-				wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
+				wc_get_template( 'template.php', array(), $theme_dir, $theme_dir );
 				return ob_get_clean();
 			} finally {
 				$document->flush_template();

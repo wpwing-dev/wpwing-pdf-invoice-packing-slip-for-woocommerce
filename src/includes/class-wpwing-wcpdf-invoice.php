@@ -26,9 +26,9 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 		public $document_type = 'invoice';
 
 		/**
-		 * Invoice creation timestamp.
+		 * Invoice creation timestamp, or date string from older stored data.
 		 *
-		 * @var int
+		 * @var int|string
 		 */
 		public $date;
 
@@ -56,7 +56,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 		/**
 		 * Settings API instance
 		 *
-		 * @var Object
+		 * @var WPWing_WcPdf_Settings
 		 */
 		public $settings;
 

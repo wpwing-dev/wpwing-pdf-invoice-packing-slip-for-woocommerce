@@ -135,6 +135,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 				}
 				if ( ! $document->exists ) {
 					$this->plugin->save_document( $document );
+					// @phpstan-ignore if.alwaysFalse (save_document() sets $exists true via the concrete subclass's save())
 					if ( $document->exists ) {
 						++$count;
 					}

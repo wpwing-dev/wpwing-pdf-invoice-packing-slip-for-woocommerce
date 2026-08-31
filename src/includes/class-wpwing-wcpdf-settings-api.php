@@ -48,20 +48,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 		private $show_pro_name = 'pro';
 
 		/**
-		 * Transient key for temporary option overrides.
-		 *
-		 * @var string
-		 */
-		private $transient_setting_name = '_temp_wpwing_wcpdf_options';
-
-		/**
-		 * Object-cache key for options.
-		 *
-		 * @var string
-		 */
-		private $cache_key = 'wpwing_wcpdf_options';
-
-		/**
 		 * Theme feature name for theme support overrides.
 		 *
 		 * @var string
@@ -266,11 +252,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 		 * @param mixed  $old_value Previous option value.
 		 * @param mixed  $value     New option value.
 		 * @param string $option    Option name.
-		 * @return mixed
 		 */
 		public function after_update( $old_value, $value, $option ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress hook callback must match hook signature.
-
-			return $value;
 		}
 
 		/**
@@ -785,7 +768,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings_API' ) ) {
 			$id    = $args['id'];
 			$type  = $args['type'];
 			$name  = $this->settings_name;
-			$size  = isset( $args['size'] ) && ! is_null( $args['size'] ) ? $args['size'] : 'regular';
+			$size  = isset( $args['size'] ) ? $args['size'] : 'regular';
 			$attrs = isset( $args['attrs'] ) ? $this->make_implode_html_attributes( $args['attrs'] ) : '';
 			$desc  = $this->get_field_description( $args );
 			$html  = '';

@@ -9,3 +9,11 @@ parameters:
         - src/vendor
     bootstrapFiles:
         - tests/bootstrap.php
+    scanFiles:
+        - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+    ignoreErrors:
+        -
+            # WC_Data::update_meta_data()'s $value param is documented as array|string upstream,
+            # but WooCommerce stores any scalar via serialization - the docblock is just too narrow.
+            message: '~^Parameter #2 \$value of method WC_Data::update_meta_data\(\) expects array\|string, .+ given\.$~'
+            identifier: argument.type

@@ -45,7 +45,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 		/**
 		 * Current WooCommerce order.
 		 *
-		 * @var WC_Order
+		 * @var WC_Order|false
 		 */
 		public $order;
 
@@ -155,7 +155,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 				do_action( 'wpwing_wcpdf_before_template_generation' );
 
 				ob_start();
-				wc_get_template( 'template.php', null, $theme_dir, $theme_dir );
+				wc_get_template( 'template.php', array(), $theme_dir, $theme_dir );
 				$html = ob_get_clean();
 
 				return self::render_pdf_from_html( $html );
@@ -358,7 +358,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 			$template_path     = $theme_dir . $template_filename;
 			if ( file_exists( $template_path ) ) {
 				ob_start();
-				wc_get_template( $template_filename, null, $theme_dir, $theme_dir );
+				wc_get_template( $template_filename, array(), $theme_dir, $theme_dir );
 				$content = ob_get_clean();
 
 				if ( $content ) {
