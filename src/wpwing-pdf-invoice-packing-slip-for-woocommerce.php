@@ -10,7 +10,7 @@
  * Requires at least:     4.8
  * Tested up to:          7.1
  * WC requires at least:  4.5
- * WC tested up to:       10.8.1
+ * WC tested up to:       11.0.1
  * WC HPOS Compatible:    Yes
  * License:               GPL-3.0-or-later
  * License URI:           https://www.gnu.org/licenses/gpl-3.0.html

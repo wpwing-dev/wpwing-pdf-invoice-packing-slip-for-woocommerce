@@ -21,7 +21,7 @@ Whether you need to send a legal tax invoice to a buyer, include a printed packi
 
 Built strictly with performance, security, and modern WordPress standards in mind, it handles document generation seamlessly on your server. It ensures your site remains lightning-fast without bloating your database, overloading your server memory, or slowing down your customer checkout conversion rates.
 
-✅ Tested OK with WooCommerce 10.8.1+
+✅ Tested OK with WooCommerce 11.0.1+
 🚀 High-Performance Order Storage (HPOS) Compatible
 
 ### 🔥 KEY FEATURES ###
