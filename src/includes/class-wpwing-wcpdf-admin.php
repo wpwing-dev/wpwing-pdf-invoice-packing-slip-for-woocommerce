@@ -76,10 +76,11 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 		 * @param WP_Post|WC_Order $post The order object currently shown.
 		 */
 		public function show_pdf_invoice_metabox( $post ) {
-			$order_id = $post instanceof WC_Order ? $post->get_id() : $post->ID;
-			$invoice  = $this->plugin->get_document_by_type( $order_id, 'invoice' );
-			$packing  = $this->plugin->get_document_by_type( $order_id, 'packing' );
-			$delivery = $this->plugin->get_document_by_type( $order_id, 'delivery' );
+			$order_id       = $post instanceof WC_Order ? $post->get_id() : $post->ID;
+			$invoice        = $this->plugin->get_document_by_type( $order_id, 'invoice' );
+			$packing        = $this->plugin->get_document_by_type( $order_id, 'packing' );
+			$delivery       = $this->plugin->get_document_by_type( $order_id, 'delivery' );
+			$shipping_label = $this->plugin->get_document_by_type( $order_id, 'shipping_label' );
 			?>
 			<div class="wpwing-wcpdf-metabox">
 
@@ -192,6 +193,39 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 					</div>
 				</div>
 
+				<div class="wpwing-wcpdf-doc-row">
+					<span class="dashicons dashicons-tag wpwing-wcpdf-doc-icon"></span>
+					<span class="wpwing-wcpdf-doc-label"><?php esc_html_e( 'Shipping Label:', 'wpwing-wcpdf' ); ?></span>
+					<div class="wpwing-wcpdf-doc-actions">
+						<?php if ( ( null !== $shipping_label ) && $shipping_label->exists ) : ?>
+							<a class="button tips wpwing_wcpdf_view_invoice"
+								data-tip="<?php esc_attr_e( 'View Shipping Label', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-view-shipping-label', $shipping_label->order->get_id() ), 'wpwing_view_shipping_label_' . $shipping_label->order->get_id() ) ); ?>"
+								target="_blank">
+								<?php esc_html_e( 'View', 'wpwing-wcpdf' ); ?>
+							</a>
+							<a class="button tips wpwing_wcpdf_preview_html"
+								data-tip="<?php esc_attr_e( 'Preview shipping label template as HTML', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-preview-html-shipping-label', $shipping_label->order->get_id() ), 'wpwing_preview_html_shipping_label_' . $shipping_label->order->get_id() ) ); ?>"
+								target="_blank">
+								<?php esc_html_e( 'Preview', 'wpwing-wcpdf' ); ?>
+							</a>
+							<a class="button tips wpwing_wcpdf_cancel_invoice wpwing-btn-cancel"
+								data-tip="<?php esc_attr_e( 'Delete Shipping Label', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-shipping-label', $shipping_label->order->get_id() ), 'wpwing_reset_shipping_label_' . $shipping_label->order->get_id() ) ); ?>"
+								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this shipping label?', 'wpwing-wcpdf' ); ?>')">
+								<span class="dashicons dashicons-trash"></span><?php esc_html_e( 'Delete', 'wpwing-wcpdf' ); ?>
+							</a>
+						<?php else : ?>
+							<a class="button tips wpwing_wcpdf_create_invoice"
+								data-tip="<?php esc_attr_e( 'Create Shipping Label', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-shipping-label', $order_id ), 'wpwing_create_shipping_label_' . $order_id ) ); ?>">
+								<?php esc_html_e( 'Create', 'wpwing-wcpdf' ); ?>
+							</a>
+						<?php endif; ?>
+					</div>
+				</div>
+
 			</div>
 			<?php
 		}
@@ -217,12 +251,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 				$notice = sanitize_key( $_GET['wpwing_notice'] );
 
 				$messages = array(
-					'invoice_created'    => array( 'success', __( 'Invoice created successfully.', 'wpwing-wcpdf' ) ),
-					'invoice_cancelled'  => array( 'warning', __( 'Invoice has been deleted.', 'wpwing-wcpdf' ) ),
-					'packing_created'    => array( 'success', __( 'Packing slip created successfully.', 'wpwing-wcpdf' ) ),
-					'packing_cancelled'  => array( 'warning', __( 'Packing slip has been deleted.', 'wpwing-wcpdf' ) ),
-					'delivery_created'   => array( 'success', __( 'Delivery note created successfully.', 'wpwing-wcpdf' ) ),
-					'delivery_cancelled' => array( 'warning', __( 'Delivery note has been deleted.', 'wpwing-wcpdf' ) ),
+					'invoice_created'          => array( 'success', __( 'Invoice created successfully.', 'wpwing-wcpdf' ) ),
+					'invoice_cancelled'        => array( 'warning', __( 'Invoice has been deleted.', 'wpwing-wcpdf' ) ),
+					'packing_created'          => array( 'success', __( 'Packing slip created successfully.', 'wpwing-wcpdf' ) ),
+					'packing_cancelled'        => array( 'warning', __( 'Packing slip has been deleted.', 'wpwing-wcpdf' ) ),
+					'delivery_created'         => array( 'success', __( 'Delivery note created successfully.', 'wpwing-wcpdf' ) ),
+					'delivery_cancelled'       => array( 'warning', __( 'Delivery note has been deleted.', 'wpwing-wcpdf' ) ),
+					'shipping_label_created'   => array( 'success', __( 'Shipping label created successfully.', 'wpwing-wcpdf' ) ),
+					'shipping_label_cancelled' => array( 'warning', __( 'Shipping label has been deleted.', 'wpwing-wcpdf' ) ),
 				);
 
 				if ( isset( $messages[ $notice ] ) ) {
@@ -243,9 +279,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 				$skipped = isset( $_GET['wpwing_bulk_skipped'] ) ? intval( $_GET['wpwing_bulk_skipped'] ) : 0;
 				$type    = isset( $_GET['wpwing_bulk_type'] ) ? sanitize_key( $_GET['wpwing_bulk_type'] ) : 'invoice';
 				$labels  = array(
-					'invoice'  => __( 'invoice', 'wpwing-wcpdf' ),
-					'packing'  => __( 'packing slip', 'wpwing-wcpdf' ),
-					'delivery' => __( 'delivery note', 'wpwing-wcpdf' ),
+					'invoice'        => __( 'invoice', 'wpwing-wcpdf' ),
+					'packing'        => __( 'packing slip', 'wpwing-wcpdf' ),
+					'delivery'       => __( 'delivery note', 'wpwing-wcpdf' ),
+					'shipping_label' => __( 'shipping label', 'wpwing-wcpdf' ),
 				);
 				$label   = isset( $labels[ $type ] ) ? $labels[ $type ] : $labels['invoice'];
 

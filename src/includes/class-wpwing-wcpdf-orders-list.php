@@ -79,15 +79,18 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 		 * @return array
 		 */
 		public function add_bulk_actions( $actions ) {
-			$actions['wpwing_generate_invoices']     = __( 'Generate Invoices', 'wpwing-wcpdf' );
-			$actions['wpwing_generate_packing']      = __( 'Generate Packing Slips', 'wpwing-wcpdf' );
-			$actions['wpwing_download_invoices_zip'] = __( 'Download Invoices (ZIP)', 'wpwing-wcpdf' );
-			$actions['wpwing_download_invoices_pdf'] = __( 'Download Invoices (Merged PDF)', 'wpwing-wcpdf' );
-			$actions['wpwing_download_packing_zip']  = __( 'Download Packing Slips (ZIP)', 'wpwing-wcpdf' );
-			$actions['wpwing_download_packing_pdf']  = __( 'Download Packing Slips (Merged PDF)', 'wpwing-wcpdf' );
-			$actions['wpwing_generate_delivery']     = __( 'Generate Delivery Notes', 'wpwing-wcpdf' );
-			$actions['wpwing_download_delivery_zip'] = __( 'Download Delivery Notes (ZIP)', 'wpwing-wcpdf' );
-			$actions['wpwing_download_delivery_pdf'] = __( 'Download Delivery Notes (Merged PDF)', 'wpwing-wcpdf' );
+			$actions['wpwing_generate_invoices']           = __( 'Generate Invoices', 'wpwing-wcpdf' );
+			$actions['wpwing_generate_packing']            = __( 'Generate Packing Slips', 'wpwing-wcpdf' );
+			$actions['wpwing_download_invoices_zip']       = __( 'Download Invoices (ZIP)', 'wpwing-wcpdf' );
+			$actions['wpwing_download_invoices_pdf']       = __( 'Download Invoices (Merged PDF)', 'wpwing-wcpdf' );
+			$actions['wpwing_download_packing_zip']        = __( 'Download Packing Slips (ZIP)', 'wpwing-wcpdf' );
+			$actions['wpwing_download_packing_pdf']        = __( 'Download Packing Slips (Merged PDF)', 'wpwing-wcpdf' );
+			$actions['wpwing_generate_delivery']           = __( 'Generate Delivery Notes', 'wpwing-wcpdf' );
+			$actions['wpwing_download_delivery_zip']       = __( 'Download Delivery Notes (ZIP)', 'wpwing-wcpdf' );
+			$actions['wpwing_download_delivery_pdf']       = __( 'Download Delivery Notes (Merged PDF)', 'wpwing-wcpdf' );
+			$actions['wpwing_generate_shipping_label']     = __( 'Generate Shipping Labels', 'wpwing-wcpdf' );
+			$actions['wpwing_download_shipping_label_zip'] = __( 'Download Shipping Labels (ZIP)', 'wpwing-wcpdf' );
+			$actions['wpwing_download_shipping_label_pdf'] = __( 'Download Shipping Labels (Merged PDF)', 'wpwing-wcpdf' );
 			return $actions;
 		}
 
@@ -105,15 +108,18 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 		public function handle_bulk_actions( $redirect_to, $action, $ids ) {
 			// Action key => [ document type, download format ].
 			$bulk_actions = array(
-				'wpwing_generate_invoices'     => array( 'invoice', '' ),
-				'wpwing_generate_packing'      => array( 'packing', '' ),
-				'wpwing_download_invoices_zip' => array( 'invoice', 'zip' ),
-				'wpwing_download_invoices_pdf' => array( 'invoice', 'pdf' ),
-				'wpwing_download_packing_zip'  => array( 'packing', 'zip' ),
-				'wpwing_download_packing_pdf'  => array( 'packing', 'pdf' ),
-				'wpwing_generate_delivery'     => array( 'delivery', '' ),
-				'wpwing_download_delivery_zip' => array( 'delivery', 'zip' ),
-				'wpwing_download_delivery_pdf' => array( 'delivery', 'pdf' ),
+				'wpwing_generate_invoices'           => array( 'invoice', '' ),
+				'wpwing_generate_packing'            => array( 'packing', '' ),
+				'wpwing_download_invoices_zip'       => array( 'invoice', 'zip' ),
+				'wpwing_download_invoices_pdf'       => array( 'invoice', 'pdf' ),
+				'wpwing_download_packing_zip'        => array( 'packing', 'zip' ),
+				'wpwing_download_packing_pdf'        => array( 'packing', 'pdf' ),
+				'wpwing_generate_delivery'           => array( 'delivery', '' ),
+				'wpwing_download_delivery_zip'       => array( 'delivery', 'zip' ),
+				'wpwing_download_delivery_pdf'       => array( 'delivery', 'pdf' ),
+				'wpwing_generate_shipping_label'     => array( 'shipping_label', '' ),
+				'wpwing_download_shipping_label_zip' => array( 'shipping_label', 'zip' ),
+				'wpwing_download_shipping_label_pdf' => array( 'shipping_label', 'pdf' ),
 			);
 
 			if ( ! isset( $bulk_actions[ $action ] ) ) {
@@ -173,7 +179,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 		 * Returns without output if no valid files are found or the archive fails.
 		 *
 		 * @param WPWing_WcPdf_Document[] $documents     Documents with existing PDF files.
-		 * @param string                  $document_type 'invoice', 'packing' or 'delivery'.
+		 * @param string                  $document_type 'invoice', 'packing', 'delivery' or 'shipping_label'.
 		 * @since 1.10.0
 		 */
 		private function stream_zip( $documents, $document_type ) {
@@ -234,7 +240,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 		 * stream it to the browser, and exit. Returns without output on failure.
 		 *
 		 * @param WPWing_WcPdf_Document[] $documents     Documents with existing PDF files.
-		 * @param string                  $document_type 'invoice', 'packing' or 'delivery'.
+		 * @param string                  $document_type 'invoice', 'packing', 'delivery' or 'shipping_label'.
 		 * @since 1.10.0
 		 */
 		private function stream_merged_pdf( $documents, $document_type ) {
@@ -285,15 +291,16 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 		/**
 		 * Return the bulk download filename prefix for a document type.
 		 *
-		 * @param string $document_type 'invoice', 'packing' or 'delivery'.
+		 * @param string $document_type 'invoice', 'packing', 'delivery' or 'shipping_label'.
 		 * @return string
 		 * @since 1.12.0
 		 */
 		private function download_filename_prefix( $document_type ) {
 			$prefixes = array(
-				'invoice'  => 'invoices-',
-				'packing'  => 'packing-slips-',
-				'delivery' => 'delivery-notes-',
+				'invoice'        => 'invoices-',
+				'packing'        => 'packing-slips-',
+				'delivery'       => 'delivery-notes-',
+				'shipping_label' => 'shipping-labels-',
 			);
 			return isset( $prefixes[ $document_type ] ) ? $prefixes[ $document_type ] : 'documents-';
 		}

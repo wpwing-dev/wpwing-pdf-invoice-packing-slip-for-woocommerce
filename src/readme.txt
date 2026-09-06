@@ -6,7 +6,7 @@ Tags:               PDF, Invoice, Packing Slip, Packing List, WooCommerce
 Requires at least:  4.8
 Tested up to:       7.1
 Requires PHP:       7.4
-Stable tag:         1.14.0
+Stable tag:         1.15.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -29,6 +29,7 @@ Built strictly with performance, security, and modern WordPress standards in min
 * 📑 **Automated Email PDF Attachment:** Automatically generate and attach PDF invoices to specific WooCommerce order status emails, including Processing Order, Completed Order, or Customer Invoice / Order Details.
 * 📦 **Efficient Order Management & Bulk Actions:** Save time during busy shipping hours. Quickly generate, download, or print multiple invoices and packing slips directly from your WooCommerce orders list page - grab a whole batch as a single ZIP file or one merged PDF in a couple of clicks. Find any order instantly by typing its invoice number into the order search box.
 * 🚚 **Delivery Notes:** Generate a price-free delivery note that travels with the parcel - listing the items and shipping address, with an optional customer note. Create it manually, in bulk, or automatically on the order statuses you choose.
+* 🏷️ **Shipping Labels:** Print a clean, price-free shipping label with a prominent recipient address, sender details, order weight, and an optional scannable QR code linking back to the order. Create it manually, in bulk, or automatically on the order statuses you choose.
 * 🌍 **Full International Currency Support:** Every WooCommerce currency symbol renders perfectly on your PDFs - including the Bangladeshi Taka (৳), Indian Rupee (₹), Thai Baht (฿), and dozens more that other plugins leave as blank boxes.
 * 🎨 **Multiple Beautiful Templates:** Switch between beautifully formatted layouts including our crisp "Default" and modern minimalist designs that print perfectly on standard A4 or Letter sizes. Add your own Custom CSS to fine-tune any detail.
 * 📱 **QR Code on Invoice:** Add a scannable QR code to your invoices - link straight to the customer's order page, or encode your own custom text with order and invoice number placeholders.
@@ -45,7 +46,6 @@ This plugin cuts through the noise by focusing purely on the essentials: deliver
 ### 🛣️ FUTURE ROADMAP ###
 We are actively building features to make your shop management even smoother. Look out for these upcoming documentation formats in future releases:
 * Proforma Invoice generation
-* Print-ready Shipping Labels
 
 ### 🧑‍💻 Dedicated Support
 At WPWing, we are committed to building high-quality, lightweight utility plugins for WordPress and WooCommerce. Our dedicated support team responds rapidly to the support forums to help you resolve any issues instantly.
@@ -93,6 +93,11 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 
 == Changelog ==
+
+= 1.15.0 - 07/09/2026 =
+
+* New: Shipping Label document type - a price-free label with a prominent recipient shipping address, sender details, order weight, shipping method, and an optional scannable QR code linking back to the order. Create it manually, in bulk (ZIP or merged PDF), or automatically on the order statuses you choose - just like invoices, packing slips, and delivery notes.
+* New: Shipping label template setting (Default or Modern), included in the same Custom CSS box as the other document types.
 
 = 1.14.0 - 31/08/2026 =
 

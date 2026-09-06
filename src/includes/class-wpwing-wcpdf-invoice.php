@@ -388,41 +388,6 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 
 			return (string) $wpwing_wcpdf_document->order->get_view_order_url();
 		}
-
-		/**
-		 * Build a QR code as a data URI. Uses a GD PNG when available, SVG otherwise.
-		 *
-		 * @param string $data Content to encode.
-		 * @return string Data URI, or empty string on failure.
-		 */
-		private function generate_qr_data_uri( $data ) {
-
-			if ( ! class_exists( '\chillerlan\QRCode\QRCode' ) && defined( 'WPWING_WCPDF_VENDOR_DIR' ) ) {
-				require_once WPWING_WCPDF_VENDOR_DIR . 'autoload.php';
-			}
-
-			if ( ! class_exists( '\chillerlan\QRCode\QRCode' ) ) {
-				return '';
-			}
-
-			$output_type = extension_loaded( 'gd' )
-				? \chillerlan\QRCode\QRCode::OUTPUT_IMAGE_PNG
-				: \chillerlan\QRCode\QRCode::OUTPUT_MARKUP_SVG;
-
-			try {
-				$options = new \chillerlan\QRCode\QROptions(
-					array(
-						'outputType'  => $output_type,
-						'eccLevel'    => \chillerlan\QRCode\QRCode::ECC_M,
-						'scale'       => 4,
-						'imageBase64' => true,
-					)
-				);
-				return ( new \chillerlan\QRCode\QRCode( $options ) )->render( $data );
-			} catch ( \Exception $e ) {
-				return '';
-			}
-		}
 	}
 
 }

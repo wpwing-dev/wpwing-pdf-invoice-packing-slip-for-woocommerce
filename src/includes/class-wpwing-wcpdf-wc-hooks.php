@@ -118,6 +118,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 						$this->plugin->save_document( $delivery );
 					}
 				}
+
+				$shipping_label_statuses = $this->settings->get_option( 'shipping_label_auto_statuses' );
+				if ( is_array( $shipping_label_statuses ) && in_array( $new_status, $shipping_label_statuses, true ) ) {
+					$shipping_label = $this->plugin->get_document_by_type( $order_id, 'shipping_label' );
+					if ( null !== $shipping_label && ! $shipping_label->exists ) {
+						$this->plugin->save_document( $shipping_label );
+					}
+				}
 			} finally {
 				$running = false;
 			}

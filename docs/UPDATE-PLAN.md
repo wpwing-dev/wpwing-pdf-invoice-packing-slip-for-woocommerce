@@ -1,198 +1,146 @@
-# Product Release Roadmap & Marketing Plan: Q3/Q4 2026
+# Product Release Roadmap: Sept 2026 - Mar 2027 (Q3/Q4 2026 + Q1 2027)
 
-**Target Plugin:** PDF Invoice and Packing Slip for WooCommerce (`wpwing-pdf-invoice-packing-slip-for-woocommerce`)  
-**Current Baseline:** v1.14.0 shipped  
-**Release Cadence:** Weekly every **Monday** (17-week runway: 2026-09-07 to 2026-12-28)[cite: 1]  
-**Dual Core Objectives:**
-1. **Free Growth & Directory Health:** Close remaining document parity gaps against WebToffee, Challan, and Tyche[cite: 2]; maintain WordPress 7.1 / WooCommerce 11.0 compatibility declarations[cite: 1, 2]; deliver on public readme commitments to protect 5-star ratings[cite: 1, 2].
-2. **Commercial Monetization:** Resolve the Proforma delivery roadmap[cite: 2], package high-converting commercial triggers (filtered bulk export, custom numbering sequences, static attachments, cloud sync)[cite: 1, 2], and execute a commercial **Pro Launch (v2.0)** ahead of **Black Friday / Cyber Monday (BFCM)**.
+**Target Plugin:** PDF Invoice and Packing Slip for WooCommerce (`wpwing-pdf-invoice-packing-slip-for-woocommerce`)
+**Current Baseline:** v1.14.0 shipped
+**Release Cadence:** Biweekly (every 2 weeks) September - December 2026, tapering to monthly January - March 2027 once the named feature backlog is placed and there's no external deadline forcing pace. 7-month runway: 2026-09-07 to 2027-03-29.
+**Core Objective:** Free Growth & Directory Health only, this cycle. Close remaining document parity gaps against WebToffee, Challan, and Tyche; maintain current WordPress/WooCommerce compatibility declarations; deliver on public readme.txt roadmap commitments to protect 5-star ratings.
+
+**No Pro launch this cycle.** Pro development (Proforma advanced logic, Credit Notes, licensing, filtered export, cloud sync, multilingual, column customizer) continues as an unscheduled background track - see Section 5. There is no v2.0.0 milestone, no BFCM-anchored launch, and no commercial campaign date committed in this document.
+
+---
+
+## 0. Revision Notes
+
+This is the second revision of this plan:
+
+- **v1 (original Gemini draft):** weekly releases, culminating in a BFCM-anchored Pro v2.0 commercial launch on 2026-11-16. Written outside the repo, with two factual errors: it treated `Tested up to: 7.1`/`WC tested up to: 11.0.1` as open work (already shipped) and assumed Proforma didn't exist yet (it does, Pro-only, in `src/pro/includes/class-wcpdf-proforma.php`).
+- **v2 (previous revision):** fixed those errors and relaxed cadence to biweekly, but still anchored a Pro v2.0 launch to BFCM 2026.
+- **v3 (this revision):** removes the Pro launch from this cycle entirely, per explicit decision - no Pro release in 2026. Cadence no longer needs a BFCM-driven weekly compression anywhere, so it's uniformly biweekly, tapering to monthly once the concrete backlog of named free-tier features runs out (roughly the December/January boundary).
+- Before starting any release below, re-verify its listed scope against current file state - plans drift, this one has drifted twice already.
 
 ---
 
 ## 1. Strategic Principles
 
-- **The Proforma Solution:** The public `readme.txt` promised Proforma in future releases[cite: 2]. Gating the entire document behind Pro risks community backlash[cite: 2].
-  - **Free Tier:** Ships a clean, basic Proforma document type (standard order data, standard sequential numbering).
-  - **Pro Tier:** Gates advanced business logic (independent counter sequences, automated conversion from Proforma to Tax Invoice on payment, and custom document prefixes/suffixes)[cite: 1, 2].
-- **Directory Freshness:** Regular Monday releases signal an actively maintained, reliable plugin on WordPress.org[cite: 1, 2].
-- **Pricing Ladder:** Positioned between Challan (~$29) and WebToffee ($69) / WooCommerce.com ($79) / WP Overnight (€99)[cite: 1, 2]:
-  - Single Site: $49 / year[cite: 2]
-  - 5 Sites (Agency Starter): $89 / year[cite: 2]
-  - 25 Sites (Agency Unlimited): $169 / year[cite: 2]
+- **The Proforma Solution:** The public `readme.txt` roadmap section promises "Proforma Invoice generation" and "Print-ready Shipping Labels" with no free/pro split stated. Gating Proforma entirely behind Pro (its current state) risks community backlash - R4 ships a free-tier Proforma regardless of Pro launch timing.
+- **Directory Freshness:** Regular releases signal an actively maintained plugin, but cadence should not outpace real QA capacity - biweekly with a docker `verify` pass per release, tapering to monthly once there's no concrete backlog item queued, rather than inventing filler features to keep a fixed cadence.
+- **BFCM without a Pro launch:** Black Friday (2026-11-27) / Cyber Monday (2026-11-30) still drives a real order-volume spike for every store running the *free* plugin - bulk PDF generation, high-throughput email attachments. R7 (2026-11-30) is reserved as a stability/support buffer for that reason, even though there is no commercial launch to support.
+- **Pricing Ladder (reference only, not committed to this cycle):** When a Pro launch is eventually scheduled, the target position is between Challan (~$29) and WebToffee ($69) / WooCommerce.com ($79) / WP Overnight (€99): Single Site $49/yr, 5 Sites $89/yr, 25 Sites $169/yr.
 
 ---
 
-## 2. 17-Week Sprint Overview
+## 2. Release Overview (13 releases, free-tier only)
 
-| Week | Date (Mon) | Target Version | Primary Scope & Headline Feature | Target Tier |
-| :--- | :--- | :--- | :--- | :--- |
-| W01 | 2026-09-07 | v1.15.0 | Shipping Labels Document Type & WP 7.1 Compatibility[cite: 1, 2] | Free |
-| W02 | 2026-09-14 | v1.16.0 | Product Thumbnails in Item Tables & Dompdf Scaling[cite: 1, 2] | Free |
-| W03 | 2026-09-21 | v1.17.0 | Dynamic Filename Token Builder & WC Analytics Column[cite: 1, 2] | Free |
-| W04 | 2026-09-28 | v1.18.0 | Standard Proforma Invoice (Roadmap Promise Delivery)[cite: 2] | Free |
-| W05 | 2026-10-05 | v1.19.0 | Eco Ink-Saving Mode (Background & Heavy Asset Stripper)[cite: 1, 2] | Free |
-| W06 | 2026-10-12 | v1.20.0 | Invoice Summary CSV Export (Accounting Data Bridge)[cite: 1, 2] | Free / Pro Prep |
-| W07 | 2026-10-19 | v1.21.0 | "Pay Now" Direct Payment Link on Unpaid Invoices[cite: 2] | Free |
-| W08 | 2026-10-26 | v1.22.0 | PDF Storage Retention Scheduler & GDPR Hygiene[cite: 2] | Free |
-| W09 | 2026-11-02 | v1.23.0 | Static File Attachments & Warehouse Notifications Engine[cite: 1, 2] | Free / Pro Prep |
-| W10 | 2026-11-09 | v1.24.0 / v2.0-RC | Pro Release Candidate Feature Freeze & Licensing Audit[cite: 1, 2] | Internal / Pre-launch |
-| W11 | 2026-11-16 | **v2.0.0 PRO** | **COMMERCIAL PRO LAUNCH & BFCM CAMPAIGN KICKOFF** | **Pro Major** |
-| W12 | 2026-11-23 | v2.0.1 / v1.25.1 | BFCM Peak Support SLA & High-Volume Store Hardening | Hotfix & SLA |
-| W13 | 2026-11-30 | v2.0.2 / v1.26.0 | Multilingual PDF Generation (WPML, Polylang, TranslatePress)[cite: 1, 2] | Pro |
-| W14 | 2026-12-07 | v2.1.0 / v1.27.0 | Automated Cloud Storage Sync (Dropbox & SFTP/FTP)[cite: 1, 2] | Pro |
-| W15 | 2026-12-14 | v2.2.0 / v1.28.0 | Visual Table Column Customizer (Show/Hide, Widths, Order)[cite: 1, 2] | Pro |
-| W16 | 2026-12-21 | v2.2.1 / v1.28.1 | Drag-and-Drop Totals Reorder & EU VAT Integration[cite: 1] | Pro |
-| W17 | 2026-12-28 | v2.3.0 / v1.29.0 | PHP 8.4 & WP 7.2 Readiness Pass + Year-End Review[cite: 1] | Free & Pro |
+| # | Date (Mon) | Target Version | Primary Scope & Headline Feature |
+| :-- | :--- | :--- | :--- |
+| R1 | 2026-09-07 | v1.15.0 | Shipping Labels document type |
+| R2 | 2026-09-21 | v1.16.0 | Product Thumbnails in Item Tables + Dompdf scaling safeguard |
+| R3 | 2026-10-05 | v1.17.0 | Dynamic Filename Token Builder + WC Analytics Invoice# column |
+| R4 | 2026-10-19 | v1.18.0 | Free Proforma Invoice + free/Pro proforma architecture split |
+| R5 | 2026-11-02 | v1.19.0 | Eco Ink-Saving Mode + Invoice Summary CSV Export (free tier) |
+| R6 | 2026-11-16 | v1.20.0 | "Pay Now" Direct Payment Link + PDF Storage Retention/GDPR hygiene |
+| R7 | 2026-11-30 | v1.20.1 | **Buffer/stability sprint** - BFCM order-volume hardening for free-tier users |
+| R8 | 2026-12-14 | v1.21.0 | Static file attachment (1) + basic column visibility toggle (SKU/Weight) |
+| R9 | 2026-12-28 | v1.22.0 | `.pot` translation refresh + backlog/polish |
+| R10 | 2027-01-11 | v1.23.0 | PHP 8.4 & WP 7.2 readiness pass |
+| R11 | 2027-02-08 | v1.23.1 | Buffer sprint - support backlog & hardening |
+| R12 | 2027-03-08 | v1.24.0 | Backlog-driven parity release (scope set from R7/R11 feedback) |
+| R13 | 2027-03-29 | v1.25.0 | Year-in-review polish + publish Q2 2027 roadmap (Pro launch timing revisited here) |
 
 ---
 
-## 3. Detailed Weekly Implementation Plan
+## 3. Detailed Implementation Plan
 
-### Month 1: September 2026 — Document Parity & Visual Upgrades
+### September - October 2026
 
-#### Week 1: 2026-09-07 — v1.15.0: Shipping Labels Document Type
-- **Headline Feature:** Shipping Labels document type[cite: 1, 2].
-- **Free Changes:**
-  - Introduce `Shipping Label` class extending base document architecture[cite: 1].
-  - Clean, price-free layout focusing on sender details, prominent recipient shipping address, order weight, and barcode/QR code integration[cite: 1, 2].
-  - Orders list bulk actions: Bulk print / Merge Shipping Labels into a single PDF[cite: 1].
-  - Ensure `Tested up to: 7.1` and WooCommerce 11.0 compatibility tags are set in `readme.txt`[cite: 1, 2].
-- **Impact:** Delivers on the final open document promise from the public roadmap, closing parity with WebToffee, Challan, and add-ons.org[cite: 1, 2].
+#### R1 - 2026-09-07 - v1.15.0: Shipping Labels Document Type
+- New `Shipping Label` document type extending `WPWing_WcPdf_Document`, following the same pattern as `WPWing_WcPdf_Delivery` (meta keys, `save()`/`reset()`, template hooks).
+- Clean, price-free layout: sender details, prominent recipient shipping address, order weight, QR/barcode (reuse the existing `chillerlan/php-qrcode` dependency already vendored for invoice QR codes).
+- Wire into the same 6 places `delivery` touches: `class-wpwing-wcpdf-plugin.php` (action map + factory), `class-wpwing-wcpdf-admin.php` (metabox buttons/notices), `class-wpwing-wcpdf-orders-list.php` (bulk generate/ZIP/merged-PDF actions), `class-wpwing-wcpdf-settings.php` (template + auto-generate-on-status), `class-wpwing-wcpdf-wc-hooks.php` (auto-create on status change), plus `templates/default/shipping-label/` and `templates/modern/shipping-label/`.
+- Hardening: nonce checks on the new endpoints from day one.
 
-#### Week 2: 2026-09-14 — v1.16.0: Product Thumbnails in Line Items
-- **Headline Feature:** Product Thumbnails in item tables[cite: 1, 2].
-- **Free Changes:**
-  - Setting toggle to render product featured image thumbnails inside Invoices, Packing Slips, and Delivery Notes[cite: 1, 2].
-  - Automatic image downscaling and dimension caching to prevent Dompdf memory exhaustion on high-resolution merchant assets.
-  - Dimension selector (32x32, 48x48, 64x64).
-- **Impact:** Visual picking aid for warehouse operations, matching a staple feature across add-ons.org, Challan, and Tyche[cite: 1, 2].
+#### R2 - 2026-09-21 - v1.16.0: Product Thumbnails in Line Items
+- Setting toggle to render product featured-image thumbnails inside Invoices, Packing Slips, and Delivery Notes.
+- Automatic image downscaling and dimension caching to prevent Dompdf memory exhaustion - test on a 128M PHP memory_limit environment.
+- Dimension selector (32x32, 48x48, 64x64).
 
-#### Week 3: 2026-09-21 — v1.17.0: Dynamic Filename Patterns & Analytics
-- **Headline Feature:** Custom PDF Filename Patterns + WC Analytics[cite: 1, 2].
-- **Free Changes:**
-  - Token-based filename formatting setting supporting tags such as `{{doc_type}}`, `{{order_number}}`, `{{invoice_date}}`[cite: 2].
-  - Add dedicated "Invoice Number" column to WooCommerce Analytics Orders report with quick-view modal[cite: 1, 2].
-- **Impact:** Improves file management for store owners, matching WebToffee free-tier functionality[cite: 2].
+#### R3 - 2026-10-05 - v1.17.0: Dynamic Filename Patterns & Analytics
+- Token-based filename formatting setting supporting `{{doc_type}}`, `{{order_number}}`, `{{invoice_date}}`.
+- Dedicated "Invoice Number" column on the WooCommerce Analytics Orders report with a quick-view modal.
 
-#### Week 4: 2026-09-28 — v1.18.0: Standard Proforma Invoice (Free Delivery)
-- **Headline Feature:** Free Proforma Invoice document type[cite: 2].
-- **Free Changes:**
-  - Standard Proforma document type selectable for "Pending payment" and "On-hold" orders[cite: 2].
-  - Standard styling with prominent "PROFORMA INVOICE" header and watermark.
-  - Teaser triggers displaying inactive toggles for Pro capabilities (e.g., independent sequential numbering, auto-conversion to Tax Invoice upon order completion)[cite: 1, 2].
-- **Impact:** Fulfills the public roadmap promise in `readme.txt` without gating core functionality[cite: 2].
+#### R4 - 2026-10-19 - v1.18.0: Free Proforma Invoice + Architecture Split
+- **Architecture work first:** refactor `WPWing_WcPdf_Proforma` so a free-tier base class (extending `WPWing_WcPdf_Document`, mirroring `WPWing_WcPdf_Delivery`) carries standard order data + standard sequential numbering, and the existing Pro class becomes a subclass/decorator adding independent counters, auto-conversion-on-payment, and custom prefixes/suffixes. Confirm the Pro plugin's activation check gracefully falls back to the free base class when Pro is inactive.
+- Free: Proforma selectable for "Pending payment" / "On-hold" orders, prominent "PROFORMA INVOICE" header/watermark.
 
 ---
 
-### Month 2: October 2026 — Differentiators & Commercial Packaging
+### November - December 2026
 
-#### Week 5: 2026-10-05 — v1.19.0: Eco Ink-Saving Mode
-- **Headline Feature:** Ink-saving print mode[cite: 1, 2].
-- **Free Changes:**
-  - 1-click toggle to strip solid background colors, dark block headers, and heavy borders, replacing them with thin line-art styling[cite: 1, 2].
-  - On-demand "Print Eco PDF" action in the admin order metabox[cite: 1, 2].
-- **Impact:** Unique cost-saving differentiator not actively marketed by primary competitors[cite: 1, 2].
+#### R5 - 2026-11-02 - v1.19.0: Eco Mode + CSV Export
+- Eco ink-saving mode: 1-click toggle stripping solid backgrounds/dark headers/heavy borders to thin line-art; "Print Eco PDF" action in the order metabox.
+- Invoice Summary CSV export (Invoice #, Date, Order #, Customer, Subtotal, Tax, Grand Total) - current page/standard batch.
 
-#### Week 6: 2026-10-12 — v1.20.0: Invoice Summary CSV Export
-- **Headline Feature:** Accounting CSV export[cite: 1, 2].
-- **Free / Pro Changes:**
-  - Orders list export action generating an accounting summary CSV: Invoice #, Date, Order #, Customer, Subtotal, Tax Total, Grand Total[cite: 1, 2].
-  - Free tier: Export current page / standard batch[cite: 1].
-  - Pro tier (seeded): Unlocked date range and status filters[cite: 1, 2].
-- **Impact:** Solves a major operational pain point for store accountants and bookkeepers[cite: 1, 2].
+#### R6 - 2026-11-16 - v1.20.0: Pay Now + Storage Hygiene
+- "Pay Now" link on unpaid Invoices/Proformas, routed to native `order-pay`.
+- PDF storage retention scheduler (purge cached temp PDFs after 30/60/90 days) + disk/temp-dir size check in System Status.
 
-#### Week 7: 2026-10-19 — v1.21.0: "Pay Now" Direct Payment Link
-- **Headline Feature:** Deep-linked invoice payments[cite: 2].
-- **Free Changes:**
-  - Render an optional "Pay Now" link/button on unpaid Invoices and Proformas[cite: 2].
-  - Routes directly to WooCommerce native `order-pay` URL[cite: 2].
-- **Impact:** Increases cash collection speed for B2B stores issuing invoices before payment[cite: 2].
+#### R7 - 2026-11-30 - v1.20.1: BFCM Stability Buffer
+- No new feature mandated. Watch and patch for high-throughput simultaneous PDF generation and email-attachment load during the Black Friday/Cyber Monday order spike, since every free-tier store sees that traffic whether or not we launch anything.
 
-#### Week 8: 2026-10-26 — v1.22.0: PDF Storage Hygiene & GDPR Retention
-- **Headline Feature:** Automated storage retention scheduler[cite: 2].
-- **Free Changes:**
-  - Configurable retention schedule to automatically purge cached temporary PDF files after 30, 60, or 90 days[cite: 2].
-  - Disk storage health and temp directory size check inside the System Status tab[cite: 1, 2].
-- **Impact:** Prevents server disk bloat and satisfies GDPR data minimization standards[cite: 2].
+#### R8 - 2026-12-14 - v1.21.0: Attachments & Column Visibility
+- Support attaching 1 static PDF (e.g. Terms of Service) to completed-order emails.
+- Basic column visibility checkboxes for SKU and Weight in item tables.
+
+#### R9 - 2026-12-28 - v1.22.0: Translation Refresh & Backlog
+- Refresh base `.pot` translation files.
+- Remaining scope: whatever support/backlog items accumulated since R1 - deliberately left open rather than pre-assigned.
 
 ---
 
-### Month 3: November 2026 — Pro Launch & Black Friday / Cyber Monday Surge
+### January - March 2027 (monthly cadence)
 
-#### Week 9: 2026-11-02 — v1.23.0: Static Attachments & Supplier Engine
-- **Headline Feature:** Static file attachments & vendor notification hooks[cite: 1, 2].
-- **Free Changes:**
-  - Support attaching 1 static PDF (e.g., standard Terms of Service) to customer completed order emails[cite: 1, 2].
-- **Pro Staging:**
-  - Automated supplier notification engine routing warehouse packing slips or delivery notes directly to vendor/warehouse email addresses upon order status change[cite: 1, 2].
+#### R10 - 2027-01-11 - v1.23.0: PHP 8.4 & WP 7.2 Readiness
+- Full compatibility pass for PHP 8.4 and WordPress 7.2 alpha/beta builds.
+- Deprecated hook cleanup, sequential-numbering index optimization on large databases.
 
-#### Week 10: 2026-11-09 — v1.24.0 / v2.0.0-RC: Pro Release Candidate Freeze
-- **Scope:**
-  - Feature freeze for Pro v2.0.0.
-  - Licensing verification (activation, deactivation, update delivery checks)[cite: 1, 2].
-  - Security audit: strict capability checks and nonce validation on all document endpoints.
-  - Send launch teaser email to user base announcing upcoming BFCM availability.
+#### R11 - 2027-02-08 - v1.23.1: Buffer Sprint
+- Support backlog and hardening only. Protect this slot - it's what keeps the schedule honest once the named feature list runs out.
 
-#### Week 11: 2026-11-16 — MAJOR RELEASE: Wpwing PDF Invoice PRO v2.0.0
-- **Commercial Launch Features (Pro v2.0.0):**
-  1. **Independent Sequential Numbering:** Separate counters, prefixes, and padding per document type (Invoices, Proformas, Credit Notes, Delivery Notes, Shipping Labels)[cite: 1, 2].
-  2. **Filtered Bulk ZIP/Merge Engine:** Export PDFs filtered by date range, order status, user role, and payment gateway[cite: 1, 2].
-  3. **Credit Notes:** Automated refund document generation with reverse tax line calculations[cite: 2].
-  4. **Multi-Recipient Supplier Automation:** Email warehouse documents automatically based on order category or vendor tag[cite: 1, 2].
-  5. **Static Attachments Suite:** Unlimited static PDF attachments mapped to specific order statuses[cite: 1, 2].
-- **Free Plugin (v1.25.0):** Native license key activation interface without aggressive nagging[cite: 1, 2].
-- **Marketing Campaign:** Black Friday Early-Bird Launch: $49/yr or $99 limited Lifetime License[cite: 2].
+#### R12 - 2027-03-08 - v1.24.0: Backlog-Driven Parity Release
+- Scope determined by what R7/R9/R11 actually surfaced (support tickets, review feedback, competitor parity gaps noticed along the way) rather than pre-committed now.
 
-#### Week 12: 2026-11-23 — v2.0.1 / v1.25.1: BFCM Peak Support & Hotfix Sprint
-- **Scope:**
-  - Support SLA priority coverage during Black Friday / Cyber Monday weekend.
-  - Performance patches for high-throughput stores generating simultaneous invoice PDFs.
-- **Marketing Focus:** "48 Hours Remaining" BFCM campaign push.
-
-#### Week 13: 2026-11-30 — v2.0.2 / v1.26.0: Multilingual Document Generation
-- **Headline Feature:** Multilingual order language rendering[cite: 1, 2].
-- **Pro Changes:**
-  - Integration with WPML, Polylang, and TranslatePress[cite: 1, 2].
-  - Renders invoice labels, dates, and currencies in the customer's checkout language rather than the backend admin language[cite: 1].
-- **Free Changes:** Refresh base `.pot` translation files.
-
----
-
-### Month 4: December 2026 — Differentiators & Year-End Polish
-
-#### Week 14: 2026-12-07 — v2.1.0 / v1.27.0: Automated Cloud Storage Sync
-- **Headline Feature:** Cloud backup integration[cite: 1, 2].
-- **Pro Changes:**
-  - Automatic background PDF upload to **Dropbox** and secure **SFTP/FTP** upon invoice creation[cite: 1, 2].
-  - Directory structure customization: `/Invoices/YYYY/MM/Invoice-XXXX.pdf`.
-- **Impact:** Eliminates manual document archiving for enterprise stores[cite: 1].
-
-#### Week 15: 2026-12-14 — v2.2.0 / v1.28.0: Visual Column Customizer (Phase 1)
-- **Headline Feature:** Item table column manager[cite: 1, 2].
-- **Pro Changes:**
-  - Visual settings interface to show/hide, rename, and adjust column widths for product item tables (SKU, Image, Title, Price, Qty, Tax, Total)[cite: 1, 2].
-- **Free Changes:** Add basic column visibility checkboxes for SKU and Weight.
-- **Impact:** Directly targets the top commercial feature of WP Overnight and add-ons.org[cite: 1, 2].
-
-#### Week 16: 2026-12-21 — v2.2.1 / v1.28.1: Drag-and-Drop Totals & Tax Compliance
-- **Headline Feature:** Order totals sorting and tax layout polish[cite: 1].
-- **Pro Changes:**
-  - Drag-and-drop order reordering for totals lines: Subtotal, Discount, Shipping, Tax Breakdown, Grand Total.
-  - EU VAT number display integration for standard checkout fields.
-- **Impact:** Supports complex tax configurations across EU, UK, and US jurisdictions[cite: 1].
-
-#### Week 17: 2026-12-28 — v2.3.0 / v1.29.0: PHP 8.4, WP 7.2 Pass & Year-End Review
-- **Headline Feature:** Infrastructure hardening and next-cycle compatibility[cite: 1].
-- **Free & Pro Changes:**
-  - Full compatibility pass for PHP 8.4 and WordPress 7.2 alpha/beta builds[cite: 1].
-  - Deprecated hook cleanups and sequential numbering index optimizations on large databases.
-- **Marketing Action:** Publish "2026 Year in Review & 2027 Roadmap" blog post.
+#### R13 - 2027-03-29 - v1.25.0: Year-in-Review & Q2 2027 Roadmap
+- Final polish pass across the cycle's features.
+- Publish a "Year in Review & Q2 2027 Roadmap" post.
+- **This is the checkpoint to decide Pro launch timing**, informed by: how much of the Section 5 background track is actually done, real release velocity from R1-R12, and free-tier install/rating trends.
 
 ---
 
 ## 4. Operational Checklist for AI Agents & Developers
 
-- **Strict Monday Release Cadence:** Releases are packaged and tagged every Monday morning[cite: 1].
-- **Changelog Rule:** Every release must contain at least one bug fix or hardening item alongside the headline feature[cite: 1].
-- **Compatibility Watch:** Ensure `Tested up to:` in `readme.txt` is updated whenever a major WordPress or WooCommerce version drops[cite: 1, 2].
-- **Dompdf Safeguards:** Any feature introducing images (thumbnails, logos) or custom fonts must pass memory limit checks on 128M environments before merging.
+- **Cadence:** Biweekly Monday releases September - December 2026, monthly January - March 2027. Do not compress back to weekly without a specific reason - there is no BFCM deadline forcing pace this cycle.
+- **Verify before ship:** Run the `verify` skill (build + launch in the docker stack, exercise the feature end-to-end) before tagging any release.
+- **Reality-check the plan first:** Before starting a release, confirm this document's assumed starting state against the actual code - this plan has drifted from reality twice already (see Revision Notes).
+- **Changelog Rule:** Every release must contain at least one bug fix or hardening item alongside the headline feature, except the explicit buffer sprints (R7, R11), whose entire scope *is* bug fixes/hardening.
+- **Compatibility Watch:** Update `Tested up to:` in `readme.txt` whenever a major WordPress or WooCommerce version drops - check current value before assuming it needs a bump.
+- **Dompdf Safeguards:** Any feature introducing images (thumbnails, logos) or custom fonts must pass memory-limit checks on 128M environments before merging.
+- **Free/Pro architecture discipline:** New document types default to a free-tier base class; Pro-only logic is added via subclass/decorator, not by writing the free tier out of the class hierarchy (see R4).
+- **No Pro version bumps or Pro changelog entries in this document's scope** - Pro work is tracked separately per Section 5 and does not get a release date here.
+
+---
+
+## 5. Background Track: Pro Development (unscheduled, no launch commitment)
+
+These continue at whatever pace is convenient alongside the free-tier releases above, without a version number, release date, or marketing commitment. Revisit scheduling an actual Pro launch at R13 (2027-03-29):
+
+- Finish the Proforma advanced logic split from R4 (independent counters, auto-conversion-on-payment, custom prefixes/suffixes) on top of the free base class.
+- Complete and QA the existing Credit Notes scaffold (`class-wcpdf-creditnote.php`) - reverse tax line calculations.
+- Independent sequential numbering per document type (separate counters/prefixes/padding).
+- Filtered bulk ZIP/merge export (date range, order status, user role, payment gateway) + advanced CSV export filters.
+- Multi-recipient supplier automation (warehouse documents emailed by order category/vendor tag).
+- Static attachment suite (unlimited attachments mapped to order statuses).
+- Licensing system (activation/deactivation/update delivery) - not urgent without a launch date, but worth having ready before one is picked.
+- Multilingual document rendering (WPML, Polylang, TranslatePress).
+- Automated cloud storage sync (Dropbox, SFTP/FTP).
+- Visual table column customizer (show/hide, rename, resize; later extend to packing slip/delivery note).
+- Drag-and-drop totals reorder + EU VAT number display.

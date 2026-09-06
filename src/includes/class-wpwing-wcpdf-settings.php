@@ -243,6 +243,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'default' => array(),
 									),
 									array(
+										'id'      => 'shipping_label_auto_statuses',
+										'type'    => 'checkboxgroup',
+										'title'   => esc_html__( 'Auto-generate shipping label on status:', 'wpwing-wcpdf' ),
+										'desc'    => esc_html__( 'Shipping label is created automatically when an order reaches one of these statuses. Only created once per order.', 'wpwing-wcpdf' ),
+										'options' => $order_statuses,
+										'default' => array(),
+									),
+									array(
 										'id'      => 'invoice_attach_to_emails',
 										'type'    => 'checkboxgroup',
 										'title'   => esc_html__( 'Attach invoice PDF to emails:', 'wpwing-wcpdf' ),
@@ -303,6 +311,20 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'type'    => 'checkbox',
 										'title'   => esc_html__( 'Show customer order note on delivery note:', 'wpwing-wcpdf' ),
 										'desc'    => 'Yes',
+										'default' => false,
+									),
+									array(
+										'id'      => 'shipping_label_template',
+										'type'    => 'select',
+										'title'   => esc_html__( 'Shipping label template:', 'wpwing-wcpdf' ),
+										'options' => $templates,
+										'default' => 'default',
+									),
+									array(
+										'id'      => 'shipping_label_show_qr',
+										'type'    => 'checkbox',
+										'title'   => esc_html__( 'Show QR code on shipping label:', 'wpwing-wcpdf' ),
+										'desc'    => esc_html__( 'Links back to the order view page - useful for warehouse staff scanning the label.', 'wpwing-wcpdf' ),
 										'default' => false,
 									),
 									array(
@@ -479,7 +501,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'id'          => 'template_custom_css',
 										'type'        => 'textarea',
 										'title'       => esc_html__( 'Custom CSS:', 'wpwing-wcpdf' ),
-										'desc'        => esc_html__( 'Applied to invoice, packing slip and delivery note, after the template styles. Example: .company-name { font-size: 18px; }', 'wpwing-wcpdf' ),
+										'desc'        => esc_html__( 'Applied to invoice, packing slip, delivery note and shipping label, after the template styles. Example: .company-name { font-size: 18px; }', 'wpwing-wcpdf' ),
 										'placeholder' => '.company-name { font-size: 18px; }',
 									),
 								)
@@ -664,6 +686,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 				array(
 					'label' => esc_html__( 'Delivery Note', 'wpwing-wcpdf' ),
 					'class' => 'WPWing_WcPdf_Delivery',
+				),
+				array(
+					'label' => esc_html__( 'Shipping Label', 'wpwing-wcpdf' ),
+					'class' => 'WPWing_WcPdf_Shipping_Label',
 				),
 			);
 
