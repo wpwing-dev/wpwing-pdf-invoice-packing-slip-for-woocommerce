@@ -54,7 +54,10 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256m
+          # dompdf-based PDF generation is memory-hungry; 256m reliably left
+          # Apache/PHP workers OOM-starved (and unresponsive to unrelated
+          # requests) once E2E specs started exercising document generation.
+          memory: 512m
           cpus: '0.50'
 
   wpcli:
