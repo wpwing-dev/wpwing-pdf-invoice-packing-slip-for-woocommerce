@@ -120,4 +120,49 @@ if ( $wpwing_wcpdf && ! empty( $created ) ) {
 	$wpwing_wcpdf->create_document( $created[0]['id'], 'delivery' );
 }
 
+// A registered customer with a known login and one of their own orders,
+// used by E2E specs that need to authenticate as a real shopper (My
+// Account, the [wpwing_invoice] shortcode, order-ownership checks).
+$customer_id = username_exists( 'e2e-customer' );
+if ( ! $customer_id ) {
+	$customer_id = wp_create_user( 'e2e-customer', 'E2eCustomerPass!23', 'e2e-customer@example.com' );
+	wp_update_user(
+		array(
+			'ID'           => $customer_id,
+			'role'         => 'customer',
+			'first_name'   => 'Erin',
+			'last_name'    => 'Customer',
+			'display_name' => 'Erin Customer',
+		)
+	);
+}
+
+$customer_address = array(
+	'first_name' => 'Erin',
+	'last_name'  => 'Customer',
+	'email'      => 'e2e-customer@example.com',
+	'phone'      => '+1 555 0199',
+	'address_1'  => '42 Example Street',
+	'city'       => 'Dhaka',
+	'postcode'   => '1207',
+	'country'    => 'BD',
+);
+
+$customer_order = wc_create_order();
+$customer_order->set_customer_id( $customer_id );
+$customer_order->set_address( $customer_address, 'billing' );
+$customer_order->set_address( $customer_address, 'shipping' );
+if ( ! empty( $products ) ) {
+	$customer_order->add_product( $products[0], 1 );
+}
+$customer_order->set_payment_method_title( 'Cash on delivery' );
+$customer_order->calculate_totals();
+$customer_order->update_status( 'completed', 'Seeded dummy order for local dev.' );
+$customer_order->save();
+
+if ( $wpwing_wcpdf ) {
+	$wpwing_wcpdf->create_document( $customer_order->get_id(), 'invoice' );
+}
+
 echo 'Seeded ' . count( $created ) . " dummy WooCommerce orders.\n";
+echo "Seeded registered customer 'e2e-customer' with order #{$customer_order->get_id()}.\n";

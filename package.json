@@ -10,9 +10,11 @@
 		"build:js": "terser src/assets/src/js/admin.js -o src/assets/public/js/admin.min.js --compress --mangle",
 		"watch:css": "sass --watch src/assets/src/scss/admin.scss src/assets/public/css/admin.css",
 		"lint:js": "eslint src/assets/src/js/",
-		"lint:css": "stylelint src/assets/src/scss/"
+		"lint:css": "stylelint src/assets/src/scss/",
+		"test:e2e": "playwright test"
 	},
 	"devDependencies": {
+		"@playwright/test": "1.45.0",
 		"eslint": "^8.57.0",
 		"sass": "^1.77.0",
 		"stylelint": "^16.0.0",

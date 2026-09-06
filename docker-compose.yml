@@ -91,6 +91,10 @@ services:
     ports:
       - "127.0.0.2:80:80"
       - "127.0.0.2:443:443"
+    networks:
+      default:
+        aliases:
+          - pdf-invoice.local
     volumes:
       - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -120,8 +124,6 @@ services:
     depends_on:
       wordpress:
         condition: service_healthy
-    extra_hosts:
-      - "pdf-invoice.local:host-gateway"
     volumes:
       - .:/var/plugin
     working_dir: /var/plugin
