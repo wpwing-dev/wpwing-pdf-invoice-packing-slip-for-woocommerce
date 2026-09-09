@@ -15,7 +15,7 @@ docker compose --profile e2e run --rm wpcli        # provision (idempotent)
 docker compose --profile e2e up -d caddy
 ```
 
-Site: https://pdf-invoice.local (hosts entry to 127.0.0.2 already present; caddy uses a self-signed cert, use `curl -k`). Admin: `admin` / `password`. WP_DEBUG log: `docker compose exec wordpress cat /var/www/html/wp-content/debug.log`.
+Site: https://pdf-invoice.local (hosts entry to 127.0.0.1 already present; caddy uses a self-signed cert, use `curl -k`). Admin: `admin` / `password`. WP_DEBUG log: `docker compose exec wordpress cat /var/www/html/wp-content/debug.log`.
 
 ## Drive
 
