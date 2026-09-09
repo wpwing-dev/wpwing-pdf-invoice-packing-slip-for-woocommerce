@@ -178,7 +178,7 @@ caddy-trust: ## Trust Caddy's local CA (run once per machine, requires sudo)
 	@echo "Waiting for Caddy to generate its CA..."
 	@sleep 3
 	docker compose --profile dev cp caddy:/data/caddy/pki/authorities/local/root.crt /tmp/caddy-root.crt
-	sudo cp /tmp/caddy-root.crt /usr/local/share/ca-certificates/caddy-local.crt
+	sudo cp /tmp/caddy-root.crt /usr/local/share/ca-certificates/caddy-pdf-invoice.crt
 	sudo update-ca-certificates
 	@echo "Done. Restart your browser."
 .PHONY: caddy-trust
