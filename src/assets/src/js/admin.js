@@ -25,16 +25,35 @@ jQuery(function($) {
     { checkbox: '#show_product_thumbnail-field',   targets: '#product_thumbnail_size-wrapper' },
   ];
 
-  toggles.forEach(function(pair) {
+  function syncToggle(pair, animate) {
     var $checkbox = $(pair.checkbox);
     var $targets  = $(pair.targets);
+    var isChecked = $checkbox.is(':checked');
 
-    // Set initial state instantly (no animation on page load)
-    $targets.toggle($checkbox.is(':checked'));
+    if (animate) {
+      if (isChecked) {
+        $targets.stop(true, true).slideDown(150);
+      } else {
+        $targets.stop(true, true).slideUp(150);
+      }
+    } else {
+      $targets.toggle(isChecked);
+    }
+  }
 
-    // On change, read truth from DOM and animate
+  function syncAllToggles(animate) {
+    toggles.forEach(function(pair) {
+      syncToggle(pair, animate);
+    });
+  }
+
+  // Set initial state instantly
+  syncAllToggles(false);
+
+  // On change, read truth from DOM and animate deterministically
+  toggles.forEach(function(pair) {
     $('body').on('change', pair.checkbox, function() {
-      $targets.slideToggle(150);
+      syncToggle(pair, true);
     });
   });
 
@@ -140,9 +159,14 @@ jQuery(function($) {
 
   function filterSettingsRows(query) {
     var q = $.trim(query).toLowerCase();
+    if (!q) {
+      $('.wpwing-wcpdf-setting-tab table tr').show();
+      syncAllToggles(false);
+      return;
+    }
     $('.wpwing-wcpdf-setting-tab table tr').each(function() {
       var $row = $(this);
-      $row.toggle(!q || $row.text().toLowerCase().indexOf(q) !== -1);
+      $row.toggle($row.text().toLowerCase().indexOf(q) !== -1);
     });
   }
 

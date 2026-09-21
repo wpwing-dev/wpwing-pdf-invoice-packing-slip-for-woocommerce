@@ -7,7 +7,7 @@
 	"private": true,
 	"scripts": {
 		"build:css": "sass src/assets/src/scss/admin.scss src/assets/public/css/admin.css --no-source-map && sass src/assets/src/scss/admin.scss src/assets/public/css/admin.min.css --style=compressed --no-source-map",
-		"build:js": "terser src/assets/src/js/admin.js -o src/assets/public/js/admin.min.js --compress --mangle",
+		"build:js": "cp src/assets/src/js/admin.js src/assets/public/js/admin.js && terser src/assets/src/js/admin.js -o src/assets/public/js/admin.min.js --compress --mangle",
 		"watch:css": "sass --watch src/assets/src/scss/admin.scss src/assets/public/css/admin.css",
 		"lint:js": "eslint src/assets/src/js/",
 		"lint:css": "stylelint src/assets/src/scss/",
