@@ -94,7 +94,7 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 == Changelog ==
 
-= 1.16.0 - 21/09/2026 =
+= 1.16.0 - 2026-09-21 =
 
 * New: Product thumbnails in item tables - toggle thumbnail display and choose size (32x32, 48x48, 64x64) across all document types (invoices, packing slips, delivery notes, shipping labels) with memory-safe downscaling and local caching.
 * New: Product SKU and Weight column visibility options across all document types in both Default and Modern templates.
@@ -102,26 +102,26 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 * Fix: Suppress PDF invoice email attachments on free orders ($0.00) when the "Disable for free orders" setting is enabled.
 * Hardening: Wrapped invoice counter advisory lock acquisition and release in try-finally construct to guarantee lock release.
 
-= 1.15.0 - 07/09/2026 =
+= 1.15.0 - 2026-09-07 =
 
 * New: Shipping Label document type - a price-free label with a prominent recipient shipping address, sender details, order weight, shipping method, and an optional scannable QR code linking back to the order. Create it manually, in bulk (ZIP or merged PDF), or automatically on the order statuses you choose - just like invoices, packing slips, and delivery notes.
 * New: Shipping label template setting (Default or Modern), included in the same Custom CSS box as the other document types.
 
-= 1.14.0 - 31/08/2026 =
+= 1.14.0 - 2026-08-31 =
 
 * New: Setup Wizard - a first-run wizard walks you through shop name and address, logo upload, paper size, auto-generate statuses, and invoice email attachments. Launches automatically the first time you activate the plugin, is skippable at every step, and can be re-launched any time from a link on the Settings page.
 * Fix: The company logo could fail to appear on generated PDFs (showing "Image not found" instead) on some hosts, including most local dev environments. The logo is now embedded directly rather than fetched back over the network.
 * Fix: Order metabox action buttons could overflow the sidebar on narrow screens. The destructive action is now labeled "Delete" instead of "Cancel" for clarity.
 * Fix: The invoice preview panel in Settings could clip the right side of the invoice on narrower screens instead of showing a scrollbar.
 
-= 1.13.0 - 24/08/2026 =
+= 1.13.0 - 2026-08-24 =
 
 * New: System Status tab in Settings - shows plugin, WordPress, PHP, WooCommerce and Dompdf versions, the document save folder and font cache folder with a writable check, and the active document types. Includes a one-click "Copy system info" button for support requests.
 * New: Settings search - a search box above the settings tabs filters the visible tab's rows in real time as you type, and stays applied when you switch tabs.
 * Fix: A brand-new install could trigger a PHP deprecation notice ("Passing null to parameter of type string") the first time the Settings page was opened, before Save Changes had ever been clicked.
 * Compatibility: Tested up to WordPress 7.1.
 
-= 1.12.0 - 19/07/2026 =
+= 1.12.0 - 2026-07-19 =
 
 * New: Delivery Note document type - a price-free document listing the items and shipping address, made to travel with the parcel. Create, view, or cancel it from the order page metabox, just like invoices and packing slips.
 * New: Auto-generate delivery notes on the order statuses you choose, with the same once-per-order behaviour as invoices and packing slips.
@@ -129,12 +129,12 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 * New: Delivery note template setting (Default or Modern) and an option to print the customer's checkout note on the delivery note.
 * Improvement: The Custom CSS box now also applies to delivery notes.
 
-= 1.11.0 - 12/07/2026 =
+= 1.11.0 - 2026-07-12 =
 
 * New: [wpwing_invoice] shortcode - drop it on any page to show a secure invoice download link. It automatically detects the order on the Thank You page and in My Account, or accepts an explicit order_id attribute. Use the label attribute to customize the link text.
 * New: Search orders by invoice number. Type an invoice number into the search box on the WooCommerce orders list and the matching order appears - works on both the classic and High-Performance Order Storage screens.
 
-= 1.10.0 - 05/07/2026 =
+= 1.10.0 - 2026-07-05 =
 
 * New: Bulk download invoices and packing slips. Select any number of orders on the orders list and download them as a single ZIP file, or as one merged PDF - any documents that don't exist yet are generated automatically.
 * New: International currency support. Currency symbols that previously printed as an empty box - such as the Bangladeshi Taka (৳), Georgian Lari (₾), Cambodian Riel (៛), and many more - now render correctly on every invoice, thanks to a bundled currency font.
@@ -143,7 +143,7 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 * Fix: When the font cache folder is missing or not writable, invoices still generate using the built-in font instead of failing outright.
 * Fix: A currency symbol added by an incomplete font cache could push invoice rows out of alignment. The bundled font now matches the default line spacing and repairs a stale cache automatically.
 
-= 1.9.0 - 28/06/2026 =
+= 1.9.0 - 2026-06-28 =
 
 * New: Added an optional QR code on invoices - configure it from Template Settings. Encode the customer's order view URL, or your own custom text with {order_number} and {invoice_number} placeholders.
 * Fix: Bulk generating invoices or packing slips no longer duplicates the document content. A template hook left registered between documents caused the second PDF in a batch to render its content twice, the third three times, and so on.
@@ -151,7 +151,7 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 * Fix: Declared the packing slip date property to avoid a dynamic property deprecation notice on PHP 8.2+.
 * Note: Minimum required PHP version is now 7.4.
 
-= 1.8.1 - 21/06/2026 =
+= 1.8.1 - 2026-06-21 =
 
 * Fix: Yearly invoice counter reset could race under concurrent Jan 1 requests, causing two invoices to receive the same number. The reset now runs inside the advisory lock alongside the counter increment.
 * Fix: When no prefix or suffix was configured, the literal text "prefix" or "suffix" appeared verbatim on invoices. These now fall back to an empty string.
@@ -162,7 +162,7 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 * Fix: Invoice table no longer crashes on orders with zero-quantity line items; shipping and fee rows now include the SKU column cell when SKU display is enabled; shipping tax is summed as a float rather than an integer; the Subtotal row shows product lines only and no longer double-counts fees and shipping; zero-cost shipping lines are suppressed; empty product SKUs fall back to "-".
 * Fix: The HTML preview endpoint always resets its document global after rendering, even if an error occurs mid-template; bulk generation count now reflects only orders where the PDF was actually saved; PDF open/download behaviour is now resolved per document type; payment due date field description clarifies it is calculated from order creation date; logo URL field is no longer read-only.
 
-= 1.8.0 - 14/06/2026 =
+= 1.8.0 - 2026-06-14 =
 
 * New: Added a payment due date to invoices - configure the offset in days from General Settings.
 * New: Added an HTML preview button in the order metabox - check the invoice or packing slip layout without generating a PDF.
@@ -172,7 +172,7 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 * Fix: If PDF generation fails partway through, the invoice number is now held in reserve and reused on the next attempt - no more gaps in your invoice sequence from a failed save.
 * Fix: Accessing invoice details on an order that could not be loaded no longer causes a fatal error.
 
-= 1.7.0 - 07/06/2026 =
+= 1.7.0 - 2026-06-07 =
 
 * New: Added an option to show the customer's note (entered at checkout) on the invoice.
 * New: Added an option to control tax display in invoice totals - show each tax class as a separate line, or collapse them into a single tax total.
@@ -180,7 +180,7 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 * Improvement: Auto-generate status and email attachment settings now use checkboxes instead of a multi-select list - much easier to pick and toggle options.
 * Fix: When a PDF fails to generate, an admin notice now appears so you always know something went wrong.
 
-= 1.6.0 - 30/05/2026 =
+= 1.6.0 - 2026-05-30 =
 
 * New: Live invoice preview panel - see exactly how your invoice looks while you're adjusting settings, without saving first.
 * New: Smarter invoice numbering - use simple tokens like {number}, {year}, and {month} to build your own format (e.g. INV-{number}/{year}{month}). Existing formats are upgraded automatically.
@@ -191,13 +191,13 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 * Improvement: The invoice preview panel stays hidden until you need it, keeping the settings page clean.
 * Compatibility: Tested and confirmed working with WooCommerce 10.8.1.
 
-= 1.5.1 - 22/05/2026 =
+= 1.5.1 - 2026-05-22 =
 
 * Compatibility: Tested and confirmed working with WordPress 7.0.
 * Improved plugin description for clarity.
 * Dev: Renamed all internal hooks, filters, and constants from wpwing_wcpi_ to wpwing_wcpdf_ for better long-term naming. Existing data is migrated automatically — no action needed.
 
-= 1.5.0 - 18/05/2026 =
+= 1.5.0 - 2026-05-18 =
 
 * New: Auto-generate invoice and packing slip on configurable order status change.
 * New: Attach invoice and packing slip PDF to any WooCommerce transactional email.
@@ -219,71 +219,71 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 * Compatibility check with WordPress v6.9 and WooCommerce v10.7.0.
 * Few minor improvements.
 
-= 1.4.3 - 22/04/2024 =
+= 1.4.3 - 2024-04-22 =
 
 * Compatibility check with WordPress v6.5 and WooCommerce v8.8.
 * Few minor improvements.
 
-= 1.4.2 - 17/02/2024 =
+= 1.4.2 - 2024-02-17 =
 
 * Compatibility check with WC's latest version.
 * Few minor improvements.
 
-= 1.4.1 - 20/01/2024 =
+= 1.4.1 - 2024-01-20 =
 
 * Update: DOM PDF version 2.0.4
 * Compatibility check with WP's latest version.
 * Compatibility check with WC's latest version.
 * Few minor improvements.
 
-= 1.4.0 - 17/06/2023 =
+= 1.4.0 - 2023-06-17 =
 
 * Update: Remove WPWing prefix from the plugin name
 * Update: Invoice and Packing slip open in new tab
 * Few minor improvements.
 
-= 1.3.4 - 17/04/2023 =
+= 1.3.4 - 2023-04-17 =
 
 * Fix: Refactor and update the DOMPDF library.
 
-= 1.3.3 - 12/07/2022 =
+= 1.3.3 - 2022-07-12 =
 
 * Fix: Refactor and update code.
 
-= 1.3.2 - 17/06/2022 =
+= 1.3.2 - 2022-06-17 =
 
 * Fix: Deactive if the dependent WooCommerce plugin is not activated.
 * Few minor improvements.
 
-= 1.3.1 - 08/06/2022 =
+= 1.3.1 - 2022-06-08 =
 
 * Update: Add download invoice feature in customer "My Account > Orders" section.
 * Few minor improvements.
 
-= 1.3.0 - 08/05/2022 =
+= 1.3.0 - 2022-05-08 =
 
 * Update: Invoice settings template UI/UX.
 * Update: DOMPDF version updated to 1.2.2
 * Few minor improvements.
 
-= 1.2.0 - 04/02/2022 =
+= 1.2.0 - 2022-02-04 =
 
 * Update: Add global condition for sending email to the customer billing address.
 * Update: DOMPDF version updated to 1.1.1
 * Fix: Appropriate text for Invoice Settings checkbox.
 * Few minor improvements.
 
-= 1.1.0 - 25/12/2021 =
+= 1.1.0 - 2021-12-25 =
 
 * Update: Send PDF Invoice attached with email when admin creates an invoice.
 * Few minor bug fixes and improvements.
 
-= 1.0.1 - 15/10/2021 =
+= 1.0.1 - 2021-10-15 =
 
 * Update: Settings text.
 * Update: Set the default invoice number if empty in the settings section.
 
-= 1.0.0 - 14/10/2021 =
+= 1.0.0 - 2021-10-14 =
 
 * initial release.
 
