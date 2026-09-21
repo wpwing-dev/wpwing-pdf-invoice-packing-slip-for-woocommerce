@@ -2,7 +2,7 @@
 
 Contributors:       wpwing, voboghure
 Donate link:        https://wpwing.com/
-Tags:               PDF, Invoice, Packing Slip, Packing List, WooCommerce
+Tags:               pdf invoice, packing slip, delivery note, shipping label, woocommerce
 Requires at least:  4.8
 Tested up to:       7.1
 Requires PHP:       7.4
@@ -10,77 +10,113 @@ Stable tag:         1.16.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
-Automatically generate, print, and attach professional PDF invoices and packing slips to WooCommerce emails. Clean, lightweight, and fast.
+Automate PDF invoices, packing slips, delivery notes & shipping labels for WooCommerce. Attach to emails, print in bulk. Fast & lightweight.
 
 
 == Description ==
 
-Streamline your eCommerce store's fulfillment, billing, and accounting workflows with a clean, lightweight WooCommerce PDF invoicing solution. This plugin automatically generates professional PDF invoices and packing slips, attaches them directly to your standard WooCommerce customer emails, and allows you to securely download or print them directly from your WordPress admin dashboard.
+Streamline your eCommerce store's fulfillment, billing, and accounting with an all-in-one, ultra-fast WooCommerce PDF invoicing solution. Automatically generate professional **PDF invoices**, **packing slips**, **delivery notes**, and **shipping labels**, attach them directly to customer order emails, and print or download batches in seconds.
 
-Whether you need to send a legal tax invoice to a buyer, include a printed packing list inside a shipping box, or keep an organized archive of your store's financial records, this plugin automates the entire process on autopilot.
+Whether you need legally compliant tax invoices for international buyers, price-free packing slips for your fulfillment warehouse, or shipping labels with scannable QR codes, this plugin automates your entire post-order workflow on autopilot.
 
-Built strictly with performance, security, and modern WordPress standards in mind, it handles document generation seamlessly on your server. It ensures your site remains lightning-fast without bloating your database, overloading your server memory, or slowing down your customer checkout conversion rates.
+Built strictly with performance, security, and modern WordPress standards, it runs lightning-fast on your server without database bloat, memory leaks, or checkout slowdowns.
 
 ✅ Tested OK with WooCommerce 11.0.1+
 🚀 High-Performance Order Storage (HPOS) Compatible
+⚡ Zero Bloat - No external telemetry, no background tracking scripts
 
-### 🔥 KEY FEATURES ###
+---
 
-* 📑 **Automated Email PDF Attachment:** Automatically generate and attach PDF invoices to specific WooCommerce order status emails, including Processing Order, Completed Order, or Customer Invoice / Order Details.
-* 📦 **Efficient Order Management & Bulk Actions:** Save time during busy shipping hours. Quickly generate, download, or print multiple invoices and packing slips directly from your WooCommerce orders list page - grab a whole batch as a single ZIP file or one merged PDF in a couple of clicks. Find any order instantly by typing its invoice number into the order search box.
-* 🚚 **Delivery Notes:** Generate a price-free delivery note that travels with the parcel - listing the items and shipping address, with an optional customer note. Create it manually, in bulk, or automatically on the order statuses you choose.
-* 🏷️ **Shipping Labels:** Print a clean, price-free shipping label with a prominent recipient address, sender details, order weight, and an optional scannable QR code linking back to the order. Create it manually, in bulk, or automatically on the order statuses you choose.
-* 🌍 **Full International Currency Support:** Every WooCommerce currency symbol renders perfectly on your PDFs - including the Bangladeshi Taka (৳), Indian Rupee (₹), Thai Baht (฿), and dozens more that other plugins leave as blank boxes.
-* 🎨 **Multiple Beautiful Templates:** Switch between beautifully formatted layouts including our crisp "Default" and modern minimalist designs that print perfectly on standard A4 or Letter sizes. Add your own Custom CSS to fine-tune any detail.
-* 📱 **QR Code on Invoice:** Add a scannable QR code to your invoices - link straight to the customer's order page, or encode your own custom text with order and invoice number placeholders.
-* ⚙️ **Fully Customizable Store Branding:** Create a professional look that matches your business identity. Easily upload your store logo, input company address details, insert tax registration information (VAT/GST/Tax ID), and add custom terms or footer notes.
-* 🔢 **Sequential Invoice Numbering:** Keep your business accounting perfectly compliant. Set up custom invoice numbers with personalized prefixes, suffixes, dynamic padding length, and an option for an automatic yearly number reset.
-* 👤 **Secure Customer My-Account Downloads:** Logged-in customers can easily navigate to their account page to view, print, or download past PDF invoices for their personal bookkeeping. Prefer a download link somewhere else? Drop the [wpwing_invoice] shortcode on any page.
-* 🔒 **Developer-Friendly & Robust Security:** Built with optimized, clean code ensuring theme compatibility. All critical document actions (create, view, cancel) are fully CSRF-protected with secure WordPress nonces.
+### 🔥 4-IN-1 DOCUMENT SUITE (100% FREE) ###
 
-### 💡 WHY CHOOSE THIS PLUGIN? ###
-Many alternative WooCommerce invoice layout tools suffer from extreme feature bloat, heavy database queries, or outdated user interfaces that confuse shop managers.
+Unlike other plugins that charge €69 to €99 per year for basic document types, WPWing gives you all 4 essential store documents completely free:
 
-This plugin cuts through the noise by focusing purely on the essentials: delivering flawless, elegant PDF invoices, accurate packing slips, and delivery notes - fast. We don't bundle unnecessary scripts or tracking codes. You get a reliable, high-speed automation tool engineered to help you run your business efficiently.
+* 📑 **PDF Invoices:** Fully compliant tax invoices with customizable sequential numbering, tax breakdowns, store branding, and automated email attachments.
+* 📦 **PDF Packing Slips:** Warehouse-ready packing lists showing items and quantities without prices, perfect for picking and packing teams.
+* 🚚 **Delivery Notes:** Price-free delivery slips that travel inside the parcel with item summaries, shipping addresses, and optional customer order notes.
+* 🏷️ **Shipping Labels:** Clean shipping cards with prominent recipient address, sender details, package weight, shipping method, and a scannable QR code.
 
-### 🛣️ FUTURE ROADMAP ###
-We are actively building features to make your shop management even smoother. Look out for these upcoming documentation formats in future releases:
-* Proforma Invoice generation
+---
 
-### 🧑‍💻 Dedicated Support
-At WPWing, we are committed to building high-quality, lightweight utility plugins for WordPress and WooCommerce. Our dedicated support team responds rapidly to the support forums to help you resolve any issues instantly.
+### ⚡ KEY FEATURES AT A GLANCE ###
+
+* 🖼️ **Product Thumbnails in Item Tables (New in 1.16.0):** Display product images (32px, 48px, or 64px), SKU, and product weight in item tables across all document types. Engineered with memory-safe image downscaling and local disk caching to prevent Dompdf crashes.
+* 🧙 **2-Minute Setup Wizard:** First-time store owners can configure shop name, address, logo, paper size, and email attachments in under two minutes with our skippable onboarding wizard.
+* 👁️ **Live Interactive Preview Panel:** Preview your changes live in real time directly from the settings panel before generating documents for real customers.
+* 📦 **1-Click Bulk Downloads (Merged PDF or ZIP):** Save hours during shipping rushes. Select orders and download all invoices or packing slips as a single combined PDF or a compressed ZIP archive.
+* 🌍 **Native International Currency Support:** Every WooCommerce currency symbol renders cleanly on your PDFs without broken "tofu" boxes - including the Bangladeshi Taka (৳), Indian Rupee (₹), Thai Baht (฿), and dozens more.
+* 📱 **Dynamic Scannable QR Codes:** Add a scannable QR code to invoices and shipping labels - linking directly to the customer's order verification page or custom text tokens.
+* 🔢 **Sequential & Yearly Reset Numbering:** Full accounting compliance. Configure custom invoice numbering with personalized prefixes, suffixes, dynamic zero-padding, and optional automatic yearly resets.
+* 🛡️ **Free Order Suppression:** Automatically skip invoice generation or email attachment on free ($0.00) orders when enabled.
+* 🔍 **Search Orders by Invoice Number:** Find any order in seconds by typing its invoice number directly into the WooCommerce order search box (works on classic and HPOS).
+* 👤 **Customer My-Account Downloads:** Customers can view and download past invoices from their My Account order history, or via the `[wpwing_invoice]` shortcode anywhere on your site.
+* 🔒 **Rock-Solid Security:** 100% CSRF-protected with WordPress nonces. Strict capability checks on every document action.
+
+---
+
+### 📊 HOW WE COMPARE ###
+
+| Feature | WP Overnight | WebToffee | WPWing (Free) |
+|---|---|---|---|
+| **Free Document Types** | 2 (Invoice, Packing) | 4 (Invoice, Packing, Delivery, Shipping) | **All 4 Free** |
+| **Product Thumbnails in Tables** | Paid Add-on (EUR 99/yr) | Paid Pro ($69/yr) | **100% Free** |
+| **Bulk Merged PDF & ZIP** | Paid Add-on (EUR 99/yr) | Paid Pro ($69/yr) | **100% Free** |
+| **QR Code on Documents** | Paid Add-on | Paid Pro | **100% Free** |
+| **Native Asian Currencies (৳, ₹, ฿)** | Broken tofu boxes | Requires free add-on | **Bundled Native Font** |
+| **Setup Wizard & Live Preview** | No | Multi-step form | **Wizard + Live Preview** |
+| **Price** | Free / EUR 99+ | Free / $69+ | **100% Free** |
+
+---
+
+### 💡 WHY SHOP OWNERS LOVE WPWING ###
+Most WooCommerce PDF invoice plugins on the market fall into two extremes: either they are abandoned with broken support, or they are bloated with heavy e-invoicing dependencies that slow down your server.
+
+WPWing hits the sweet spot: **clean, modern code, blazing fast document generation, and zero paywalls on essential shipping features.**
+
+### 🧑‍💻 Fast & Friendly Support
+Need help or have a feature suggestion? We actively maintain our plugins and respond quickly on the WordPress.org support forums.
 
 
 == Installation ==
 
-### 🛠️ Modern Way (Recommended): ###
-1. Navigate to your WordPress Dashboard and click on **Plugins > Add New**.
+### 🛠️ Automatic Installation (Recommended):
+1. In your WordPress dashboard, navigate to **Plugins > Add New**.
 2. Search for *"PDF Invoice and Packing Slip for WooCommerce"*.
 3. Click **Install Now**, then click **Activate**.
+4. The automatic Setup Wizard will launch to help you set up your logo and details in 2 minutes.
 
-### 📁 Traditional Way: ###
-1. Download the plugin zip file and extract it.
-2. Upload the folder `wpwing-pdf-invoice-packing-slip-for-woocommerce` to your `/wp-content/plugins/` directory.
+### 📁 Manual Installation:
+1. Download the plugin zip file and unpack it.
+2. Upload the `wpwing-pdf-invoice-packing-slip-for-woocommerce` folder to your `/wp-content/plugins/` directory.
 3. Activate the plugin through the **Plugins** menu in WordPress.
-4. Follow our official [Documentation](https://wpwing.com/docs/) to configure your layout settings.
+4. Open **WooCommerce > PDF Invoices** to configure your store settings.
 
 
 == Frequently Asked Questions ==
 
-= Do I need coding skills to use this plugin? =
-Not at all! This plugin is designed to be plug-and-play. It features a highly intuitive settings dashboard that lets you upload your logo, add business details, and configure your invoices in just a few clicks.
+= Can I show product images and thumbnails on invoices? =
+Yes! In **WooCommerce > PDF Invoices > Template**, simply toggle the "Show product thumbnail" checkbox and choose your desired size (32x32, 48x48, or 64x64). Thumbnails are automatically cached and downscaled to keep PDF generation fast and memory-safe.
 
-= Do I need to edit my current WordPress theme files? =
-No, it works seamlessly out-of-the-box with any standard WordPress theme. You just need to activate the plugin, and the system handles the PDF generation automatically.
+= Can I bulk download invoices as a single merged PDF? =
+Yes! From your WooCommerce Orders list, select the orders you want to print, choose **Download Invoices (Merged PDF)** or **Download Invoices (ZIP)** from the Bulk Actions dropdown, and click **Apply**.
+
+= Does this support non-Latin currency symbols like Taka (৳) and Rupee (₹)? =
+Yes! Most PDF plugins render non-Latin currency symbols as empty boxes or question marks because standard PDF fonts lack those glyphs. WPWing includes a custom bundled currency font that renders symbols for the Bangladeshi Taka (৳), Indian Rupee (₹), Thai Baht (฿), Philippine Peso (₱), and many more perfectly out-of-the-box.
+
+= Can I prevent invoices from being sent on free ($0) orders? =
+Yes! Under **WooCommerce > PDF Invoices > General**, enable the "Disable for free orders" option. Free orders will not generate or attach invoice PDFs to customer emails.
 
 = Can I show an invoice download link anywhere on my site? =
-Yes! Use the `[wpwing_invoice]` shortcode. On the order Thank You page or a My Account order page it finds the order automatically; anywhere else, pass the order explicitly with `[wpwing_invoice order_id="123"]`. You can change the link text with the `label` attribute. The link only appears for the order's own customer (logged in) or store managers, and only after the invoice has been generated.
+Yes! Use the `[wpwing_invoice]` shortcode. On the Thank You page or My Account order details, it detects the order automatically; elsewhere, use `[wpwing_invoice order_id="123"]`. You can customize the link text with the `label` attribute.
 
-= Is the plugin compatible with WooCommerce HPOS? =
-Yes! The plugin fully supports High-Performance Order Storage (HPOS) to ensure maximum database efficiency and site speed for modern WooCommerce environments.
+= Is this plugin compatible with WooCommerce HPOS (High-Performance Order Storage)? =
+Yes! WPWing fully supports High-Performance Order Storage (HPOS) and standard custom post types.
 
-= Can I contribute to the code or report a bug? =
-You’re more than welcome! This plugin is actively developed and hosted on [GitHub](https://github.com/wpwing-dev/wpwing-pdf-invoice-packing-slip-for-woocommerce), where you can openly create issues or submit pull requests.
+= Do I need coding knowledge to customize my invoices? =
+Not at all. You can upload your store logo, add company details, adjust invoice numbering, toggle QR codes, and customize colors directly from the settings panel. If you are a developer, we also provide a Custom CSS box and rich action/filter hooks.
+
+= Can I contribute or report bugs? =
+Yes! This plugin is actively maintained on [GitHub](https://github.com/wpwing-dev/wpwing-pdf-invoice-packing-slip-for-woocommerce). We welcome pull requests and issue reports.
 
 
 == Screenshots ==
