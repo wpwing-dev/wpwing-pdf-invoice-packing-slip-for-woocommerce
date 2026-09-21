@@ -92,7 +92,7 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 5. Template settings screen with live interactive preview panel
 6. Delivery Note template preview
 7. Shipping Label with QR code template preview
-8. WooCommerce orders list with quick PDF action buttons
+8. WooCommerce orders list with bulk PDF actions dropdown
 
 == Changelog ==
 
