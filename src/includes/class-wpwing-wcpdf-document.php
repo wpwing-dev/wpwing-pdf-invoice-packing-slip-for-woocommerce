@@ -549,6 +549,74 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 		}
 
 		/**
+		 * Return a downscaled, base64-encoded thumbnail data URI for a given product.
+		 * Resizes images and caches them on disk so Dompdf never handles full-resolution assets.
+		 *
+		 * @since 1.16.0
+		 * @param WC_Product|false|null $product   Product instance.
+		 * @param int                   $dimension Target width/height in pixels (32, 48, 64).
+		 * @return string Data URI, or empty string when no image is available.
+		 */
+		public function get_product_thumbnail_data_uri( $product, $dimension = 32 ) {
+			if ( ! ( $product instanceof \WC_Product ) ) {
+				return '';
+			}
+
+			$image_id = $product->get_image_id();
+			if ( ! $image_id && $product->get_parent_id() ) {
+				$parent   = wc_get_product( $product->get_parent_id() );
+				$image_id = $parent instanceof \WC_Product ? $parent->get_image_id() : 0;
+			}
+
+			if ( ! $image_id ) {
+				return '';
+			}
+
+			$image_id  = (int) $image_id;
+			$dimension = in_array( (int) $dimension, array( 32, 48, 64 ), true ) ? (int) $dimension : 32;
+
+			$cache_dir = trailingslashit( WPWING_WCPDF_DOCUMENT_SAVE_DIR ) . 'thumbs/';
+			if ( ! file_exists( $cache_dir ) ) {
+				wp_mkdir_p( $cache_dir );
+			}
+
+			$cache_file = $cache_dir . sprintf( 'thumb_%d_%dx%d.png', $image_id, $dimension, $dimension );
+
+			if ( file_exists( $cache_file ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+				$cached_bytes = file_get_contents( $cache_file );
+				if ( false !== $cached_bytes && ! empty( $cached_bytes ) ) {
+					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+					return 'data:image/png;base64,' . base64_encode( $cached_bytes );
+				}
+			}
+
+			$source_path = get_attached_file( $image_id );
+			if ( ! $source_path || ! file_exists( $source_path ) ) {
+				return '';
+			}
+
+			if ( function_exists( 'wp_get_image_editor' ) ) {
+				$editor = wp_get_image_editor( $source_path );
+				if ( ! is_wp_error( $editor ) ) {
+					$editor->resize( $dimension, $dimension, true );
+					$saved = $editor->save( $cache_file, 'image/png' );
+					if ( ! is_wp_error( $saved ) && file_exists( $cache_file ) ) {
+						// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+						$bytes = file_get_contents( $cache_file );
+						if ( false !== $bytes ) {
+							// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+							return 'data:image/png;base64,' . base64_encode( $bytes );
+						}
+					}
+				}
+			}
+
+			$thumb_url = wp_get_attachment_image_url( $image_id, array( $dimension, $dimension ) );
+			return $thumb_url ? $this->resolve_local_image_src( $thumb_url ) : '';
+		}
+
+		/**
 		 * Render the product list for this document type.
 		 * Path resolves to templates/{theme}/{document_type}/products.php.
 		 */
