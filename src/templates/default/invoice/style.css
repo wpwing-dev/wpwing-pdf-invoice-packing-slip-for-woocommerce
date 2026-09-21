@@ -248,13 +248,12 @@ table.invoice-totals tr.invoice-details-total {
 }
 
 footer {
+	clear: both;
 	border-top: 1px solid #b9b9b9;
-	width: 100%;
 	padding-top: 25px;
 	padding-bottom: 15px;
+	margin-top: 30px;
 	text-align: center;
-	position: absolute;
-	bottom: 0;
 }
 
 .customer-note {
