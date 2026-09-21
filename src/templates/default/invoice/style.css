@@ -221,6 +221,7 @@ table.invoice-totals tr.invoice-details-total {
 .invoice-qr {
 	text-align: right;
 	margin-top: 15px;
+	padding-right: 20px;
 }
 
 .notes {

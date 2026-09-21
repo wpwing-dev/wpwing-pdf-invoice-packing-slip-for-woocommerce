@@ -375,19 +375,21 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 		 */
 		private function get_qr_content() {
 
-			global $wpwing_wcpdf_document;
+			if ( ! $this->order ) {
+				return '';
+			}
 
 			if ( 'custom' === $this->settings->get_option( 'invoice_qr_content' ) ) {
 				$text = (string) $this->settings->get_option( 'invoice_qr_custom_text' );
 				$text = str_replace(
 					array( '{order_number}', '{invoice_number}' ),
-					array( $wpwing_wcpdf_document->order->get_order_number(), $wpwing_wcpdf_document->get_formatted_invoice_number() ),
+					array( $this->order->get_order_number(), $this->get_formatted_invoice_number() ),
 					$text
 				);
 				return trim( $text );
 			}
 
-			return (string) $wpwing_wcpdf_document->order->get_view_order_url();
+			return (string) $this->order->get_view_order_url();
 		}
 	}
 
