@@ -10,6 +10,7 @@ PRO_BUILD   = $(DIST_DIR)/$(PRO_SLUG)
 # Dev tooling (PHPUnit 10, phpcs, phpstan) needs PHP 8.1+, independent of the system default php
 PHP      ?= php8.2
 COMPOSER ?= $(PHP) $(shell command -v composer)
+PLAYWRIGHT_IMAGE ?= mcr.microsoft.com/playwright:v1.45.0-jammy
 
 .DEFAULT_GOAL := help
 
@@ -197,6 +198,17 @@ test-e2e: ## Run Playwright E2E tests (spins up full stack)
 	docker compose --profile e2e up -d caddy
 	docker compose --profile e2e run --rm e2e
 .PHONY: test-e2e
+
+screenshots: ## Capture WordPress.org listing screenshots into wporg-assets/ and update readme.txt captions
+	$(MAKE) dev
+	@OTHERS=$$(docker compose --profile dev run --rm -T wpcli wp plugin list --status=active --field=name --allow-root 2>/dev/null | tr -d '\r' | grep -v -E '^(wpwing-pdf-invoice-packing-slip-for-woocommerce|woocommerce)$$' | tr '\n' ' '); \
+	[ -z "$$OTHERS" ] || echo "Deactivating for capture: $$OTHERS"; \
+	[ -z "$$OTHERS" ] || docker compose --profile dev run --rm -T wpcli wp plugin deactivate $$OTHERS --allow-root >/dev/null 2>&1; \
+	docker run --rm --network host --add-host=pdf-invoice.local:127.0.0.1 -v $(CURDIR):/work -w /work $(PLAYWRIGHT_IMAGE) node tools/screenshots.js; status=$$?; \
+	[ -z "$$OTHERS" ] || docker compose --profile dev run --rm -T wpcli wp plugin activate $$OTHERS --allow-root >/dev/null 2>&1; \
+	docker run --rm -v $(CURDIR):/work -w /work $(PLAYWRIGHT_IMAGE) chown -R $(shell id -u):$(shell id -g) wporg-assets $(SRC_DIR)/readme.txt; \
+	exit $$status
+.PHONY: screenshots
 
 env-reset: ## Wipe all Docker volumes and containers
 	docker compose --profile dev --profile unit --profile e2e down -v

@@ -11,7 +11,8 @@
 		"watch:css": "sass --watch src/assets/src/scss/admin.scss src/assets/public/css/admin.css",
 		"lint:js": "eslint src/assets/src/js/",
 		"lint:css": "stylelint src/assets/src/scss/",
-		"test:e2e": "playwright test"
+		"test:e2e": "playwright test",
+		"screenshots": "node tools/screenshots.js"
 	},
 	"devDependencies": {
 		"@playwright/test": "1.45.0",
