@@ -137,8 +137,30 @@ table.invoice-details tr td {
 	border-bottom: 1px solid #eaeff3;
 }
 
+.column-thumbnail {
+	width: 45px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.column-thumbnail img {
+	display: block;
+	margin: 0 auto;
+	border-radius: 2px;
+}
+
+.column-sku {
+	width: 70px;
+	text-align: left;
+}
+
+.column-weight {
+	width: 65px;
+	text-align: center;
+}
+
 .column-quantity {
-	width: 120px;
+	width: 80px;
 	text-align: center;
 }
 
