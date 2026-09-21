@@ -32,7 +32,7 @@ class MigrationTest extends TestCase {
 
 	public function test_maybe_run_skips_when_db_version_matches(): void {
 		$this->expectNotToPerformAssertions();
-		Functions\when( 'get_option' )->justReturn( WPWING_WCPDF_VERSION );
+		Functions\when( 'get_option' )->justReturn( WPWing_WcPdf_Migration::DB_VERSION );
 		Functions\expect( 'update_option' )->never();
 
 		WPWing_WcPdf_Migration::maybe_run();

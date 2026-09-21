@@ -155,6 +155,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 				return $attachments;
 			}
 
+			if ( $this->settings->get_option( 'invoice_disable_free_orders' ) && (float) $object->get_total() === 0.0 ) {
+				return $attachments;
+			}
+
 			$running  = true;
 			$order_id = $object->get_id();
 			$invoice  = $this->plugin->get_document_by_type( $order_id, 'invoice' );

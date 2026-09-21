@@ -19,15 +19,20 @@ if ( ! class_exists( 'WPWing_WcPdf_Migration' ) ) {
 	class WPWing_WcPdf_Migration {
 
 		/**
-		 * Run migration if the stored db_version does not match the current plugin version.
+		 * Current database schema version.
+		 */
+		const DB_VERSION = 1;
+
+		/**
+		 * Run migration if the stored db_version does not match current DB_VERSION.
 		 */
 		public static function maybe_run() {
-			if ( get_option( 'wpwing_wcpdf_db_version' ) === WPWING_WCPDF_VERSION ) {
+			if ( self::DB_VERSION === (int) get_option( 'wpwing_wcpdf_db_version' ) ) {
 				return;
 			}
 			self::migrate_options();
 			self::migrate_order_meta();
-			update_option( 'wpwing_wcpdf_db_version', WPWING_WCPDF_VERSION );
+			update_option( 'wpwing_wcpdf_db_version', self::DB_VERSION );
 		}
 
 		/**

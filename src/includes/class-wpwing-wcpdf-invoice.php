@@ -195,28 +195,30 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- advisory lock, no cacheable result.
 			$wpdb->query( $wpdb->prepare( 'SELECT GET_LOCK(%s, 5)', 'wpwing_wcpdf_invoice_number' ) );
 
-			if ( $this->settings->get_option( 'invoice_number_reset_yearly' ) ) {
-				$current_year = (int) wp_date( 'Y' );
-				$stored_year  = (int) $this->settings->get_option( '_invoice_last_year' );
-				if ( $stored_year > 0 && $stored_year !== $current_year ) {
-					$this->settings->set_option( 'invoice_number', 1 );
+			try {
+				if ( $this->settings->get_option( 'invoice_number_reset_yearly' ) ) {
+					$current_year = (int) wp_date( 'Y' );
+					$stored_year  = (int) $this->settings->get_option( '_invoice_last_year' );
+					if ( $stored_year > 0 && $stored_year !== $current_year ) {
+						$this->settings->set_option( 'invoice_number', 1 );
+					}
+					if ( $stored_year !== $current_year ) {
+						$this->settings->set_option( '_invoice_last_year', $current_year );
+					}
 				}
-				if ( $stored_year !== $current_year ) {
-					$this->settings->set_option( '_invoice_last_year', $current_year );
+
+				$current = (int) $this->settings->get_option( 'invoice_number' );
+				if ( $current < 1 ) {
+					$current = 1;
 				}
+
+				$this->settings->set_option( 'invoice_number', $current + 1 );
+
+				return $current;
+			} finally {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- advisory lock, no cacheable result.
+				$wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', 'wpwing_wcpdf_invoice_number' ) );
 			}
-
-			$current = (int) $this->settings->get_option( 'invoice_number' );
-			if ( $current < 1 ) {
-				$current = 1;
-			}
-
-			$this->settings->set_option( 'invoice_number', $current + 1 );
-
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- advisory lock, no cacheable result.
-			$wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', 'wpwing_wcpdf_invoice_number' ) );
-
-			return $current;
 		}
 
 		/**
