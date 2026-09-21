@@ -102,6 +102,8 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 * New: Product SKU and Weight column visibility options across all document types in both Default and Modern templates.
 * Fix: Decoupled database migration routine from plugin semver releases, preventing redundant table migration queries on every release.
 * Fix: Suppress PDF invoice email attachments on free orders ($0.00) when the "Disable for free orders" setting is enabled.
+* Fix: Relocated invoice QR code adjacent to totals summary table to optimize document layout and eliminate dead space.
+* Fix: Resolved template footer overlap on shorter pages and preview panels by replacing absolute positioning with normal document flow.
 * Hardening: Wrapped invoice counter advisory lock acquisition and release in try-finally construct to guarantee lock release.
 
 = 1.15.0 - 2026-09-07 =
