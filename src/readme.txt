@@ -6,7 +6,7 @@ Tags:               PDF, Invoice, Packing Slip, Packing List, WooCommerce
 Requires at least:  4.8
 Tested up to:       7.1
 Requires PHP:       7.4
-Stable tag:         1.15.0
+Stable tag:         1.16.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -93,6 +93,14 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 
 == Changelog ==
+
+= 1.16.0 - 21/09/2026 =
+
+* New: Product thumbnails in item tables - toggle thumbnail display and choose size (32x32, 48x48, 64x64) across all document types (invoices, packing slips, delivery notes, shipping labels) with memory-safe downscaling and local caching.
+* New: Product SKU and Weight column visibility options across all document types in both Default and Modern templates.
+* Fix: Decoupled database migration routine from plugin semver releases, preventing redundant table migration queries on every release.
+* Fix: Suppress PDF invoice email attachments on free orders ($0.00) when the "Disable for free orders" setting is enabled.
+* Hardening: Wrapped invoice counter advisory lock acquisition and release in try-finally construct to guarantee lock release.
 
 = 1.15.0 - 07/09/2026 =
 
