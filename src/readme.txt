@@ -85,12 +85,14 @@ You’re more than welcome! This plugin is actively developed and hosted on [Git
 
 == Screenshots ==
 
-1. PDF Invoice (sample).
-2. PDF Packing List (sample).
-3. Create PDF from the order admin page.
-4. General settings page.
-5. Template settings page.
-
+1. PDF Invoice template preview
+2. PDF Packing Slip template preview
+3. WooCommerce order details page with PDF invoice metabox actions
+4. General settings screen - numbering format, automation, and email attachments
+5. Template settings screen with live interactive preview panel
+6. Delivery Note template preview
+7. Shipping Label with QR code template preview
+8. WooCommerce orders list with quick PDF action buttons
 
 == Changelog ==
 
