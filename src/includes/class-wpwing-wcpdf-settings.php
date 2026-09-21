@@ -477,10 +477,36 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'default' => false,
 									),
 									array(
+										'id'      => 'show_product_thumbnail',
+										'type'    => 'checkbox',
+										'title'   => esc_html__( 'Show product image:', 'wpwing-wcpdf' ),
+										'desc'    => esc_html__( 'Yes - show product thumbnail in item tables', 'wpwing-wcpdf' ),
+										'default' => false,
+									),
+									array(
+										'id'      => 'product_thumbnail_size',
+										'type'    => 'select',
+										'title'   => esc_html__( 'Product image dimension:', 'wpwing-wcpdf' ),
+										'desc'    => esc_html__( 'Select thumbnail dimension in pixels (width x height)', 'wpwing-wcpdf' ),
+										'default' => '32',
+										'options' => array(
+											'32' => '32 x 32 px',
+											'48' => '48 x 48 px',
+											'64' => '64 x 64 px',
+										),
+									),
+									array(
 										'id'      => 'show_product_sku',
 										'type'    => 'checkbox',
-										'title'   => esc_html__( 'Show product SKU on invoice:', 'wpwing-wcpdf' ),
-										'desc'    => 'Yes',
+										'title'   => esc_html__( 'Show product SKU:', 'wpwing-wcpdf' ),
+										'desc'    => esc_html__( 'Yes - show product SKU in item tables', 'wpwing-wcpdf' ),
+										'default' => false,
+									),
+									array(
+										'id'      => 'show_product_weight',
+										'type'    => 'checkbox',
+										'title'   => esc_html__( 'Show product weight:', 'wpwing-wcpdf' ),
+										'desc'    => esc_html__( 'Yes - show product weight in item tables', 'wpwing-wcpdf' ),
 										'default' => false,
 									),
 									array(

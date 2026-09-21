@@ -22,6 +22,7 @@ jQuery(function($) {
     { checkbox: '#company_details_checkbox-field', targets: '#company_address-wrapper, #company_city-wrapper, #company_zip-wrapper, #company_country-wrapper, #company_phone-wrapper, #company_email-wrapper, #company_vat-wrapper' },
     { checkbox: '#company_notes_checkbox-field',   targets: '#company_notes_text-wrapper' },
     { checkbox: '#company_footer_checkbox-field',  targets: '#company_footer_text-wrapper' },
+    { checkbox: '#show_product_thumbnail-field',   targets: '#product_thumbnail_size-wrapper' },
   ];
 
   toggles.forEach(function(pair) {
