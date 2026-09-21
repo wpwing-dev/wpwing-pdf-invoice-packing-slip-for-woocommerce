@@ -11,3 +11,8 @@
 ## Punctuation
 
 - Use a plain hyphen (`-`) as a separator in prose and changelogs. Never use an en-dash (`–`) or em-dash (`—`).
+
+## File Modifications & Editor Tabs
+
+- Modify files directly in the background on the filesystem (using shell commands or scripts) without opening tabs in the VS Code editor.
+- Never leave unsaved or dirty editor buffers in the workspace.
