@@ -1,0 +1,396 @@
+.form-table.wpwing-pdf-invoice th {
+    width: 250px;
+}
+
+// Metabox — summary line (only when invoice exists)
+.wpwing-wcpdf-summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px 8px;
+    padding: 0 0 10px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #e2e4e7;
+    font-size: 12px;
+    color: #50575e;
+
+    .wpwing-wcpdf-sep { color: #c3c4c7; }
+
+    strong {
+        font-family: Consolas, Monaco, monospace;
+        font-size: 11px;
+        color: #1d2327;
+        background: #f0f0f1;
+        padding: 2px 6px;
+        border-radius: 3px;
+    }
+}
+
+// Metabox — document rows (Invoice / Packing Slip / Delivery Note)
+// Actions sit on their own full-width line below the label so they wrap instead of clipping.
+.wpwing-wcpdf-doc-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 -10px;
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+
+    & + & { border-top: 1px solid #f0f0f0; }
+
+    &:hover { background-color: #f9f9f9; }
+
+    .wpwing-wcpdf-doc-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #f0f0f1;
+        color: #50575e;
+        font-size: 15px;
+        flex-shrink: 0;
+    }
+
+    .wpwing-wcpdf-doc-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #1d2327;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .wpwing-wcpdf-doc-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        width: 100%;
+        padding-left: 32px;
+        box-sizing: border-box;
+
+        a.button {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0 10px;
+            min-height: 26px;
+            line-height: 24px;
+            font-size: 11px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .wpwing_wcpdf_create_invoice {
+            color: #2271b1;
+            border-color: #2271b1;
+
+            &:hover, &:focus {
+                background: #2271b1;
+                color: #fff;
+            }
+        }
+
+        .wpwing-btn-cancel {
+            color: #d63638;
+            border-color: #d63638;
+
+            .dashicons {
+                font-size: 14px;
+                width: 14px;
+                height: 14px;
+                line-height: 1;
+            }
+
+            &:hover, &:focus {
+                background: #d63638;
+                border-color: #d63638;
+                color: #fff;
+            }
+        }
+    }
+}
+
+// Orders list — icon buttons base style (square, text hidden)
+.widefat .column-order_actions a.button.wpwing_wcpdf_buttons,
+.widefat .column-wc_actions a.button.wpwing_wcpdf_buttons {
+    display: inline-block;
+    text-indent: -9999px;
+    position: relative;
+    padding: 0 !important;
+    height: 2em !important;
+    width: 2em;
+}
+
+.widefat .column-order_actions a.button.wpwing_wcpdf_buttons::after,
+.widefat .column-wc_actions a.button.wpwing_wcpdf_buttons::after {
+    display: none;
+}
+
+// Orders list — Create button (dashicons-plus-alt replaces invoice_add.png)
+.widefat .column-order_actions a.button.wpwing_wcpdf_create_invoice,
+.widefat .column-wc_actions a.button.wpwing_wcpdf_create_invoice {
+    &::before {
+        font-family: dashicons, sans-serif;
+        content: "\f132";
+        font-size: 16px;
+        line-height: 1;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-indent: 0;
+    }
+}
+
+// Orders list — View button (dashicons-visibility replaces invoice_view.png)
+.widefat .column-order_actions a.button.wpwing_wcpdf_view_invoice,
+.widefat .column-wc_actions a.button.wpwing_wcpdf_view_invoice {
+    &::before {
+        font-family: dashicons, sans-serif;
+        content: "\f177";
+        font-size: 16px;
+        line-height: 1;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-indent: 0;
+    }
+}
+
+.column-wpwing_invoice {
+    width: 50px;
+    text-align: center;
+
+    .dashicons {
+        color: #2271b1;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+
+    .dashicons-yes-alt {
+        color: #00a32a;
+    }
+
+    a {
+        text-decoration: none;
+    }
+}
+
+fieldset.wpwing-checkboxgroup {
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: normal;
+        cursor: pointer;
+    }
+}
+
+.wpwing-settings-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.wpwing-settings-left {
+    flex: 0 0 55%;
+    min-width: 480px;
+}
+
+.wpwing-settings-right {
+    flex: 1;
+    position: sticky;
+    top: 52px;
+    height: calc(100vh - 72px);
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.wpwing-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid #dcdcde;
+    background: #f6f7f7;
+    flex-shrink: 0;
+
+    h2 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+    }
+}
+
+#wpwing-preview-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+    line-height: 1;
+    padding: 0;
+
+    &:hover {
+        color: #000;
+    }
+}
+
+#wpwing-preview-frame {
+    flex: 1;
+    width: 100%;
+    border: none;
+    display: none;
+}
+
+#wpwing-preview-placeholder {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #646970;
+    font-size: 13px;
+    padding: 20px;
+    text-align: center;
+}
+
+// Settings — search box (sits above the tabs, outside the form)
+.wpwing-wcpdf-settings-search {
+    margin: 12px 0 16px;
+
+    input[type="search"] {
+        width: 320px;
+        max-width: 100%;
+    }
+}
+
+// System Status tab
+.wpwing-status-table {
+    width: 100%;
+    max-width: 640px;
+    border-collapse: collapse;
+
+    th, td {
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    th {
+        width: 220px;
+        font-weight: 600;
+    }
+
+    code {
+        background: #f6f7f7;
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-size: 12px;
+    }
+}
+
+.wpwing-status-ok {
+    color: #00a32a;
+    font-weight: 600;
+}
+
+.wpwing-status-warn {
+    color: #d63638;
+    font-weight: 600;
+}
+
+.wpwing-status-actions {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wpwing-status-copy-source {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+}
+
+// Setup Wizard
+.wpwing-wizard-wrap {
+    max-width: 720px;
+}
+
+.wpwing-wizard-skip-all {
+    text-align: right;
+    margin: 0 0 10px;
+
+    a {
+        color: #646970;
+
+        &:hover, &:focus {
+            color: #d63638;
+        }
+    }
+}
+
+.wpwing-wizard-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+
+    li {
+        font-size: 13px;
+        color: #646970;
+    }
+
+    .wpwing-wizard-step-current {
+        color: #2271b1;
+        font-weight: 600;
+    }
+}
+
+.wpwing-wizard-card {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    padding: 24px;
+}
+
+.wpwing-wizard-actions {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    .wpwing-wizard-skip-step {
+        color: #646970;
+
+        &:hover, &:focus {
+            color: #2271b1;
+        }
+    }
+}
+
+.wpwing-wcpdf-wizard-relaunch {
+    margin: 4px 0 0;
+}

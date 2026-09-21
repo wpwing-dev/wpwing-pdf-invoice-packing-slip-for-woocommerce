@@ -1,29 +1,25 @@
 {
-    "name": "wpwing-wc-pdf-invoice",
-    "version": "1.3.3",
-    "description": "Generate and Print PDF invoices and packing slips for WooCommerce orders.",
-    "author": "WPWing",
-    "license": "GPL",
-    "private": true,
-    "scripts": {
-        "webpack": "cross-env NODE_ENV=development node_modules/.bin/webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "dev": "npm run webpack -- --watch",
-        "build": "cross-env NODE_ENV=production node_modules/.bin/webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "bundle": "npm run webpack && npm run build",
-        "package:bundle": "cross-env NODE_ENV=package node_modules/.bin/webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "package": "npm run bundle && npm run package:bundle"
-    },
-    "devDependencies": {
-        "cli-color": "^2.0.0",
-        "cross-env": "^7.0.3",
-        "emojic": "^1.1.16",
-        "exports-loader": "^1.1.1",
-        "laravel-mix": "^5.0.9",
-        "laravel-mix-storepress": "0.0.1",
-        "resolve-url-loader": "^3.1.2",
-        "sass": "^1.30.0",
-        "sass-loader": "^8.0.2",
-        "vue-template-compiler": "^2.6.12",
-        "wp-pot": "^1.9.8"
-    }
+	"name": "pdf-invoice-packing-slip-for-woocommerce",
+	"version": "1.16.0",
+	"description": "Download your WooCommerce order invoice and packing slip as PDF format for print or email.",
+	"author": "WPWing",
+	"license": "GPL",
+	"private": true,
+	"scripts": {
+		"build:css": "sass src/assets/src/scss/admin.scss src/assets/public/css/admin.css --no-source-map && sass src/assets/src/scss/admin.scss src/assets/public/css/admin.min.css --style=compressed --no-source-map",
+		"build:js": "cp src/assets/src/js/admin.js src/assets/public/js/admin.js && terser src/assets/src/js/admin.js -o src/assets/public/js/admin.min.js --compress --mangle",
+		"watch:css": "sass --watch src/assets/src/scss/admin.scss src/assets/public/css/admin.css",
+		"lint:js": "eslint src/assets/src/js/",
+		"lint:css": "stylelint src/assets/src/scss/",
+		"test:e2e": "playwright test",
+		"screenshots": "node tools/screenshots.js"
+	},
+	"devDependencies": {
+		"@playwright/test": "1.45.0",
+		"eslint": "^8.57.0",
+		"sass": "^1.77.0",
+		"stylelint": "^16.0.0",
+		"stylelint-config-standard-scss": "^13.0.0",
+		"terser": "^5.31.0"
+	}
 }

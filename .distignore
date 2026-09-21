@@ -1,0 +1,5 @@
+pro/
+vendor/
+assets/src/
+.DS_Store
+*.map

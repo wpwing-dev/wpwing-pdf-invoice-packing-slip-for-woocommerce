@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<ruleset name="WPWing PDF Invoice">
+    <description>WordPress Coding Standards for WPWing PDF Invoice &amp; Packing Slip plugin</description>
+
+    <file>src/includes/</file>
+    <file>src/templates/</file>
+    <file>src/pro/</file>
+    <file>src/wpwing-pdf-invoice-packing-slip-for-woocommerce.php</file>
+
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/dist/*</exclude-pattern>
+
+    <rule ref="WordPress">
+        <!-- File naming convention conflicts with existing class file names -->
+        <exclude name="WordPress.Files.FileName"/>
+    </rule>
+
+    <rule ref="WordPress.WP.Capabilities">
+        <properties>
+            <property name="custom_capabilities" type="array">
+                <element value="manage_woocommerce"/>
+            </property>
+        </properties>
+    </rule>
+
+    <config name="minimum_supported_wp_version" value="5.0"/>
+    <config name="testVersion" value="7.4-"/>
+</ruleset>
