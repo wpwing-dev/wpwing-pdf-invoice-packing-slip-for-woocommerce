@@ -344,11 +344,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 				</tr>
 			</table>
 			<?php
-			$this->render_invoice_qr_code();
 		}
 
 		/**
-		 * Render the QR code beneath the order details table when enabled.
+		 * Render the QR code when enabled.
 		 */
 		public function render_invoice_qr_code() {
 
@@ -366,7 +365,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 				return;
 			}
 
-			echo '<div class="invoice-qr" style="margin-top:10px;"><img src="' . esc_attr( $uri ) . '" width="110" height="110" alt="QR code" /></div>';
+			echo '<div class="invoice-qr"><img src="' . esc_attr( $uri ) . '" width="110" height="110" alt="QR code" /></div>';
 		}
 
 		/**

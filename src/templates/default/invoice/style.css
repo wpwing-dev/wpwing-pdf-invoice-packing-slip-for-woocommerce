@@ -218,6 +218,11 @@ table.invoice-totals tr.invoice-details-total {
 	font-weight: 700;
 }
 
+.invoice-qr {
+	text-align: right;
+	margin-top: 15px;
+}
+
 .notes {
 	clear: both;
 	margin-bottom: 50px;
