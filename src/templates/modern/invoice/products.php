@@ -185,7 +185,11 @@ $weight_unit        = get_option( 'woocommerce_weight_unit', 'kg' );
 <table>
 	<tr>
 		<td class="column1">
-
+			<?php
+			if ( method_exists( $wpwing_wcpdf_document, 'render_invoice_qr_code' ) ) {
+				$wpwing_wcpdf_document->render_invoice_qr_code();
+			}
+			?>
 		</td>
 		<td class="column2">
 			<table class="invoice-totals">
@@ -220,11 +224,6 @@ $weight_unit        = get_option( 'woocommerce_weight_unit', 'kg' );
 					<td class="column-total"><?php echo wp_kses_post( wc_price( $wpwing_wcpdf_document->order->get_total() ) ); ?></td>
 				</tr>
 			</table>
-			<?php
-			if ( method_exists( $wpwing_wcpdf_document, 'render_invoice_qr_code' ) ) {
-				$wpwing_wcpdf_document->render_invoice_qr_code();
-			}
-			?>
 		</td>
 	</tr>
 
