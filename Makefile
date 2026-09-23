@@ -56,7 +56,7 @@ pot: ## Regenerate the .pot translation file
 		--exclude=vendor,node_modules
 .PHONY: pot
 
-version: ## Bump version strings — usage: make version V=1.6.0
+version: ## Bump version strings - usage: make version V=1.6.0
 	@[ -n "$(V)" ] || (echo "Usage: make version V=1.6.0" && exit 1)
 	sed -i "s/\(Version:[[:space:]]*\)[0-9][0-9.]*/\1$(V)/" $(SRC_DIR)/$(PLUGIN_SLUG).php
 	sed -i "s/WPWING_WCPDF_VERSION', '[0-9.]*'/WPWING_WCPDF_VERSION', '$(V)'/" $(SRC_DIR)/$(PLUGIN_SLUG).php
@@ -65,18 +65,21 @@ version: ## Bump version strings — usage: make version V=1.6.0
 	@echo "Version bumped to $(V)"
 .PHONY: version
 
-zip: clean-build assets ## Build distributable zip into dist/
+build: clean-build assets ## Prepare clean shippable staging directory in dist/
 	mkdir -p $(BUILD_DIR)
 	rsync -r --exclude-from=.distignore $(SRC_DIR)/ $(BUILD_DIR)/
 	$(COMPOSER) install --no-dev --optimize-autoloader --working-dir=$(BUILD_DIR)
 	rm -f $(BUILD_DIR)/composer.json $(BUILD_DIR)/composer.lock
+.PHONY: build
+
+zip: build ## Build distributable zip into dist/
 	cd $(DIST_DIR) && zip -r $(PLUGIN_SLUG).zip $(PLUGIN_SLUG)/
 	rm -rf $(BUILD_DIR)
 	unzip -t $(DIST_DIR)/$(PLUGIN_SLUG).zip > /dev/null
 	@echo "Built: $(DIST_DIR)/$(PLUGIN_SLUG).zip"
 .PHONY: zip
 
-release: ## Full release — usage: make release V=1.6.0
+release: ## Full release - usage: make release V=1.6.0
 	@[ -n "$(V)" ] || (echo "Usage: make release V=1.6.0" && exit 1)
 	$(MAKE) version V=$(V)
 	$(MAKE) check
@@ -109,14 +112,14 @@ zip-pro: clean-build-pro ## Build pro addon zip into dist/
 	@echo "Built: $(DIST_DIR)/$(PRO_SLUG).zip"
 .PHONY: zip-pro
 
-version-pro: ## Bump pro version strings — usage: make version-pro V=1.0.1
+version-pro: ## Bump pro version strings - usage: make version-pro V=1.0.1
 	@[ -n "$(V)" ] || (echo "Usage: make version-pro V=1.0.1" && exit 1)
 	sed -i "s/Version: .*/Version: $(V)/" $(SRC_DIR)/$(PRO_SRC)/$(PRO_SLUG).php
 	sed -i "s/define( 'WPWING_WCPDF_PRO_VERSION', '.*' )/define( 'WPWING_WCPDF_PRO_VERSION', '$(V)' )/" $(SRC_DIR)/$(PRO_SRC)/$(PRO_SLUG).php
 	@echo "Pro version bumped to $(V)"
 .PHONY: version-pro
 
-release-pro: ## Full pro release — usage: make release-pro V=1.0.1
+release-pro: ## Full pro release - usage: make release-pro V=1.0.1
 	@[ -n "$(V)" ] || (echo "Usage: make release-pro V=1.0.1" && exit 1)
 	$(MAKE) version-pro V=$(V)
 	$(MAKE) zip-pro
@@ -138,10 +141,10 @@ check: ## Verify version strings are consistent across all files
 	[ $$errors -eq 0 ] && echo "  All version strings match $$V ✓" || exit 1
 .PHONY: check
 
-tag: ## Create annotated git tag — usage: make tag V=1.6.0
+tag: ## Create annotated git tag - usage: make tag V=1.6.0
 	@[ -n "$(V)" ] || (echo "Usage: make tag V=1.6.0" && exit 1)
 	git tag -a "v$(V)" -m "Release v$(V)"
-	@echo "Tagged v$(V) — push with: git push --tags"
+	@echo "Tagged v$(V) - push with: git push --tags"
 .PHONY: tag
 
 setup: ## Bootstrap dev environment (first-time setup)
@@ -159,7 +162,7 @@ changelog: ## Print commits since last tag to help update CHANGELOG.md
 		echo "Commits since $$LAST:"; \
 		git log $$LAST..HEAD --pretty=format:"- %s" --no-merges; \
 	else \
-		echo "No tags yet — showing all commits:"; \
+		echo "No tags yet - showing all commits:"; \
 		git log --pretty=format:"- %s" --no-merges; \
 	fi
 .PHONY: changelog
@@ -210,6 +213,15 @@ screenshots: ## Capture WordPress.org listing screenshots into wporg-assets/ and
 	exit $$status
 .PHONY: screenshots
 
+release-svn: ## Deploy release to WordPress.org SVN
+	bash tools/deploy-svn.sh
+.PHONY: release-svn
+
+release-svn-dry: ## Dry-run deploy to WordPress.org SVN (preview changes without committing)
+	bash tools/deploy-svn.sh --dry-run
+.PHONY: release-svn-dry
+
 env-reset: ## Wipe all Docker volumes and containers
 	docker compose --profile dev --profile unit --profile e2e down -v
 .PHONY: env-reset
+
