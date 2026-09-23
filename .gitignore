@@ -10,3 +10,6 @@
 /test-results
 /playwright-report
 /tests/e2e/.auth
+
+# Local WordPress.org SVN checkout
+/svn/
