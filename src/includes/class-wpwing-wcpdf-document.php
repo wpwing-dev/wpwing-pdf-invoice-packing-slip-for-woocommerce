@@ -334,16 +334,38 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 		 */
 		public function flush_template() {
 
-			remove_all_filters( 'wpwing_wcpdf_before_template_generation' );
-			remove_all_filters( 'wpwing_wcpdf_template_head' );
-			remove_all_filters( 'wpwing_wcpdf_template_content' );
+			remove_action( 'wpwing_wcpdf_before_template_generation', array( $this, 'init_template_generation_actions' ) );
+			remove_action( 'wpwing_wcpdf_template_head', array( $this, 'add_template_head' ) );
+			remove_action( 'wpwing_wcpdf_template_content', array( $this, 'add_template_content' ) );
 
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_company_data' );
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_company_logo' );
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_customer_data' );
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_order_data' );
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_product_list' );
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_footer' );
+			$type = $this->document_type;
+			foreach ( array( 'company_data', 'company_logo', 'customer_data', 'order_data', 'product_list', 'footer' ) as $section ) {
+				remove_action( "wpwing_wcpdf_{$type}_template_{$section}", array( $this, "render_template_{$section}" ) );
+			}
+		}
+
+		/**
+		 * Apply the optional filename pattern, retaining the legacy filename when unset.
+		 *
+		 * @param string $default_filename Existing filename, including its leading slash.
+		 * @return string
+		 */
+		public function get_formatted_filename( $default_filename ) {
+			$format = $this->settings->get_option( 'document_filename_format' );
+			if ( ! $format ) {
+				return $default_filename;
+			}
+
+			$timestamp    = isset( $this->date ) ? ( is_numeric( $this->date ) ? (int) $this->date : strtotime( $this->date ) ) : time();
+			$invoice_date = wp_date( 'Y-m-d', $timestamp ? $timestamp : time() );
+			$filename     = str_replace(
+				array( '{{doc_type}}', '{{order_number}}', '{{invoice_date}}' ),
+				array( $this->document_type, $this->order->get_order_number(), $invoice_date ),
+				$format
+			);
+			$filename = trim( sanitize_file_name( $filename ), '.' );
+
+			return '' !== $filename ? '/' . $filename : $default_filename;
 		}
 
 		/**

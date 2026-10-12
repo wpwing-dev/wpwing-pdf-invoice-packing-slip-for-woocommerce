@@ -316,7 +316,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 			foreach ( $columns as $key => $label ) {
 				$new_columns[ $key ] = $label;
 				if ( 'order_status' === $key ) {
-					$new_columns['wpwing_invoice'] = __( 'Invoice', 'wpwing-wcpdf' );
+					$new_columns['wpwing_invoice'] = __( 'Invoice Number', 'wpwing-wcpdf' );
 				}
 			}
 			return $new_columns;
@@ -338,10 +338,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 			$order_id = $order_or_id instanceof WC_Order ? $order_or_id->get_id() : intval( $order_or_id );
 			$invoice  = $this->plugin->get_document_by_type( $order_id, 'invoice' );
 
-			if ( null !== $invoice && $invoice->exists ) {
+			if ( $invoice instanceof WPWing_WcPdf_Invoice && $invoice->exists ) {
 				printf(
-					'<span class="dashicons dashicons-yes-alt" title="%s"></span>',
-					esc_attr__( 'Invoice generated', 'wpwing-wcpdf' )
+					'<span>%s</span>',
+					esc_html( $invoice->get_formatted_invoice_number() )
 				);
 			} else {
 				$url = wp_nonce_url(

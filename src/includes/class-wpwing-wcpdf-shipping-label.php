@@ -116,7 +116,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Shipping_Label' ) ) {
 			$date       = getdate( $this->date );
 			$year       = $date['year'];
 
-			$filename        = apply_filters( 'wpwing_wcpdf_shipping_label_filename', '/shipping_label_' . $this->number, $this );
+			$filename        = $this->get_formatted_filename( '/shipping_label_' . $this->number );
+			$filename        = apply_filters( 'wpwing_wcpdf_shipping_label_filename', $filename, $this );
 			$this->save_path = $year . $filename . '.pdf';
 			$pdf_path        = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $this->save_path;
 			$this->exists    = true;

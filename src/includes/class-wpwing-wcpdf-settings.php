@@ -177,6 +177,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'placeholder' => 'd/m/Y',
 									),
 									array(
+										'id'          => 'document_filename_format',
+										'type'        => 'text',
+										'title'       => esc_html__( 'Document filename format:', 'wpwing-wcpdf' ),
+										'desc'        => 'Optional. Tokens: {{doc_type}}, {{order_number}}, {{invoice_date}}. Leave empty to keep the current filenames.',
+										'placeholder' => '{{doc_type}}_{{order_number}}_{{invoice_date}}',
+										'default'     => '',
+									),
+									array(
 										'id'          => 'invoice_due_date_days',
 										'type'        => 'number',
 										'title'       => esc_html__( 'Payment due within (days):', 'wpwing-wcpdf' ),

@@ -152,9 +152,29 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 				return false;
 			}
 			$order = wc_get_order( $order_id );
-			return $order instanceof WC_Order
-				&& is_user_logged_in()
-				&& get_current_user_id() === (int) $order->get_customer_id();
+			if ( ! ( $order instanceof WC_Order ) ) {
+				return false;
+			}
+
+			return ( is_user_logged_in() && get_current_user_id() === (int) $order->get_customer_id() )
+				|| $this->has_valid_order_key( $order );
+		}
+
+		/**
+		 * Check whether the request carries this order's guest access key.
+		 *
+		 * @param WC_Order $order WooCommerce order.
+		 * @return bool
+		 */
+		private function has_valid_order_key( $order ) {
+			if ( ! isset( $_GET['key'] ) || ! is_string( $_GET['key'] ) ) {
+				return false;
+			}
+
+			$key       = sanitize_text_field( wp_unslash( $_GET['key'] ) );
+			$order_key = (string) $order->get_order_key();
+
+			return '' !== $key && '' !== $order_key && hash_equals( $order_key, $key );
 		}
 
 		/**

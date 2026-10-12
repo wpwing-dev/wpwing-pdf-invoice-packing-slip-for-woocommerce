@@ -114,7 +114,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Packing' ) ) {
 			$date       = getdate( $this->date );
 			$year       = $date['year'];
 
-			$filename        = apply_filters( 'wpwing_wcpdf_packing_filename', '/packing_' . $this->number, $this );
+			$filename        = $this->get_formatted_filename( '/packing_' . $this->number );
+			$filename        = apply_filters( 'wpwing_wcpdf_packing_filename', $filename, $this );
 			$this->save_path = $year . $filename . '.pdf';
 			$pdf_path        = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $this->save_path;
 			$this->exists    = true;

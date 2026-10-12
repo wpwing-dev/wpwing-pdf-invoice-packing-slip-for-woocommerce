@@ -131,7 +131,18 @@ if ( ! class_exists( 'WPWing_WcPdf_Shortcodes' ) ) {
 			if ( current_user_can( 'manage_woocommerce' ) ) {
 				return true;
 			}
-			return is_user_logged_in() && get_current_user_id() === (int) $order->get_customer_id();
+			if ( is_user_logged_in() && get_current_user_id() === (int) $order->get_customer_id() ) {
+				return true;
+			}
+
+			if ( ! isset( $_GET['key'] ) || ! is_string( $_GET['key'] ) ) {
+				return false;
+			}
+
+			$key       = sanitize_text_field( wp_unslash( $_GET['key'] ) );
+			$order_key = (string) $order->get_order_key();
+
+			return '' !== $key && '' !== $order_key && hash_equals( $order_key, $key );
 		}
 	}
 }

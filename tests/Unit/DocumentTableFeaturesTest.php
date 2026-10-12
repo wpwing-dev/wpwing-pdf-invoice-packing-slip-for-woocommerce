@@ -11,6 +11,8 @@ class DocumentTableFeaturesTest extends TestCase {
 		require_once WPWING_WCPDF_DIR . 'includes/class-wpwing-wcpdf-settings.php';
 		require_once WPWING_WCPDF_DIR . 'includes/class-wpwing-wcpdf-plugin.php';
 		require_once WPWING_WCPDF_DIR . 'includes/class-wpwing-wcpdf-document.php';
+		require_once WPWING_WCPDF_DIR . 'includes/class-wpwing-wcpdf-invoice.php';
+		require_once WPWING_WCPDF_DIR . 'includes/class-wpwing-wcpdf-orders-list.php';
 		require_once WPWING_WCPDF_DIR . 'includes/class-wpwing-wcpdf-wc-hooks.php';
 	}
 
@@ -136,6 +138,71 @@ class DocumentTableFeaturesTest extends TestCase {
 		$this->assertSame( 'data:image/png;base64,' . base64_encode( $raw_png_bytes ), $uri );
 	}
 
+	public function test_custom_filename_uses_tokens_and_sanitizes_path_separators(): void {
+		$order = new class extends WC_Order {
+			public function get_order_number() {
+				return '1001';
+			}
+		};
+		Functions\when( 'wc_get_order' )->justReturn( $order );
+		Functions\when( 'wp_date' )->alias( fn( $format, $timestamp ) => gmdate( $format, $timestamp ) );
+		Functions\when( 'sanitize_file_name' )->alias( fn( $filename ) => preg_replace( '/[^A-Za-z0-9_.-]/', '-', $filename ) );
+
+		$settings = $this->createMock( WPWing_WcPdf_Settings::class );
+		$settings->method( 'get_option' )->with( 'document_filename_format' )->willReturn( '../{{doc_type}}/{{order_number}}_{{invoice_date}}' );
+
+		$document = new class( 1, $settings ) extends WPWing_WcPdf_Document {
+			public $document_type = 'invoice';
+			public $date          = 1790012345;
+
+			public function __construct( $order_id, $settings ) {
+				parent::__construct( $order_id );
+				$this->settings = $settings;
+			}
+
+			protected function get_from_label() { return ''; }
+			public function save() {}
+			public function reset() {}
+		};
+
+		$this->assertSame( '/-invoice-1001_2026-09-21', $document->get_formatted_filename( '/invoice_1' ) );
+	}
+
+	public function test_empty_filename_pattern_keeps_legacy_filename(): void {
+		$document = $this->create_document_instance();
+		$this->assertSame( '/invoice_1', $document->get_formatted_filename( '/invoice_1' ) );
+	}
+
+	public function test_flush_template_removes_only_internal_callbacks(): void {
+		$document = $this->create_document_instance();
+
+		Functions\expect( 'remove_action' )->times( 9 );
+		Functions\expect( 'remove_all_filters' )->never();
+
+		$document->flush_template();
+	}
+
+	public function test_orders_list_displays_formatted_invoice_number(): void {
+		$plugin  = $this->createMock( WPWing_WcPdf_Plugin::class );
+		$invoice = $this->getMockBuilder( WPWing_WcPdf_Invoice::class )
+			->disableOriginalConstructor()
+			->onlyMethods( array( 'get_formatted_invoice_number' ) )
+			->getMock();
+		$invoice->exists = true;
+		$invoice->method( 'get_formatted_invoice_number' )->willReturn( 'INV-42' );
+		$plugin->method( 'get_document_by_type' )->with( 12, 'invoice' )->willReturn( $invoice );
+
+		$orders_list = new WPWing_WcPdf_Orders_List( $plugin );
+		$columns     = $orders_list->add_order_list_column( array( 'order_status' => 'Status' ) );
+
+		ob_start();
+		$orders_list->render_order_list_column( 'wpwing_invoice', 12 );
+		$output = ob_get_clean();
+
+		$this->assertSame( 'Invoice Number', $columns['wpwing_invoice'] );
+		$this->assertStringContainsString( 'INV-42', $output );
+	}
+
 	public function test_attach_document_to_email_suppresses_for_free_orders_when_enabled(): void {
 		$plugin   = $this->createMock( WPWing_WcPdf_Plugin::class );
 		$settings = $this->createMock( WPWing_WcPdf_Settings::class );
@@ -229,4 +296,3 @@ class DocumentTableFeaturesTest extends TestCase {
 		$hooks->maybe_auto_generate( 25, 'pending', 'completed', $order );
 	}
 }
-
