@@ -1,199 +1,147 @@
 # Growth / Marketing Plan
 
 Goal: grow from **10+ active installs** (5.0 rating, 1 review, snapshot
-2026-08-22) to a self-sustaining install base that can support the Pro launch.
+2026-09-21) to a self-sustaining install base of 1,000+ stores that supports the Pro launch.
 
-Written alongside [COMPETITORS.md](COMPETITORS.md) and [TODO.md](TODO.md).
-Review monthly with the competitor snapshot.
+Written alongside [COMPETITORS.md](COMPETITORS.md) and [UPDATE-PLAN.md](UPDATE-PLAN.md).
+Current plugin version: **1.16.0**.
+
+---
 
 ## Targets
 
-wordpress.org shows installs in brackets (10+, 20+, ... 100+, 200+, ...), and
-growth compounds slowly at first. Honest targets:
+WordPress.org displays active installs in discrete tiers (10+, 20+, 50+, 100+, 200+, 500+, 1,000+).
+Growth compounds gradually at first before directory search network effects take over:
 
-| Milestone | Target date | Leading indicators |
+| Milestone | Target Date | Leading Indicators |
 |---|---|---|
-| 50+ installs, 5 reviews | Oct 2026 | downloads/day > 10, cadence restored |
-| 100+ installs, 10 reviews | Dec 2026 | first-page directory rank for 1 keyword |
-| 500+ installs, 25 reviews | Mar 2027 | Pro launched, content ranking in Google |
-| 1,000+ installs | Jun 2027 | organic installs exceed churn consistently |
+| 50+ installs, 5 reviews | Oct 2026 | downloads/day > 15, weekly release cadence maintained |
+| 100+ installs, 10 reviews | Dec 2026 | first-page directory rank for 1 primary keyword ("delivery note woocommerce") |
+| 500+ installs, 25 reviews | Mar 2027 | Pro launched, high-intent comparison content ranking on Google |
+| 1,000+ installs | Jun 2027 | Organic directory installs exceed churn consistently |
 
-Track weekly: active installs bracket, downloads/day (wordpress.org advanced
-stats), review count, directory search position for "pdf invoice", "packing
-slip", "invoice", support threads answered.
+**Track weekly:** active installs bracket, downloads/day (WordPress.org advanced stats), review count, directory search position for "pdf invoice", "packing slip", "delivery note", "shipping label", and support forum response time.
 
 ---
 
-## 1. Win the wordpress.org directory (the only channel that matters at 10 installs)
+## 1. Competitive Value Matrix
 
-Almost all installs at this scale come from directory search. The ranking
-algorithm weights: readme keyword relevance, active install growth rate,
-rating count and quality, support thread resolution, freshness / tested-up-to,
-and translations. Every action below targets one of those inputs.
+Based on live competitive tracking in [`docs/COMPETITORS.md`](COMPETITORS.md):
 
-### 1a. Listing hygiene (this week, near-zero effort)
+| Capability | WP Overnight (300k+) | WebToffee (50k+) | WooCommerce.com ($79/yr) | **WPWing (Ours - Free)** |
+|---|---|---|---|---|
+| **Free Document Types** | Invoice & Packing Slip only | Invoice, Packing, Delivery, Shipping | Invoice only (Paid) | **All 4 Free:** Invoice, Packing Slip, Delivery Note, Shipping Label |
+| **Product Thumbnails in Tables** | Paid add-on (EUR 99/yr) | Paid Pro ($69/yr) | Not included | **100% Free** (v1.16.0) with auto downscaling & local file caching |
+| **Bulk Merged PDF & ZIP** | Paid (EUR 99/yr) | Paid Pro ($69/yr) | Not included | **100% Free** directly from Orders list |
+| **QR Code on Documents** | Paid add-on | Paid Pro | Not included | **100% Free** (Order URL or custom token string) |
+| **Currency Symbol Rendering** | Standard (tofu boxes on Asian currencies) | RTL add-on required | Standard (tofu boxes) | **Native Bundled Currency Font** (Taka, Rupee, Baht, etc. render flawlessly) |
+| **Onboarding UX** | Single dense settings tab | Multi-step form | Basic settings | **Interactive 2-min Setup Wizard** + Live Preview Panel in Admin |
+| **Code Weight & Speed** | Heavy (enterprise e-invoicing stack) | Medium (multiple external libs) | Basic | **Ultra-lightweight**, Zero tracking, HPOS Native |
 
-- [ ] Bump **Tested up to: 7.1** (leaders declare it; the directory warns users
-      and demotes search placement for stale values).
-- [ ] Resume the weekly release cadence - "Last updated: 1 month ago" is
-      already visible on our page. Freshness is a ranking input we fully control.
-- [ ] Review the 5 tags. Current: PDF, Invoice, Packing Slip, Packing List,
-      WooCommerce. Consider swapping "Packing List" for "delivery note" now
-      that the document type shipped (check tag search volume in the directory
-      before swapping).
-- [ ] Rewrite the readme **short description** around the highest-volume search
-      phrase: "PDF invoice", "packing slip", "delivery note", "WooCommerce
-      invoice" should all appear naturally in the first sentence.
-
-### 1b. Live preview button (this month, high leverage, almost nobody does it)
-
-- [ ] Add a WordPress Playground **blueprint** (`assets/blueprints/blueprint.json`
-      in SVN) so the listing gets a "Live Preview" button: WooCommerce
-      pre-installed, a sample order created, settings pre-filled with a demo
-      logo. A visitor clicks once and sees a finished invoice.
-- Very few plugins in this niche have it (none of our 7 tracked competitors do).
-  It converts undecided visitors and signals quality to the directory team.
-
-### 1c. Screenshots and media (this month)
-
-- [ ] Rebuild the screenshot set: lead with the **finished PDF invoice**, not the
-      settings screen. Order: invoice PDF, packing slip PDF, delivery note PDF,
-      QR code close-up, orders-list bulk actions, settings with live preview.
-- [ ] Annotated captions on every screenshot (captions are indexed).
-- [ ] Professional banner (1544x500) and icon - the current listing must not
-      look homemade next to WebToffee's.
-- [ ] 60-90 second demo video (install -> wizard -> first invoice) embedded in
-      the readme via YouTube; doubles as the YouTube channel seed (section 3).
-
-### 1d. Review engine (continuous - the single biggest ranking lever)
-
-1 review vs. WebToffee's 284 is the gap that matters most. Mechanisms:
-
-- [ ] **In-plugin review prompt**: dismissible admin notice after ~25 generated
-      documents ("Your store has generated 25 PDF invoices with us - would you
-      leave a review?"). Once, dismissible forever, never blocks work -
-      compliant with directory guidelines and effective because it triggers at
-      a moment of delivered value.
-- [ ] **Setup wizard finish screen** links to the review page (already planned
-      in 1.14.0 - this is another reason to ship it now).
-- [ ] **Support-to-review pipeline**: after every resolved support thread, one
-      polite sentence asking for a review. Resolved-thread users convert best.
-- [ ] Personally ask the existing 10+ installers (support forum, GitHub issue
-      participants) - at this scale, individual outreach is feasible.
-
-### 1e. Support excellence (continuous)
-
-- [ ] Answer every forum thread within 24 hours. With near-zero volume today
-      this is cheap, and the "resolved threads" ratio is displayed publicly and
-      factored into ranking. Tyche resolves 8/20 - beating that is easy.
-
-### 1f. Translations (this quarter)
-
-Translated plugins surface in localized plugin directories (a far less
-competitive search landscape) and translation contributions feed ranking.
-
-- [ ] Seed translations via translate.wordpress.org for: **Bengali** (native
-      team language + the currency-font differentiator targets this market),
-      Spanish, German, French, Dutch, Italian, Brazilian Portuguese, Hindi.
-- [ ] Readme first (that is what localized directories index), then the
-      settings strings.
+### Primary Positioning Angle:
+> *"The complete 4-in-1 WooCommerce document suite without the EUR 99 price tag or sluggish server bloat."*
 
 ---
 
-## 2. Positioning: pick fights we can win
+## 2. Win the WordPress.org Directory (Directory ASO)
 
-We cannot out-feature WP Overnight or out-review WebToffee this year. Positioning
-that works at our size:
+At the 10+ install stage, **over 90% of qualified installs originate directly inside the WordPress.org plugin directory search**. The search algorithm ranks listings based on:
+1. Exact keyword matches in title, short description, tags, and section headers.
+2. Active install velocity and daily download trajectory.
+3. Review count, review frequency, and 5-star rating average.
+4. Support thread resolution ratio (publicly shown on directory page).
+5. Tested-up-to freshness and recent update recency.
 
-- **"Lightweight and fast"** - already our readme angle; keep hammering it.
-  The market leaders are visibly bloated (WP Overnight ships an e-invoicing
-  stack most small stores never use). Target merchants who want invoices
-  working in 5 minutes.
-- **"Every currency symbol just works"** - the bundled currency font (Taka,
-  Rupee, Lari, Riel...) is a genuine differentiator competitors leave as blank
-  boxes. This is the wedge into South/Southeast Asian markets, which are also
-  underserved by localized competition (only Challan targets them, and they are
-  3 months stale).
-- **"Actually supported"** - WooCommerce.com's official plugin is at 2.4 stars
-  over dead support at $79/yr. Fast forum answers are marketing.
+### 2a. Listing Hygiene & Keyword Optimization
+- [x] **Bump Tested up to: 7.1** - matching market leaders; avoids stale warning banners.
+- [x] **Active release cadence** - v1.16.0 ships fresh updates; cadence is a signal we control.
+- [x] **Optimized 5 Tags** - replace duplicate "Packing List" with high-intent keywords:
+  `pdf invoice, packing slip, delivery note, shipping label, woocommerce`
+- [x] **Short Description (150-char limit)** - rewrite to mention all 4 document types:
+  > `Automate PDF invoices, packing slips, delivery notes & shipping labels for WooCommerce. Attach to emails, print in bulk. Fast & lightweight.`
+- [x] **Screenshots Suite (8 shots)** - automated via Playwright inside Docker (`make screenshots`), leading with the finished invoice template, delivery notes, shipping labels, live preview panel, and open bulk actions dropdown.
 
----
+### 2b. The "Live Preview" Playground Blueprint (High Leverage Differentiator)
+- [ ] Add a WordPress Playground blueprint (`assets/blueprints/blueprint.json` in SVN).
+- Signals quality to the WordPress.org team and enables the "Live Preview" button on the listing.
+- A visitor clicks once: a browser-isolated sandbox loads in 5 seconds with WooCommerce installed, sample orders seeded, and WPWing settings open with an active invoice preview.
+- **Zero of the 7 tracked competitors offer this.**
 
-## 3. Content marketing (starts now, compounds by Q1 2027)
+### 2c. Review Generation Pipeline (Closing the Review Deficit)
+1 review vs. WebToffee's 284 is the single largest organic search handicap. Mechanisms to close the gap:
+- [ ] **Milestone Review Notice**: A dismissible, non-intrusive admin notice triggered after a store creates its **25th document**:
+  *"You have generated 25 PDF invoices with WPWing! Has it saved you time? Please leave a 5-star review on WordPress.org."*
+- [ ] **Setup Wizard Completion**: Ensure the final "All Done" screen of the Setup Wizard includes a friendly "Review on WordPress.org" link.
+- [ ] **Support-to-Review**: Every resolved support thread concludes with a polite one-line review request. Resolved users have a >40% review conversion rate.
 
-Directory search caps out; Google long-tail brings the next tier of installs.
-All content lives on wpwing.com with the plugin as the answer.
+### 2d. Support Excellence
+- [ ] Answer 100% of WordPress.org support forum threads within 24 hours.
+- Maintain a 100% resolved threads ratio (Tyche resolves 8 of 20; WooCommerce.com sits at 2.4 stars due to neglected support).
 
-- [ ] **Comparison content** (highest commercial intent):
-  - "Best free PDF invoice plugins for WooCommerce (2026)" - honest roundup
-    including competitors; we win by being current and thorough.
-  - Head-to-heads: "WP Overnight vs WebToffee vs WPWing", "X alternative" pages
-    for each competitor (searches for "challan plugin alternative" etc. are
-    low-volume but near-100% intent).
-- [ ] **Long-tail how-tos** (each maps to a feature we ship):
-  - "How to add a QR code to WooCommerce invoices"
-  - "How to show ৳/₹/฿ currency symbols on WooCommerce PDF invoices" (we are
-    the only good answer on the internet for this one)
-  - "How to bulk download WooCommerce invoices as one PDF"
-  - "How to create WooCommerce delivery notes"
-  - "How to search WooCommerce orders by invoice number"
-- [ ] **YouTube**: screen-recorded versions of the top how-tos. Video results
-      rank on Google for "how to" WooCommerce queries with thin competition.
-- [ ] Cadence: 2 posts/month minimum; every feature release gets a matching
-      how-to post and a changelog-driven social mention.
-
----
-
-## 4. Community distribution (low cost, immediate)
-
-- [ ] **Facebook groups**: WordPress Bangladesh (huge, team's home community),
-      WooCommerce Community, WordPress Speed Up, various WooCommerce help
-      groups. Answer invoice-related questions genuinely; mention the plugin
-      only when it is the actual answer.
-- [ ] **Reddit** r/woocommerce and r/wordpress: same rule - be the helpful
-      answer, not the ad.
-- [ ] **wordpress.org support forums of competitors' users**: never spam, but
-      unanswered general "how do I make invoices" threads in the main
-      WooCommerce forum are fair ground for helpful answers.
-- [ ] **GitHub presence**: the repo is already public - add good-first-issue
-      labels, a CONTRIBUTING note, and respond fast. Contributors become
-      advocates and reviewers.
-- [ ] **Outreach for roundups**: pitch inclusion to existing "best invoice
-      plugin" listicles (WPBeginner-style sites refresh these yearly; being
-      new, lightweight, and actively developed is the pitch). One accepted
-      placement can outdo months of directory grinding.
+### 2e. Localized Directory Search (The Asian & International Wedge)
+- Merchants searching in their native language see localized plugins first.
+- [ ] Submit translation strings to translate.wordpress.org starting with `readme.txt`:
+  - **Bengali** (native team language + direct beneficiary of our bundled currency font)
+  - **Hindi** (massive WooCommerce market, ₹ currency symbol fix)
+  - **Spanish, French, German, Dutch, Italian, Brazilian Portuguese**
 
 ---
 
-## 5. Launch moments (Q4 2026)
+## 3. Organic Content Marketing (wpwing.com)
 
-- [ ] **Pro launch** (per UPDATE-PLAN month 4): launch on Product Hunt +
-      relevant newsletters (wpMail.me, The Repository, Post Status). A
-      launch-week lifetime or discount deal creates urgency.
-- [ ] Consider **AppSumo/deal platforms** only after Pro is stable - good for
-      cash and installs, hard on support and review averages; decide in Q1 2027.
-- [ ] Every major free feature (setup wizard, shipping labels, drag-and-drop
-      customizer) is a mini-launch: blog post + video + community posts +
-      newsletter pitch.
+Directory search caps out as rankings solidify; Google long-tail search captures buyers searching for solutions to specific plugin frustrations.
+
+### 3a. Commercial Intent Comparison Roundups
+- *"Best Free PDF Invoice & Packing Slip Plugins for WooCommerce (2026 Comparison)"*
+  - Honest breakdown comparing WP Overnight, WebToffee, Challan, and WPWing.
+  - Highlights what each charges for vs. what WPWing includes free.
+- *"Top WooCommerce PDF Invoice Plugins with Product Images"*
+  - Target merchants who want thumbnails without paying €99/year for WP Overnight's Premium Templates add-on.
+- *"Challan Alternative for WooCommerce"*
+  - Target stores looking for a lightweight, actively maintained alternative to Challan.
+
+### 3b. Long-Tail Problem-Solving How-Tos
+- *"How to Show Taka (৳), Rupee (₹), or Baht (฿) on WooCommerce PDF Invoices without Broken Boxes"*
+  - We are the only plugin that solves this out-of-the-box via bundled currency glyphs.
+- *"How to Bulk Download WooCommerce Invoices as a Single Merged PDF"*
+- *"How to Add a Scannable QR Code to WooCommerce Invoices & Shipping Labels"*
+- *"How to Create Delivery Notes in WooCommerce for Free"*
+- *"How to Search WooCommerce Orders by Invoice Number"*
+
+### 3c. YouTube Video Tutorials
+- 2-3 minute screen-recorded walkthroughs of each how-to.
+- Video embeds in blog posts and readme documentation boost organic dwell time and rank in Google Video Carousels.
 
 ---
 
-## 6. What we deliberately skip (for now)
+## 4. Community Distribution & Outreach
 
-- **Paid ads**: "woocommerce pdf invoice" CPCs are bid up by incumbents with
-  LTVs we cannot match at 10 installs. Revisit after Pro conversion data exists.
-- **Affiliate program**: needs Pro revenue first; revisit Q1 2027.
-- **E-invoicing content/features**: WP Overnight owns this narrative; entering
-  it now dilutes the lightweight positioning (see TODO "Watching, not building").
+- **Facebook Communities**:
+  - WordPress Bangladesh (massive local WooCommerce adoption).
+  - WooCommerce Help & Share, Advanced WooCommerce.
+  - Participate by answering questions on order fulfillment and invoicing; recommend the plugin organically when directly relevant.
+- **Reddit (`r/woocommerce`, `r/wordpress`)**:
+  - Provide technical advice on invoice generation, Dompdf memory limits, and HPOS compatibility.
+- **Competitor Forum Gap Filling**:
+  - Monitor unresolved invoice questions on the main WooCommerce forums.
+- **Directory Roundup Outreach**:
+  - Reach out to authors of existing "Best WooCommerce Invoice Plugins" listicles (WPBeginner, LearnWoo, WPMayor) pitching inclusion based on the 4-in-1 free lineup and currency support.
 
 ---
 
-## Standing weekly marketing checklist
+## 5. Pro Launch Preparation (Q4 2026)
 
-- Ship the weekly release (cadence = freshness = ranking).
-- Answer all support threads; ask resolved ones for a review.
-- One community answer (Facebook/Reddit/forums) that genuinely helps someone.
-- Log the weekly numbers: installs bracket, downloads/day, reviews, rank for
-  "pdf invoice" in directory search.
-- Monthly: refresh COMPETITORS.md, re-plan UPDATE-PLAN.md, review this plan's
-  targets.
+When the active install base reaches 200+ and review count reaches 15+:
+- Position Pro addon at the **$39-$49/year** sweet spot (under-pricing WebToffee's $69 and WP Overnight's €99).
+- Pro feature set: Credit Notes, Proforma Invoices, Packing Picklists, Multi-language (WPML/Polylang), Cloud Backup (Dropbox/Google Drive).
+- Launch campaign on Product Hunt, Post Status, and WordPress newsletters (wpMail.me, The Repository).
+
+---
+
+## Standing Weekly Marketing Routine
+
+1. Ship regular feature/fix releases (recency = directory ranking freshness).
+2. Triage support forum within 24 hours; convert happy users to reviews.
+3. Publish 1 how-to tutorial on wpwing.com targeting long-tail keywords.
+4. Review analytics: active install tier, daily downloads, keyword rankings, support metrics.
+5. Monthly: update `COMPETITORS.md` and review milestone pacing against this plan.

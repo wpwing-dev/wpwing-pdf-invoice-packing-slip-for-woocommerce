@@ -114,7 +114,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Delivery' ) ) {
 			$date       = getdate( $this->date );
 			$year       = $date['year'];
 
-			$filename        = apply_filters( 'wpwing_wcpdf_delivery_filename', '/delivery_' . $this->number, $this );
+			$filename        = apply_filters( 'wpwing_wcpdf_delivery_filename', $this->get_formatted_filename( '/delivery_' . $this->number, $year ), $this );
 			$this->save_path = $year . $filename . '.pdf';
 			$pdf_path        = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $this->save_path;
 			$this->exists    = true;

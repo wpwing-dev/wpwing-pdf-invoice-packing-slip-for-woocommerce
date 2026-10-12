@@ -124,6 +124,10 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		public function get_id() { return 0; }
 		public function get_total() { return 0.0; }
 		public function get_items() { return array(); }
+		public function get_meta( $key = '' ) { return ''; }
+		public function get_order_number() { return ''; }
+		public function get_order_key() { return ''; }
+		public function get_customer_id() { return 0; }
 	}
 }
 

@@ -139,6 +139,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 		/**
 		 * Whether the current user may manage (create/view/cancel) documents for a given order.
 		 * Admins always pass. Customers pass only for view actions on their own orders.
+		 * Guests pass for view actions on guest orders when the request carries the order key.
 		 *
 		 * @param int  $order_id   WooCommerce order ID.
 		 * @param bool $admin_only True for write actions (create/cancel); false allows order owner too.
@@ -152,9 +153,33 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 				return false;
 			}
 			$order = wc_get_order( $order_id );
-			return $order instanceof WC_Order
-				&& is_user_logged_in()
-				&& get_current_user_id() === (int) $order->get_customer_id();
+			if ( ! $order instanceof WC_Order ) {
+				return false;
+			}
+			if ( is_user_logged_in() && get_current_user_id() === (int) $order->get_customer_id() ) {
+				return true;
+			}
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce verified by the caller.
+			$key = isset( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : '';
+			return self::guest_order_key_matches( $order, $key );
+		}
+
+		/**
+		 * Whether an order key grants access to a guest order's documents.
+		 * Orders that belong to a customer account never pass, so a leaked key
+		 * cannot bypass the account login.
+		 *
+		 * @param WC_Order $order Order object.
+		 * @param string   $key   Order key from the request, e.g. the Thank You page URL.
+		 * @return bool
+		 * @since 1.17.0
+		 */
+		public static function guest_order_key_matches( $order, $key ) {
+			$order_key = (string) $order->get_order_key();
+			return 0 === (int) $order->get_customer_id()
+				&& '' !== $order_key
+				&& is_string( $key )
+				&& hash_equals( $order_key, $key );
 		}
 
 		/**

@@ -147,11 +147,61 @@ const SHOTS = [
 	},
 	{
 		file: 'screenshot-8.png',
-		caption: 'WooCommerce orders list with quick PDF action buttons',
+		caption: 'WooCommerce orders list with bulk PDF actions dropdown',
 		capture: async ( page ) => {
 			await page.goto( `${ BASE_URL }/wp-admin/edit.php?post_type=shop_order` );
 			await page.locator( '.wp-list-table' ).waitFor( { state: 'visible' } );
 			await hideAdminNotices( page );
+
+			const checkboxes = page.locator( 'input[name="post[]"]' );
+			if ( ( await checkboxes.count() ) >= 2 ) {
+				await checkboxes.nth( 0 ).check();
+				await checkboxes.nth( 1 ).check();
+			}
+
+			await page.evaluate( () => {
+				const select = document.querySelector( '#bulk-action-selector-top' );
+				if ( ! select ) return;
+				const rect = select.getBoundingClientRect();
+
+				select.style.borderColor = '#2271b1';
+				select.style.boxShadow = '0 0 0 1px #2271b1';
+				select.style.outline = '2px solid transparent';
+
+				const menu = document.createElement( 'div' );
+				menu.id = 'wpwing-fake-dropdown';
+				menu.style.position = 'absolute';
+				menu.style.left = `${ rect.left + window.scrollX }px`;
+				menu.style.top = `${ rect.bottom + window.scrollY + 1 }px`;
+				menu.style.width = '270px';
+				menu.style.background = '#ffffff';
+				menu.style.border = '1px solid #8c8f94';
+				menu.style.borderRadius = '4px';
+				menu.style.boxShadow = '0 4px 12px rgba(0,0,0,0.18)';
+				menu.style.zIndex = '999999';
+				menu.style.padding = '4px 0';
+				menu.style.fontFamily =
+					'-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif';
+				menu.style.fontSize = '13px';
+				menu.style.lineHeight = '1.4';
+
+				Array.from( select.options ).forEach( ( opt, idx ) => {
+					if ( idx === 0 ) return;
+					const item = document.createElement( 'div' );
+					item.textContent = opt.textContent;
+					item.style.padding = '5px 12px';
+					item.style.cursor = 'pointer';
+					item.style.color = '#2c3338';
+
+					if ( opt.value === 'wpwing_generate_invoices' ) {
+						item.style.background = '#2271b1';
+						item.style.color = '#ffffff';
+					}
+					menu.appendChild( item );
+				} );
+				document.body.appendChild( menu );
+			} );
+
 			await page.screenshot( { path: shotPath( 'screenshot-8.png' ) } );
 		},
 	},

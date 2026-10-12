@@ -45,11 +45,11 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 			add_filter( 'bulk_actions-woocommerce_page_wc-orders', array( $this, 'add_bulk_actions' ) );
 			add_filter( 'handle_bulk_actions-woocommerce_page_wc-orders', array( $this, 'handle_bulk_actions' ), 10, 3 );
 
-			// Invoice status column - classic orders screen.
-			add_filter( 'manage_shop_order_posts_columns', array( $this, 'add_order_list_column' ) );
+			// Invoice number column - classic orders screen. Priority 20: WooCommerce replaces the column list at 10.
+			add_filter( 'manage_shop_order_posts_columns', array( $this, 'add_order_list_column' ), 20 );
 			add_action( 'manage_shop_order_posts_custom_column', array( $this, 'render_order_list_column' ), 10, 2 );
 
-			// Invoice status column - HPOS orders screen.
+			// Invoice number column - HPOS orders screen.
 			add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'add_order_list_column' ) );
 			add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'render_order_list_column' ), 10, 2 );
 
@@ -306,7 +306,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 		}
 
 		/**
-		 * Add invoice status column to the orders list table.
+		 * Add invoice number column to the orders list table.
 		 *
 		 * @param array $columns Existing table columns.
 		 * @return array
@@ -323,7 +323,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 		}
 
 		/**
-		 * Render the invoice status column cell.
+		 * Render the invoice number column cell: the number linked to the PDF, or a create link.
 		 *
 		 * Works for both classic (post ID int) and HPOS (WC_Order object) screens.
 		 *
@@ -338,10 +338,16 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 			$order_id = $order_or_id instanceof WC_Order ? $order_or_id->get_id() : intval( $order_or_id );
 			$invoice  = $this->plugin->get_document_by_type( $order_id, 'invoice' );
 
-			if ( null !== $invoice && $invoice->exists ) {
+			if ( $invoice instanceof WPWing_WcPdf_Invoice && $invoice->exists ) {
+				$url = wp_nonce_url(
+					add_query_arg( 'wpwing-view-invoice', $order_id ),
+					'wpwing_view_invoice_' . $order_id
+				);
 				printf(
-					'<span class="dashicons dashicons-yes-alt" title="%s"></span>',
-					esc_attr__( 'Invoice generated', 'wpwing-wcpdf' )
+					'<a href="%s" target="_blank" title="%s">%s</a>',
+					esc_url( $url ),
+					esc_attr__( 'View Invoice', 'wpwing-wcpdf' ),
+					esc_html( $invoice->get_formatted_invoice_number() )
 				);
 			} else {
 				$url = wp_nonce_url(
