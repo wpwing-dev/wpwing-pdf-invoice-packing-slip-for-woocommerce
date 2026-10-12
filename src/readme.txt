@@ -6,7 +6,7 @@ Tags:               pdf invoice, packing slip, delivery note, shipping label, wo
 Requires at least:  4.8
 Tested up to:       7.1
 Requires PHP:       7.4
-Stable tag:         1.16.0
+Stable tag:         1.17.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -107,7 +107,7 @@ Yes! Most PDF plugins render non-Latin currency symbols as empty boxes or questi
 Yes! Under **WooCommerce > PDF Invoices > General**, enable the "Disable for free orders" option. Free orders will not generate or attach invoice PDFs to customer emails.
 
 = Can I show an invoice download link anywhere on my site? =
-Yes! Use the `[wpwing_invoice]` shortcode. On the Thank You page or My Account order details, it detects the order automatically; elsewhere, use `[wpwing_invoice order_id="123"]`. You can customize the link text with the `label` attribute.
+Yes! Use the `[wpwing_invoice]` shortcode. On the Thank You page or My Account order details, it detects the order automatically, including guest orders on the Thank You page; elsewhere, use `[wpwing_invoice order_id="123"]`. You can customize the link text with the `label` attribute.
 
 = Is this plugin compatible with WooCommerce HPOS (High-Performance Order Storage)? =
 Yes! WPWing fully supports High-Performance Order Storage (HPOS) and standard custom post types.
@@ -131,6 +131,15 @@ Yes! This plugin is actively maintained on [GitHub](https://github.com/wpwing-de
 8. WooCommerce orders list with bulk PDF actions dropdown
 
 == Changelog ==
+
+= 1.17.0 - 2026-10-12 =
+
+* New: PDF filename format setting - name generated documents with the {{doc_type}}, {{order_number}}, and {{invoice_date}} tokens (for example invoice-1234.pdf). Leave it empty to keep the current names. Existing documents keep their filenames.
+* New: The Invoice column on the WooCommerce orders list now shows the invoice number, linked to the PDF, instead of a checkmark.
+* New: Guest customers can download their invoice from the Order Received (Thank You) page with the [wpwing_invoice] shortcode. Access is verified with the WooCommerce order key.
+* Fix: The Invoice column was missing from the orders list when WooCommerce uses legacy (non-HPOS) order storage.
+* Fix: Generating documents no longer removes callbacks that themes or other plugins attach to the PDF template hooks.
+* Hardening: A custom filename format never overwrites an existing PDF - a numeric suffix is added when the name is already taken.
 
 = 1.16.0 - 2026-09-21 =
 
