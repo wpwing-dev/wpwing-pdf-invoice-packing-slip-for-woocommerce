@@ -14,7 +14,7 @@
 - **E-invoicing is the real parity gap:** WP Overnight's *free* plugin (300k+ installs) already ships UBL 2.1, Peppol BIS 3.0, CII D16B, Factur-X 1.0, and ZUGFeRD 1.0/2.0. WebToffee's free plugin ships UBL/XML. France requires every business to *receive* e-invoices from 01-09-2026 and French SMEs to *issue* from September 2027, five months past this runway; Germany has required reception since 2025. Structured-format export is therefore the highest-value free-tier work in this cycle, and the feature most likely to anchor a future Pro tier.
 - **The Proforma Solution:** The public `readme.txt` roadmap section promises "Proforma Invoice generation" with no free/pro split stated. Gating Proforma entirely behind Pro (its current state, `src/pro/includes/class-wcpdf-proforma.php`) risks community backlash - R4 ships a free-tier Proforma regardless of Pro launch timing.
 - **Directory Freshness:** Regular releases signal an actively maintained plugin, but cadence must not outpace real QA capacity - biweekly with a docker `verify` pass and a green test suite per release, tapering to monthly in 2027.
-- **Harden before the spike, not during it:** Black Friday (27-11-2026) / Cyber Monday (30-11-2026) drive a real order-volume spike for every store running the *free* plugin - bulk PDF generation, high-throughput email attachments. That hardening ships in R6 (16-11-2026), ahead of the spike. R7 (30-11-2026) is a patch-only window with no scheduled feature scope.
+- **Harden before the spike, not during it:** Black Friday (27-11-2026) / Cyber Monday (30-11-2026) drive a real order-volume spike for every store running the *free* plugin - bulk PDF generation, high-throughput email attachments. That hardening ships in R6 (23-11-2026), four days ahead of the spike. R7 (07-12-2026) is a patch-only window with no scheduled feature scope.
 - **Pricing Ladder (reference only, not committed to this cycle):** Verified competitor positions as of September 2026 - Challan Pro $49/yr (entry tier $29, lifetime $196), WebToffee $69/yr, WooCommerce.com $79/yr, WP Overnight €69/yr single site (€139/3 sites, €279/25 sites). The earlier $49/$89/$169 ladder in this document assumed a WP Overnight ceiling of €99 and would land a single-site license exactly on Challan Pro rather than between the tiers. Re-derive the ladder when a Pro launch is actually scheduled; do not ship the old numbers.
 
 ---
@@ -24,19 +24,21 @@
 | # | Date (Mon) | Target Version | Primary Scope & Headline Feature |
 | :-- | :--- | :--- | :--- |
 | R1 | 07-09-2026 | v1.15.0 | **Shipped.** Shipping Label document type |
-| R2 | 21-09-2026 | v1.16.0 | Item tables (thumbnails, SKU/Weight) + migration/email attachment safety fixes |
-| R3 | 05-10-2026 | v1.17.0 | Dynamic filename tokens + order column + guest access & hook isolation |
-| R4 | 19-10-2026 | v1.18.0 | Free Proforma Invoice + free/Pro proforma architecture split |
-| R5 | 02-11-2026 | v1.19.0 | **E-invoicing phase 1:** free UBL 2.1 export + Factur-X feasibility spike |
-| R6 | 16-11-2026 | v1.20.0 | BFCM throughput & merge memory bounds + PDF retention/GDPR hygiene |
-| R7 | 30-11-2026 | v1.20.1 | **Patch window** - no scheduled feature scope, BFCM support cover |
-| R8 | 14-12-2026 | v1.21.0 | "Pay Now" direct payment link + static file attachment (1) |
+| R2 | 21-09-2026 | v1.16.0 | **Shipped.** Item tables (thumbnails, SKU/Weight) + migration/email attachment safety fixes |
+| R3 | 12-10-2026 | v1.17.0 | Dynamic filename tokens + order column + guest access & hook isolation |
+| R4 | 26-10-2026 | v1.18.0 | Free Proforma Invoice + free/Pro proforma architecture split |
+| R5 | 09-11-2026 | v1.19.0 | **E-invoicing phase 1:** free UBL 2.1 export + Factur-X feasibility spike |
+| R6 | 23-11-2026 | v1.20.0 | BFCM throughput & merge memory bounds + PDF retention/GDPR hygiene |
+| R7 | 07-12-2026 | v1.20.1 | **Patch window** - no scheduled feature scope, BFCM support cover (watch from 27-11) |
+| R8 | 21-12-2026 | v1.21.0 | "Pay Now" direct payment link + static file attachment (1) |
 | R9 | 11-01-2027 | v1.22.0 | **E-invoicing phase 2:** Factur-X / ZUGFeRD embed (gated on the R5 spike) |
 | R10 | 08-02-2027 | v1.23.0 | PHP floor bump + PHP 8.4 / WP 7.2 readiness + `.pot` refresh |
 | R11 | 08-03-2027 | v1.24.0 | Eco ink-saving mode + Invoice Summary CSV export |
 | R12 | 29-03-2027 | v1.25.0 | Year-in-review polish + publish Q2 2027 roadmap (Pro launch timing decided here) |
 
 No release is scheduled for 28-12-2026 - holiday freeze week.
+
+**Revision 4 (12-10-2026):** R3 slipped one week from 05-10-2026 and ships today. R4-R8 move back one week each to keep the biweekly gap. The holiday freeze absorbs the slip, so R9-R12 dates are unchanged.
 
 **Slack warning:** R7 is the only pure buffer slot left in the cycle. E-invoicing consumed the Jan-Feb buffer sprints the previous revision protected. If two features slip, the Jan-Mar dates move; do not absorb slippage by cutting the `verify` pass.
 
@@ -51,7 +53,7 @@ No release is scheduled for 28-12-2026 - holiday freeze week.
 - Note the template directory convention is `shipping_label` (underscore), matching the document type key. Follow it for new document types.
 - Shipped without a bug-fix or hardening entry in the changelog, against the Section 4 rule. Hold the next release to it.
 
-#### R2 - 21-09-2026 - v1.16.0: Item Table Rendering & Safety Hardening
+#### R2 - 21-09-2026 - v1.16.0: Item Table Rendering & Safety Hardening - SHIPPED
 - Setting toggle to render product featured-image thumbnails inside Invoices, Packing Slips, Delivery Notes, and Shipping Labels.
 - Automatic image downscaling and dimension caching to prevent Dompdf memory exhaustion - test on a 128M PHP `memory_limit` environment.
 - Dimension selector (32x32, 48x48, 64x64).
@@ -62,7 +64,7 @@ No release is scheduled for 28-12-2026 - holiday freeze week.
   - **Advisory lock safety (P2):** Wrap invoice counter increment in `WPWing_WcPdf_Invoice::get_new_invoice_number()` in `try { ... } finally { $wpdb->query( ... RELEASE_LOCK ... ); }` to prevent deadlock if option saving fails.
   - **CI suite expansion:** Add `phpunit`, `phpstan`, and frontend linters to `.github/workflows/ci.yml`.
 
-#### R3 - 05-10-2026 - v1.17.0: Dynamic Filename Patterns & Order Column
+#### R3 - 12-10-2026 - v1.17.0: Dynamic Filename Patterns & Order Column
 - Token-based filename formatting setting supporting `{{doc_type}}`, `{{order_number}}`, `{{invoice_date}}`.
 - Invoice Number column on the standard WooCommerce orders list, via the existing `class-wpwing-wcpdf-orders-list.php`.
 - **Not** the WooCommerce Analytics report column from the previous revision. Analytics is a React/`@wordpress/data` surface and this repo's asset pipeline is sass + terser only (`build:css`, `build:js` in `package.json`) with no `@wordpress/scripts`, JSX, or bundler. That item is a toolchain adoption, not a half-release feature; revisit it as its own release if demand justifies the build-system cost.
@@ -70,7 +72,7 @@ No release is scheduled for 28-12-2026 - holiday freeze week.
   - **Safe template hook cleanup (P1):** Refactor `WPWing_WcPdf_Document::flush_template()` to unhook only internal plugin callback instances instead of `remove_all_filters()`, preventing the erasure of third-party custom hooks during batch generation.
   - **Guest order authorization (P2):** Add WooCommerce `order_key` verification to `user_can_manage_order()` and `WPWing_WcPdf_Shortcodes` so guest buyers can download invoices on the Order Received (Thank You) page.
 
-#### R4 - 19-10-2026 - v1.18.0: Free Proforma Invoice + Architecture Split
+#### R4 - 26-10-2026 - v1.18.0: Free Proforma Invoice + Architecture Split
 - **Architecture work first:** refactor `WPWing_WcPdf_Proforma` (currently `src/pro/includes/class-wcpdf-proforma.php`, extending `WPWing_WcPdf_ProDocument`) so a free-tier base class extending `WPWing_WcPdf_Document` - mirroring `WPWing_WcPdf_Delivery` - carries standard order data and standard sequential numbering, and the existing Pro class becomes a subclass/decorator adding independent counters, auto-conversion-on-payment, and custom prefixes/suffixes. Confirm the Pro plugin's activation check falls back to the free base class when Pro is inactive.
 - Free: Proforma selectable for "Pending payment" / "On-hold" orders, prominent "PROFORMA INVOICE" header/watermark.
 - Removes the last item from the public `readme.txt` roadmap section - update that section in the same release.
@@ -79,21 +81,21 @@ No release is scheduled for 28-12-2026 - holiday freeze week.
 
 ### November - December 2026
 
-#### R5 - 02-11-2026 - v1.19.0: E-invoicing Phase 1 (UBL 2.1)
+#### R5 - 09-11-2026 - v1.19.0: E-invoicing Phase 1 (UBL 2.1)
 - Free UBL 2.1 XML export for invoices: download from the order metabox, bulk export from the orders list, and an optional attach-to-email toggle alongside the existing PDF attachment.
 - Map WooCommerce order, tax, and seller/buyer data to UBL 2.1 fields. Seller VAT/tax identifiers need new settings fields - reuse `class-wpwing-wcpdf-settings-api.php`.
 - **Timeboxed spike, same release, no shipped feature:** can Dompdf 2.0.4 embed a PDF/A-3 attachment (the Factur-X requirement) at all, or does it need a post-processor such as FPDI or a second library? Record the answer in this document. R9 is gated on it, and the answer decides whether R9 ships an embed or a plain XML sidecar.
 - Ship UBL first even if the spike comes back red - XML export alone closes most of the WebToffee/Challan free-tier gap.
 
-#### R6 - 16-11-2026 - v1.20.0: BFCM Hardening + Storage Hygiene
-- Throughput hardening for simultaneous PDF generation and email-attachment load - profile bulk ZIP/merge on a several-hundred-order batch, cap peak memory, and confirm no fatal on a 128M `memory_limit`. This ships *before* the spike, not after it.
+#### R6 - 23-11-2026 - v1.20.0: BFCM Hardening + Storage Hygiene
+- Throughput hardening for simultaneous PDF generation and email-attachment load - profile bulk ZIP/merge on a several-hundred-order batch, cap peak memory, and confirm no fatal on a 128M `memory_limit`. This ships *before* the spike, not after it. With the R3 slip it lands on the Monday of Black Friday week - no room left to slip it further; if it is late, cut scope rather than the date.
 - **Bulk merged PDF memory bounds (P1):** Add order-count guardrails in `WPWing_WcPdf_Orders_List::stream_merged_pdf()` (cap at 30 orders per merged PDF with notice to use ZIP for larger sets) to prevent Dompdf memory exhaustion crashes on 128M hosts.
 - PDF storage retention scheduler (purge cached temp PDFs after 30/60/90 days) plus a disk/temp-dir size check in System Status.
 
-#### R7 - 30-11-2026 - v1.20.1: BFCM Patch Window
+#### R7 - 07-12-2026 - v1.20.1: BFCM Patch Window
 - No feature scope, and no release at all unless something breaks. Watch support channels through the Black Friday/Cyber Monday spike and patch only.
 
-#### R8 - 14-12-2026 - v1.21.0: Pay Now + Static Attachment
+#### R8 - 21-12-2026 - v1.21.0: Pay Now + Static Attachment
 - "Pay Now" link on unpaid Invoices and Proformas, routed to native `order-pay`.
   - **Security constraint, decide before building:** the `order-pay` URL carries `key=wc_order_*`, which is a bearer credential for that order. A PDF is emailed, archived, and forwarded, so embedding that key makes it long-lived and shareable. Render the link only on unpaid documents, never on paid or archived ones, and decide the expiry/regeneration behavior up front.
   - Deliberately placed after the BFCM peak rather than before it - this touches money-adjacent flows.
