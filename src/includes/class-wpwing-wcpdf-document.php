@@ -328,22 +328,88 @@ if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
 		}
 
 		/**
-		 * Flush template hooks
+		 * Flush template hooks registered by this document instance.
+		 * Third-party callbacks on the same hooks are left in place.
 		 *
 		 * @since 1.0.0
 		 */
 		public function flush_template() {
 
-			remove_all_filters( 'wpwing_wcpdf_before_template_generation' );
-			remove_all_filters( 'wpwing_wcpdf_template_head' );
-			remove_all_filters( 'wpwing_wcpdf_template_content' );
+			$hooks = array(
+				'wpwing_wcpdf_before_template_generation',
+				'wpwing_wcpdf_template_head',
+				'wpwing_wcpdf_template_content',
+			);
+			foreach ( array( 'company_data', 'company_logo', 'customer_data', 'order_data', 'product_list', 'footer' ) as $section ) {
+				$hooks[] = 'wpwing_wcpdf_' . $this->document_type . '_template_' . $section;
+			}
 
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_company_data' );
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_company_logo' );
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_customer_data' );
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_order_data' );
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_product_list' );
-			remove_all_filters( 'wpwing_wcpdf_' . $this->document_type . '_template_footer' );
+			foreach ( $hooks as $hook ) {
+				$this->remove_own_callbacks( $hook );
+			}
+		}
+
+		/**
+		 * Remove every callback on a hook that is a method of this instance, at any priority.
+		 *
+		 * @param string $hook Hook name.
+		 * @since 1.17.0
+		 */
+		private function remove_own_callbacks( $hook ) {
+
+			global $wp_filter;
+
+			if ( empty( $wp_filter[ $hook ] ) || ! isset( $wp_filter[ $hook ]->callbacks ) ) {
+				return;
+			}
+
+			foreach ( $wp_filter[ $hook ]->callbacks as $priority => $callbacks ) {
+				foreach ( $callbacks as $callback ) {
+					if ( is_array( $callback['function'] ) && $callback['function'][0] === $this ) {
+						remove_action( $hook, $callback['function'], $priority );
+					}
+				}
+			}
+		}
+
+		/**
+		 * Build the PDF filename (without extension) from the filename format setting.
+		 * Returns the default filename when no format is set. A numeric suffix is added
+		 * when the file already exists, so a pattern can never overwrite another document.
+		 *
+		 * @param string     $default_filename Default filename including its leading slash, e.g. '/invoice_12'.
+		 * @param int|string $year             Year subdirectory the file is saved in.
+		 * @return string Filename including its leading slash.
+		 * @since 1.17.0
+		 */
+		public function get_formatted_filename( $default_filename, $year ) {
+
+			$format = trim( (string) $this->settings->get_option( 'document_filename_format' ) );
+			if ( '' === $format ) {
+				return $default_filename;
+			}
+
+			// Non-invoice documents use the order's invoice date when one exists.
+			$invoice_date = $this->order->get_meta( '_wpwing_wcpdf_invoice_date' );
+			if ( ! $invoice_date && isset( $this->date ) ) {
+				$invoice_date = $this->date;
+			}
+			$timestamp = is_numeric( $invoice_date ) ? (int) $invoice_date : strtotime( (string) $invoice_date );
+
+			$filename = str_replace(
+				array( '{{doc_type}}', '{{order_number}}', '{{invoice_date}}' ),
+				array( $this->document_type, $this->order->get_order_number(), wp_date( 'Y-m-d', $timestamp ? $timestamp : time() ) ),
+				$format
+			);
+			$filename = trim( sanitize_file_name( $filename ), '.-_' );
+
+			if ( '' === $filename ) {
+				return $default_filename;
+			}
+
+			$unique = wp_unique_filename( WPWING_WCPDF_DOCUMENT_SAVE_DIR . $year, $filename . '.pdf' );
+
+			return '/' . substr( $unique, 0, -4 );
 		}
 
 		/**

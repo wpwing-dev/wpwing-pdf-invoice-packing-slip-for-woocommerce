@@ -79,10 +79,12 @@ if ( ! class_exists( 'WPWing_WcPdf_Shortcodes' ) ) {
 				return '';
 			}
 
-			$url = wp_nonce_url(
-				add_query_arg( 'wpwing-view-invoice', $order_id ),
-				'wpwing_view_invoice_' . $order_id
-			);
+			$args = array( 'wpwing-view-invoice' => $order_id );
+			if ( $this->request_has_guest_key( $order ) ) {
+				$args['key'] = $order->get_order_key();
+			}
+
+			$url = wp_nonce_url( add_query_arg( $args ), 'wpwing_view_invoice_' . $order_id );
 
 			return sprintf(
 				'<a class="wpwing-wcpdf-invoice-link" href="%s">%s</a>',
@@ -122,7 +124,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Shortcodes' ) ) {
 
 		/**
 		 * Whether the current user may view documents for the given order.
-		 * Mirrors the access rules of the document view endpoint.
+		 * Mirrors the access rules of the document view endpoint, including guest order keys.
 		 *
 		 * @param WC_Order $order Order object.
 		 * @return bool
@@ -131,7 +133,23 @@ if ( ! class_exists( 'WPWing_WcPdf_Shortcodes' ) ) {
 			if ( current_user_can( 'manage_woocommerce' ) ) {
 				return true;
 			}
-			return is_user_logged_in() && get_current_user_id() === (int) $order->get_customer_id();
+			if ( is_user_logged_in() && get_current_user_id() === (int) $order->get_customer_id() ) {
+				return true;
+			}
+			return $this->request_has_guest_key( $order );
+		}
+
+		/**
+		 * Whether the current request carries the guest order key, as on the Thank You page.
+		 *
+		 * @param WC_Order $order Order object.
+		 * @return bool
+		 * @since 1.17.0
+		 */
+		private function request_has_guest_key( $order ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only check; the order key is the credential.
+			$key = isset( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : '';
+			return WPWing_WcPdf_Plugin::guest_order_key_matches( $order, $key );
 		}
 	}
 }

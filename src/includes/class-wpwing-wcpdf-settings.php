@@ -212,6 +212,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'default' => 'A4',
 									),
 									array(
+										'id'          => 'document_filename_format',
+										'type'        => 'text',
+										'title'       => esc_html__( 'PDF filename format:', 'wpwing-wcpdf' ),
+										'desc'        => 'Tokens: {{doc_type}} = document type, {{order_number}} = order number, {{invoice_date}} = invoice date (Y-m-d). Example: {{doc_type}}-{{order_number}} → invoice-1234.pdf. Leave empty to keep the default names. Applies to newly generated documents only.',
+										'placeholder' => '{{doc_type}}-{{order_number}}',
+										'default'     => '',
+									),
+									array(
 										'id'      => 'invoice_disable_free_orders',
 										'type'    => 'checkbox',
 										'title'   => esc_html__( 'Disable invoice for free orders:', 'wpwing-wcpdf' ),
