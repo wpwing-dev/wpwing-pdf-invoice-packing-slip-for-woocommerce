@@ -1,13 +1,14 @@
 <?php
 /**
- * Proforma invoice template partial.
+ * Proforma invoice template partial - Modern theme.
  *
  * @package WPWing_PDF_Invoice_Packing_Slip
  */
 
+defined( 'ABSPATH' ) || exit;
 ?>
 <div class="invoice-document proforma-document">
-	<div class="proforma-banner"><?php esc_html_e( 'PROFORMA INVOICE', 'wpwing-pdf-invoice-pro' ); ?></div>
+	<div class="proforma-banner"><?php esc_html_e( 'PROFORMA INVOICE', 'wpwing-wcpdf' ); ?></div>
 
 	<div class="company-header">
 		<table>
@@ -41,3 +42,4 @@
 
 	<?php do_action( 'wpwing_wcpdf_proforma_template_footer' ); ?>
 </div>
+

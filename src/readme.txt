@@ -6,16 +6,16 @@ Tags:               pdf invoice, packing slip, delivery note, shipping label, wo
 Requires at least:  4.8
 Tested up to:       7.1
 Requires PHP:       7.4
-Stable tag:         1.17.0
+Stable tag:         1.18.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
-Automate PDF invoices, packing slips, delivery notes & shipping labels for WooCommerce. Attach to emails, print in bulk. Fast & lightweight.
+Automate PDF invoices, proforma invoices, packing slips, delivery notes & shipping labels for WooCommerce. Attach to emails, print in bulk. Fast & lightweight.
 
 
 == Description ==
 
-Streamline your eCommerce store's fulfillment, billing, and accounting with an all-in-one, ultra-fast WooCommerce PDF invoicing solution. Automatically generate professional **PDF invoices**, **packing slips**, **delivery notes**, and **shipping labels**, attach them directly to customer order emails, and print or download batches in seconds.
+Streamline your eCommerce store's fulfillment, billing, and accounting with an all-in-one, ultra-fast WooCommerce PDF invoicing solution. Automatically generate professional **PDF invoices**, **proforma invoices**, **packing slips**, **delivery notes**, and **shipping labels**, attach them directly to customer order emails, and print or download batches in seconds.
 
 Whether you need legally compliant tax invoices for international buyers, price-free packing slips for your fulfillment warehouse, or shipping labels with scannable QR codes, this plugin automates your entire post-order workflow on autopilot.
 
@@ -27,11 +27,12 @@ Built strictly with performance, security, and modern WordPress standards, it ru
 
 ---
 
-### 🔥 4-IN-1 DOCUMENT SUITE (100% FREE) ###
+### 🔥 5-IN-1 DOCUMENT SUITE (100% FREE) ###
 
-Unlike other plugins that charge €69 to €99 per year for basic document types, WPWing gives you all 4 essential store documents completely free:
+Unlike other plugins that charge €69 to €99 per year for basic document types, WPWing gives you all 5 essential store documents completely free:
 
 * 📑 **PDF Invoices:** Fully compliant tax invoices with customizable sequential numbering, tax breakdowns, store branding, and automated email attachments.
+* 📋 **Proforma Invoices:** Pre-payment invoices with clear proforma headers and line totals for pending payment and on-hold orders.
 * 📦 **PDF Packing Slips:** Warehouse-ready packing lists showing items and quantities without prices, perfect for picking and packing teams.
 * 🚚 **Delivery Notes:** Price-free delivery slips that travel inside the parcel with item summaries, shipping addresses, and optional customer order notes.
 * 🏷️ **Shipping Labels:** Clean shipping cards with prominent recipient address, sender details, package weight, shipping method, and a scannable QR code.
@@ -58,7 +59,7 @@ Unlike other plugins that charge €69 to €99 per year for basic document type
 
 | Feature | WP Overnight | WebToffee | WPWing (Free) |
 |---|---|---|---|
-| **Free Document Types** | 2 (Invoice, Packing) | 4 (Invoice, Packing, Delivery, Shipping) | **All 4 Free** |
+| **Free Document Types** | 2 (Invoice, Packing) | 4 (Invoice, Packing, Delivery, Shipping) | **All 5 Free** |
 | **Product Thumbnails in Tables** | Paid Add-on (EUR 99/yr) | Paid Pro ($69/yr) | **100% Free** |
 | **Bulk Merged PDF & ZIP** | Paid Add-on (EUR 99/yr) | Paid Pro ($69/yr) | **100% Free** |
 | **QR Code on Documents** | Paid Add-on | Paid Pro | **100% Free** |
@@ -109,6 +110,9 @@ Yes! Under **WooCommerce > PDF Invoices > General**, enable the "Disable for fre
 = Can I show an invoice download link anywhere on my site? =
 Yes! Use the `[wpwing_invoice]` shortcode. On the Thank You page or My Account order details, it detects the order automatically, including guest orders on the Thank You page; elsewhere, use `[wpwing_invoice order_id="123"]`. You can customize the link text with the `label` attribute.
 
+= Can I generate Proforma Invoices for pending payment orders? =
+Yes! WPWing includes a dedicated Proforma Invoice document type. You can create proformas manually from the order edit screen, bulk generate them from the WooCommerce orders list, or configure them to auto-generate and attach to emails on specific order statuses (such as Pending payment and On-hold).
+
 = Is this plugin compatible with WooCommerce HPOS (High-Performance Order Storage)? =
 Yes! WPWing fully supports High-Performance Order Storage (HPOS) and standard custom post types.
 
@@ -131,6 +135,17 @@ Yes! This plugin is actively maintained on [GitHub](https://github.com/wpwing-de
 8. WooCommerce orders list with bulk PDF actions dropdown
 
 == Changelog ==
+
+= 1.18.0 - 2026-10-26 =
+
+* New: Free Proforma Invoice document type - generate compliant pre-payment proforma invoices for pending payment and on-hold orders with prominent proforma banner, line items, and totals.
+* New: Auto-generate proforma invoices on order status changes (defaults to Pending payment and On-hold).
+* New: Attach proforma invoice PDFs to WooCommerce transactional emails.
+* New: Bulk generate and download proforma invoices (ZIP or Merged PDF) directly from the WooCommerce orders list.
+* New: Proforma invoice template selection (Default and Modern) with full custom CSS support.
+* Architecture: Free Proforma base class architecture split with decorator hooks for Pro add-on extensibility.
+* Fix: Ensure bulk ZIP archive creation uses safe overwrite flags across all PHP zip library versions.
+* Hardening: Strengthened email attachment filtering so multiple document types attach cleanly without mutual suppression.
 
 = 1.17.0 - 2026-10-12 =
 

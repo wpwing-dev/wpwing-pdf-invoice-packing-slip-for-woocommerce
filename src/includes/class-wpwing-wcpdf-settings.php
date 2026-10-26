@@ -259,10 +259,26 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'default' => array(),
 									),
 									array(
+										'id'      => 'proforma_auto_statuses',
+										'type'    => 'checkboxgroup',
+										'title'   => esc_html__( 'Auto-generate proforma invoice on status:', 'wpwing-wcpdf' ),
+										'desc'    => esc_html__( 'Proforma invoice is created automatically when an order reaches one of these statuses. Only created once per order.', 'wpwing-wcpdf' ),
+										'options' => $order_statuses,
+										'default' => array( 'pending', 'on-hold' ),
+									),
+									array(
 										'id'      => 'invoice_attach_to_emails',
 										'type'    => 'checkboxgroup',
 										'title'   => esc_html__( 'Attach invoice PDF to emails:', 'wpwing-wcpdf' ),
 										'desc'    => esc_html__( 'Invoice PDF is attached to the selected WooCommerce emails. Invoice is auto-created if it does not exist yet.', 'wpwing-wcpdf' ),
+										'options' => $email_options,
+										'default' => array(),
+									),
+									array(
+										'id'      => 'proforma_attach_to_emails',
+										'type'    => 'checkboxgroup',
+										'title'   => esc_html__( 'Attach proforma PDF to emails:', 'wpwing-wcpdf' ),
+										'desc'    => esc_html__( 'Proforma invoice PDF is attached to the selected WooCommerce emails. Proforma is auto-created if it does not exist yet.', 'wpwing-wcpdf' ),
 										'options' => $email_options,
 										'default' => array(),
 									),
@@ -325,6 +341,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'id'      => 'shipping_label_template',
 										'type'    => 'select',
 										'title'   => esc_html__( 'Shipping label template:', 'wpwing-wcpdf' ),
+										'options' => $templates,
+										'default' => 'default',
+									),
+									array(
+										'id'      => 'proforma_template',
+										'type'    => 'select',
+										'title'   => esc_html__( 'Proforma invoice template:', 'wpwing-wcpdf' ),
 										'options' => $templates,
 										'default' => 'default',
 									),
@@ -724,6 +747,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 				array(
 					'label' => esc_html__( 'Shipping Label', 'wpwing-wcpdf' ),
 					'class' => 'WPWing_WcPdf_Shipping_Label',
+				),
+				array(
+					'label' => esc_html__( 'Proforma Invoice', 'wpwing-wcpdf' ),
+					'class' => 'WPWing_WcPdf_Proforma',
 				),
 			);
 
