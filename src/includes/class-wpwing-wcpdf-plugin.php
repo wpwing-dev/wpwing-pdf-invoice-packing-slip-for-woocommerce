@@ -90,6 +90,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 				'wpwing-view-shipping-label'         => array( 'shipping_label', 'view', false, '' ),
 				'wpwing-reset-shipping-label'        => array( 'shipping_label', 'reset', true, 'shipping_label_cancelled' ),
 				'wpwing-preview-html-shipping-label' => array( 'shipping_label', 'preview_html', true, '' ),
+				'wpwing-create-proforma'             => array( 'proforma', 'create', true, 'proforma_created' ),
+				'wpwing-view-proforma'               => array( 'proforma', 'view', false, '' ),
+				'wpwing-reset-proforma'              => array( 'proforma', 'reset', true, 'proforma_cancelled' ),
+				'wpwing-preview-html-proforma'       => array( 'proforma', 'preview_html', true, '' ),
 			);
 
 			$notice = '';
@@ -186,7 +190,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 		 * Return a new document of the requested type for a specific order.
 		 *
 		 * @param int    $order_id      The order ID.
-		 * @param string $document_type 'invoice', 'packing', 'delivery' or 'shipping_label'.
+		 * @param string $document_type 'invoice', 'packing', 'delivery', 'shipping_label' or 'proforma'.
 		 * @return WPWing_WcPdf_Document|null
 		 * @since 1.0.0
 		 */
@@ -200,6 +204,9 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 					return new WPWing_WcPdf_Delivery( $order_id );
 				case 'shipping_label':
 					return new WPWing_WcPdf_Shipping_Label( $order_id );
+				case 'proforma':
+					$class = apply_filters( 'wpwing_wcpdf_proforma_class', 'WPWing_WcPdf_Proforma' );
+					return new $class( $order_id );
 				default:
 					return null;
 			}

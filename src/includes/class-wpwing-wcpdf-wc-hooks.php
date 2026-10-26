@@ -71,6 +71,19 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 					'url'  => $nonce_url,
 					'name' => __( 'Invoice', 'wpwing-wcpdf' ),
 				);
+			} else {
+				$proforma = $this->plugin->get_document_by_type( $order->get_id(), 'proforma' );
+				if ( ( null !== $proforma ) && $proforma->exists ) {
+					$nonce_url = wp_nonce_url(
+						add_query_arg( 'wpwing-view-proforma', $order->get_id() ),
+						'wpwing_view_proforma_' . $order->get_id()
+					);
+
+					$actions['wpwing_proforma'] = array(
+						'url'  => $nonce_url,
+						'name' => __( 'Proforma', 'wpwing-wcpdf' ),
+					);
+				}
 			}
 
 			return $actions;
@@ -126,13 +139,21 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 						$this->plugin->save_document( $shipping_label );
 					}
 				}
+
+				$proforma_statuses = $this->settings->get_option( 'proforma_auto_statuses' );
+				if ( is_array( $proforma_statuses ) && in_array( $new_status, $proforma_statuses, true ) ) {
+					$proforma = $this->plugin->get_document_by_type( $order_id, 'proforma' );
+					if ( null !== $proforma && ! $proforma->exists ) {
+						$this->plugin->save_document( $proforma );
+					}
+				}
 			} finally {
 				$running = false;
 			}
 		}
 
 		/**
-		 * Attach the invoice PDF to configured WooCommerce transactional emails.
+		 * Attach configured document PDFs to WooCommerce transactional emails.
 		 *
 		 * @param array    $attachments Current email attachments.
 		 * @param string   $email_id    WooCommerce email ID.
@@ -145,43 +166,60 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 				return $attachments;
 			}
 
-			$configured_ids = $this->settings->get_option( 'invoice_attach_to_emails' );
-
-			if ( ! is_array( $configured_ids ) || ! in_array( $email_id, $configured_ids, true ) ) {
-				return $attachments;
-			}
-
 			if ( ! ( $object instanceof WC_Order ) ) {
-				return $attachments;
-			}
-
-			if ( $this->settings->get_option( 'invoice_disable_free_orders' ) && (float) $object->get_total() === 0.0 ) {
 				return $attachments;
 			}
 
 			$running  = true;
 			$order_id = $object->get_id();
-			$invoice  = $this->plugin->get_document_by_type( $order_id, 'invoice' );
 
-			if ( null === $invoice ) {
+			try {
+				// Invoice attachment.
+				$invoice_email_ids = $this->settings->get_option( 'invoice_attach_to_emails' );
+				$skip_free         = $this->settings->get_option( 'invoice_disable_free_orders' ) && (float) $object->get_total() === 0.0;
+				if ( is_array( $invoice_email_ids ) && in_array( $email_id, $invoice_email_ids, true ) && ! $skip_free ) {
+					$attachments = $this->append_document_attachment( $attachments, $order_id, 'invoice' );
+				}
+
+				// Proforma attachment.
+				$proforma_email_ids = $this->settings->get_option( 'proforma_attach_to_emails' );
+				if ( is_array( $proforma_email_ids ) && in_array( $email_id, $proforma_email_ids, true ) ) {
+					$attachments = $this->append_document_attachment( $attachments, $order_id, 'proforma' );
+				}
+			} finally {
 				$running = false;
+			}
+
+			return $attachments;
+		}
+
+		/**
+		 * Helper to append a generated document PDF file to the email attachments list.
+		 *
+		 * @param array  $attachments Current attachments.
+		 * @param int    $order_id    Order ID.
+		 * @param string $doc_type    Document type ('invoice', 'proforma', etc.).
+		 * @return array
+		 */
+		private function append_document_attachment( $attachments, $order_id, $doc_type ) {
+			$document = $this->plugin->get_document_by_type( $order_id, $doc_type );
+			if ( null === $document ) {
 				return $attachments;
 			}
 
-			if ( ! $invoice->exists ) {
-				$this->plugin->save_document( $invoice );
+			if ( ! $document->exists ) {
+				$this->plugin->save_document( $document );
 			}
 
-			if ( $invoice->exists && ! empty( $invoice->save_path ) ) {
-				$path = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $invoice->save_path;
+			if ( $document->exists && ! empty( $document->save_path ) ) {
+				$path = WPWING_WCPDF_DOCUMENT_SAVE_DIR . $document->save_path;
 				$real = realpath( $path );
 				$base = realpath( WPWING_WCPDF_DOCUMENT_SAVE_DIR );
-				if ( $real && $base && strpos( $real, $base . DIRECTORY_SEPARATOR ) === 0 ) {
+				if ( $real && $base && 0 === strpos( $real, $base . DIRECTORY_SEPARATOR ) && ! in_array( $real, $attachments, true ) ) {
 					$attachments[] = $real;
 				}
 			}
 
-			$running = false;
 			return $attachments;
 		}
 	}

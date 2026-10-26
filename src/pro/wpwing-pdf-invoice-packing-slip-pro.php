@@ -43,7 +43,7 @@ add_action( 'plugins_loaded', 'wpwing_wcpdf_pro_init', 12 );
  * Boot the pro plugin after the free plugin has loaded.
  */
 function wpwing_wcpdf_pro_init() {
-	if ( ! class_exists( 'WPWing_WcPdf_Document' ) ) {
+	if ( ! class_exists( 'WPWing_WcPdf_Document' ) || ! class_exists( 'WPWing_WcPdf_Proforma' ) ) {
 		add_action( 'admin_notices', 'wpwing_wcpdf_pro_dependency_notice' );
 		return;
 	}

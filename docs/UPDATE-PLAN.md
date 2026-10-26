@@ -25,8 +25,8 @@
 | :-- | :--- | :--- | :--- |
 | R1 | 07-09-2026 | v1.15.0 | **Shipped.** Shipping Label document type |
 | R2 | 21-09-2026 | v1.16.0 | **Shipped.** Item tables (thumbnails, SKU/Weight) + migration/email attachment safety fixes |
-| R3 | 12-10-2026 | v1.17.0 | Dynamic filename tokens + order column + guest access & hook isolation |
-| R4 | 26-10-2026 | v1.18.0 | Free Proforma Invoice + free/Pro proforma architecture split |
+| R3 | 12-10-2026 | v1.17.0 | **Shipped.** Dynamic filename tokens + order column + guest access & hook isolation |
+| R4 | 26-10-2026 | v1.18.0 | **Shipped.** Free Proforma Invoice + free/Pro proforma architecture split |
 | R5 | 09-11-2026 | v1.19.0 | **E-invoicing phase 1:** free UBL 2.1 export + Factur-X feasibility spike |
 | R6 | 23-11-2026 | v1.20.0 | BFCM throughput & merge memory bounds + PDF retention/GDPR hygiene |
 | R7 | 07-12-2026 | v1.20.1 | **Patch window** - no scheduled feature scope, BFCM support cover (watch from 27-11) |
@@ -72,10 +72,13 @@ No release is scheduled for 28-12-2026 - holiday freeze week.
   - **Safe template hook cleanup (P1):** Refactor `WPWing_WcPdf_Document::flush_template()` to unhook only internal plugin callback instances instead of `remove_all_filters()`, preventing the erasure of third-party custom hooks during batch generation.
   - **Guest order authorization (P2):** Add WooCommerce `order_key` verification to `user_can_manage_order()` and `WPWing_WcPdf_Shortcodes` so guest buyers can download invoices on the Order Received (Thank You) page.
 
-#### R4 - 26-10-2026 - v1.18.0: Free Proforma Invoice + Architecture Split
-- **Architecture work first:** refactor `WPWing_WcPdf_Proforma` (currently `src/pro/includes/class-wcpdf-proforma.php`, extending `WPWing_WcPdf_ProDocument`) so a free-tier base class extending `WPWing_WcPdf_Document` - mirroring `WPWing_WcPdf_Delivery` - carries standard order data and standard sequential numbering, and the existing Pro class becomes a subclass/decorator adding independent counters, auto-conversion-on-payment, and custom prefixes/suffixes. Confirm the Pro plugin's activation check falls back to the free base class when Pro is inactive.
-- Free: Proforma selectable for "Pending payment" / "On-hold" orders, prominent "PROFORMA INVOICE" header/watermark.
-- Removes the last item from the public `readme.txt` roadmap section - update that section in the same release.
+#### R4 - 26-10-2026 - v1.18.0: Free Proforma Invoice + Architecture Split - SHIPPED
+- Delivered in [`src/includes/class-wpwing-wcpdf-proforma.php`](../src/includes/class-wpwing-wcpdf-proforma.php) (`WPWing_WcPdf_Proforma extends WPWing_WcPdf_Document`), wired into `class-wpwing-wcpdf-plugin.php`, `class-wpwing-wcpdf-admin.php`, `class-wpwing-wcpdf-orders-list.php`, `class-wpwing-wcpdf-settings.php`, `class-wpwing-wcpdf-wc-hooks.php`, plus `src/templates/default/proforma/` and `src/templates/modern/proforma/`.
+- Architecture split: `WPWing_WcPdf_Pro_Proforma` in Pro add-on decorates free base class, with auto-conversion on payment and fallback when Pro is inactive.
+- Free: Proforma selectable for "Pending payment" / "On-hold" orders, prominent "PROFORMA INVOICE" banner and complete order line items with totals.
+- **Hardening / Bug Fixes (satisfies Section 4 Changelog Rule):**
+  - **ZipArchive open safety (P1):** Use `ZipArchive::CREATE | ZipArchive::OVERWRITE` in `WPWing_WcPdf_Orders_List::stream_zip()` to ensure compatibility with PHP versions where temporary empty files cannot be opened with `OVERWRITE` alone.
+  - **Multi-document email attachment isolation (P2):** Refactored `WPWing_WcPdf_Wc_Hooks::attach_document_to_email()` into an extensible multi-document loop with `try ... finally` reentrancy guards, allowing invoice and proforma attachments to be configured independently without mutual suppression.
 
 ---
 

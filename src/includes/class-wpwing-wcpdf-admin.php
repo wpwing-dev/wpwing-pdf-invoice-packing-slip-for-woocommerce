@@ -81,6 +81,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 			$packing        = $this->plugin->get_document_by_type( $order_id, 'packing' );
 			$delivery       = $this->plugin->get_document_by_type( $order_id, 'delivery' );
 			$shipping_label = $this->plugin->get_document_by_type( $order_id, 'shipping_label' );
+			$proforma       = $this->plugin->get_document_by_type( $order_id, 'proforma' );
 			?>
 			<div class="wpwing-wcpdf-metabox">
 
@@ -121,6 +122,39 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 							<a class="button tips wpwing_wcpdf_create_invoice"
 								data-tip="<?php esc_attr_e( 'Create Invoice', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-invoice', $order_id ), 'wpwing_create_invoice_' . $order_id ) ); ?>">
+								<?php esc_html_e( 'Create', 'wpwing-wcpdf' ); ?>
+							</a>
+						<?php endif; ?>
+					</div>
+				</div>
+
+				<div class="wpwing-wcpdf-doc-row">
+					<span class="dashicons dashicons-media-text wpwing-wcpdf-doc-icon"></span>
+					<span class="wpwing-wcpdf-doc-label"><?php esc_html_e( 'Proforma:', 'wpwing-wcpdf' ); ?></span>
+					<div class="wpwing-wcpdf-doc-actions">
+						<?php if ( ( null !== $proforma ) && $proforma->exists ) : ?>
+							<a class="button tips wpwing_wcpdf_view_invoice"
+								data-tip="<?php esc_attr_e( 'View Proforma Invoice', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-view-proforma', $proforma->order->get_id() ), 'wpwing_view_proforma_' . $proforma->order->get_id() ) ); ?>"
+								target="_blank">
+								<?php esc_html_e( 'View', 'wpwing-wcpdf' ); ?>
+							</a>
+							<a class="button tips wpwing_wcpdf_preview_html"
+								data-tip="<?php esc_attr_e( 'Preview proforma invoice template as HTML', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-preview-html-proforma', $proforma->order->get_id() ), 'wpwing_preview_html_proforma_' . $proforma->order->get_id() ) ); ?>"
+								target="_blank">
+								<?php esc_html_e( 'Preview', 'wpwing-wcpdf' ); ?>
+							</a>
+							<a class="button tips wpwing_wcpdf_cancel_invoice wpwing-btn-cancel"
+								data-tip="<?php esc_attr_e( 'Delete Proforma Invoice', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-proforma', $proforma->order->get_id() ), 'wpwing_reset_proforma_' . $proforma->order->get_id() ) ); ?>"
+								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this proforma invoice?', 'wpwing-wcpdf' ); ?>')">
+								<span class="dashicons dashicons-trash"></span><?php esc_html_e( 'Delete', 'wpwing-wcpdf' ); ?>
+							</a>
+						<?php else : ?>
+							<a class="button tips wpwing_wcpdf_create_invoice"
+								data-tip="<?php esc_attr_e( 'Create Proforma Invoice', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-create-proforma', $order_id ), 'wpwing_create_proforma_' . $order_id ) ); ?>">
 								<?php esc_html_e( 'Create', 'wpwing-wcpdf' ); ?>
 							</a>
 						<?php endif; ?>
@@ -259,6 +293,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 					'delivery_cancelled'       => array( 'warning', __( 'Delivery note has been deleted.', 'wpwing-wcpdf' ) ),
 					'shipping_label_created'   => array( 'success', __( 'Shipping label created successfully.', 'wpwing-wcpdf' ) ),
 					'shipping_label_cancelled' => array( 'warning', __( 'Shipping label has been deleted.', 'wpwing-wcpdf' ) ),
+					'proforma_created'         => array( 'success', __( 'Proforma invoice created successfully.', 'wpwing-wcpdf' ) ),
+					'proforma_cancelled'       => array( 'warning', __( 'Proforma invoice has been deleted.', 'wpwing-wcpdf' ) ),
 				);
 
 				if ( isset( $messages[ $notice ] ) ) {
@@ -283,6 +319,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 					'packing'        => __( 'packing slip', 'wpwing-wcpdf' ),
 					'delivery'       => __( 'delivery note', 'wpwing-wcpdf' ),
 					'shipping_label' => __( 'shipping label', 'wpwing-wcpdf' ),
+					'proforma'       => __( 'proforma invoice', 'wpwing-wcpdf' ),
 				);
 				$label   = isset( $labels[ $type ] ) ? $labels[ $type ] : $labels['invoice'];
 

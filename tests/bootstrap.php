@@ -128,6 +128,13 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		public function get_order_number() { return ''; }
 		public function get_order_key() { return ''; }
 		public function get_customer_id() { return 0; }
+		public function delete_meta_data( $key ) {}
+		public function update_meta_data( $key, $value ) {}
+		public function save_meta_data() {}
+		public function apply_changes() {}
+		public function get_date_created() { return null; }
+		public function get_formatted_billing_address() { return ''; }
+		public function get_formatted_shipping_address() { return ''; }
 	}
 }
 

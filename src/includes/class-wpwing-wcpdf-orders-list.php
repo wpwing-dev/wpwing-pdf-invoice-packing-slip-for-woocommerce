@@ -91,6 +91,9 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 			$actions['wpwing_generate_shipping_label']     = __( 'Generate Shipping Labels', 'wpwing-wcpdf' );
 			$actions['wpwing_download_shipping_label_zip'] = __( 'Download Shipping Labels (ZIP)', 'wpwing-wcpdf' );
 			$actions['wpwing_download_shipping_label_pdf'] = __( 'Download Shipping Labels (Merged PDF)', 'wpwing-wcpdf' );
+			$actions['wpwing_generate_proforma']           = __( 'Generate Proforma Invoices', 'wpwing-wcpdf' );
+			$actions['wpwing_download_proforma_zip']       = __( 'Download Proforma Invoices (ZIP)', 'wpwing-wcpdf' );
+			$actions['wpwing_download_proforma_pdf']       = __( 'Download Proforma Invoices (Merged PDF)', 'wpwing-wcpdf' );
 			return $actions;
 		}
 
@@ -120,6 +123,9 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 				'wpwing_generate_shipping_label'     => array( 'shipping_label', '' ),
 				'wpwing_download_shipping_label_zip' => array( 'shipping_label', 'zip' ),
 				'wpwing_download_shipping_label_pdf' => array( 'shipping_label', 'pdf' ),
+				'wpwing_generate_proforma'           => array( 'proforma', '' ),
+				'wpwing_download_proforma_zip'       => array( 'proforma', 'zip' ),
+				'wpwing_download_proforma_pdf'       => array( 'proforma', 'pdf' ),
 			);
 
 			if ( ! isset( $bulk_actions[ $action ] ) ) {
@@ -204,7 +210,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 
 			if ( class_exists( 'ZipArchive' ) ) {
 				$zip = new ZipArchive();
-				if ( true !== $zip->open( $tmp, ZipArchive::OVERWRITE ) ) {
+				if ( true !== $zip->open( $tmp, ZipArchive::CREATE | ZipArchive::OVERWRITE ) ) {
 					wp_delete_file( $tmp );
 					return;
 				}
@@ -301,6 +307,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 				'packing'        => 'packing-slips-',
 				'delivery'       => 'delivery-notes-',
 				'shipping_label' => 'shipping-labels-',
+				'proforma'       => 'proforma-invoices-',
 			);
 			return isset( $prefixes[ $document_type ] ) ? $prefixes[ $document_type ] : 'documents-';
 		}
