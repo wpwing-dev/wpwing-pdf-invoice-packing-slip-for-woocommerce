@@ -94,6 +94,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 				'wpwing-view-proforma'               => array( 'proforma', 'view', false, '' ),
 				'wpwing-reset-proforma'              => array( 'proforma', 'reset', true, 'proforma_cancelled' ),
 				'wpwing-preview-html-proforma'       => array( 'proforma', 'preview_html', true, '' ),
+				'wpwing-download-ubl-invoice'        => array( 'invoice', 'download_ubl', false, '' ),
 			);
 
 			$notice = '';
@@ -117,7 +118,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 					wp_die( $msg ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already escaped via esc_html__() above.
 				}
 
-				if ( in_array( $op, array( 'view', 'preview_html' ), true ) ) {
+				if ( in_array( $op, array( 'view', 'preview_html', 'download_ubl' ), true ) ) {
 					$this->{$op . '_document'}( $order_id, $doc_type );
 					return;
 				}
@@ -295,6 +296,48 @@ if ( ! class_exists( 'WPWing_WcPdf_Plugin' ) ) {
 			header( 'Content-Type: text/html; charset=utf-8' );
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $html;
+			exit();
+		}
+
+		/**
+		 * Generate and stream the UBL 2.1 XML document to the browser.
+		 *
+		 * @param int    $order_id      The order ID.
+		 * @param string $document_type The document type ('invoice').
+		 * @since 1.19.0
+		 */
+		public function download_ubl_document( $order_id, $document_type ) {
+			if ( 'invoice' !== $document_type ) {
+				wp_die( esc_html__( 'UBL export is only supported for invoices.', 'wpwing-wcpdf' ) );
+			}
+
+			$order = wc_get_order( $order_id );
+			if ( ! $order ) {
+				wp_die( esc_html__( 'Order not found.', 'wpwing-wcpdf' ) );
+			}
+
+			$invoice = $this->get_document_by_type( $order_id, 'invoice' );
+			if ( null !== $invoice && ! $invoice->exists ) {
+				$this->save_document( $invoice );
+			}
+
+			$ubl = new WPWing_WcPdf_UBL( $invoice ? $invoice : $order );
+			$xml = $ubl->generate_xml();
+
+			if ( empty( $xml ) ) {
+				wp_die( esc_html__( 'Failed to generate UBL 2.1 XML.', 'wpwing-wcpdf' ) );
+			}
+
+			$ubl->save_xml();
+
+			$filename = 'ubl-invoice-' . sanitize_file_name( $ubl->get_invoice_identifier() ) . '.xml';
+
+			nocache_headers();
+			header( 'Content-Type: application/xml; charset=utf-8' );
+			header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $filename ) . '"' );
+			header( 'Content-Length: ' . strlen( $xml ) );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $xml;
 			exit();
 		}
 

@@ -94,6 +94,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 			$actions['wpwing_generate_proforma']           = __( 'Generate Proforma Invoices', 'wpwing-wcpdf' );
 			$actions['wpwing_download_proforma_zip']       = __( 'Download Proforma Invoices (ZIP)', 'wpwing-wcpdf' );
 			$actions['wpwing_download_proforma_pdf']       = __( 'Download Proforma Invoices (Merged PDF)', 'wpwing-wcpdf' );
+			$actions['wpwing_download_invoices_ubl_zip']   = __( 'Download Invoices (UBL 2.1 XML ZIP)', 'wpwing-wcpdf' );
 			return $actions;
 		}
 
@@ -126,6 +127,7 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 				'wpwing_generate_proforma'           => array( 'proforma', '' ),
 				'wpwing_download_proforma_zip'       => array( 'proforma', 'zip' ),
 				'wpwing_download_proforma_pdf'       => array( 'proforma', 'pdf' ),
+				'wpwing_download_invoices_ubl_zip'   => array( 'invoice', 'ubl_zip' ),
 			);
 
 			if ( ! isset( $bulk_actions[ $action ] ) ) {
@@ -160,6 +162,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 			if ( $download_format && $documents ) {
 				if ( 'zip' === $download_format ) {
 					$this->stream_zip( $documents, $document_type );
+				} elseif ( 'ubl_zip' === $download_format ) {
+					$this->stream_ubl_zip( $documents );
 				} else {
 					$this->stream_merged_pdf( $documents, $document_type );
 				}
@@ -195,7 +199,13 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 			foreach ( $documents as $document ) {
 				$real = realpath( WPWING_WCPDF_DOCUMENT_SAVE_DIR . $document->save_path );
 				if ( $real && $base && 0 === strpos( $real, $base . DIRECTORY_SEPARATOR ) ) {
-					$files[ basename( $real ) ] = $real;
+					$entry_name = basename( $real );
+					if ( isset( $files[ $entry_name ] ) ) {
+						$ext        = pathinfo( $entry_name, PATHINFO_EXTENSION );
+						$name       = pathinfo( $entry_name, PATHINFO_FILENAME );
+						$entry_name = sprintf( '%s-order-%d.%s', $name, $document->order->get_id(), $ext );
+					}
+					$files[ $entry_name ] = $real;
 				}
 			}
 
@@ -230,6 +240,81 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 			}
 
 			$filename = $this->download_filename_prefix( $document_type ) . wp_date( 'Y-m-d' ) . '.zip';
+
+			nocache_headers();
+			header( 'Content-Type: application/zip' );
+			header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $filename ) . '"' );
+			header( 'Content-Length: ' . filesize( $tmp ) );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
+			readfile( $tmp );
+			wp_delete_file( $tmp );
+			exit();
+		}
+
+		/**
+		 * Stream the given documents' UBL 2.1 XML files as a ZIP archive and exit.
+		 *
+		 * @param WPWing_WcPdf_Document[] $documents Documents with existing or generated invoices.
+		 * @since 1.19.0
+		 */
+		private function stream_ubl_zip( $documents ) {
+			$files = array();
+			$base  = realpath( WPWING_WCPDF_DOCUMENT_SAVE_DIR );
+
+			foreach ( $documents as $document ) {
+				if ( ! $document instanceof WPWing_WcPdf_Invoice ) {
+					continue;
+				}
+
+				$ubl  = new WPWing_WcPdf_UBL( $document );
+				$path = $ubl->get_xml_file_path();
+				if ( empty( $path ) ) {
+					continue;
+				}
+
+				$real = realpath( $path );
+				if ( $real && $base && 0 === strpos( $real, $base . DIRECTORY_SEPARATOR ) ) {
+					$entry_name = basename( $real );
+					if ( isset( $files[ $entry_name ] ) ) {
+						$ext        = pathinfo( $entry_name, PATHINFO_EXTENSION );
+						$name       = pathinfo( $entry_name, PATHINFO_FILENAME );
+						$entry_name = sprintf( '%s-order-%d.%s', $name, $document->order->get_id(), $ext );
+					}
+					$files[ $entry_name ] = $real;
+				}
+			}
+
+			if ( ! $files ) {
+				return;
+			}
+
+			$tmp = wp_tempnam( 'wpwing-wcpdf-ubl-bulk' );
+			if ( ! $tmp ) {
+				return;
+			}
+
+			if ( class_exists( 'ZipArchive' ) ) {
+				$zip = new ZipArchive();
+				if ( true !== $zip->open( $tmp, ZipArchive::CREATE | ZipArchive::OVERWRITE ) ) {
+					wp_delete_file( $tmp );
+					return;
+				}
+				foreach ( $files as $name => $path ) {
+					$zip->addFile( $path, $name );
+				}
+				$zip->close();
+			} else {
+				require_once ABSPATH . 'wp-admin/includes/class-pclzip.php';
+				$archive = new PclZip( $tmp );
+				// @phpstan-ignore-next-line -- PclZip::create() accepts variadic option pairs.
+				$result = $archive->create( implode( ',', array_values( $files ) ), PCLZIP_OPT_REMOVE_ALL_PATH );
+				if ( 0 === $result ) {
+					wp_delete_file( $tmp );
+					return;
+				}
+			}
+
+			$filename = 'invoices-ubl-' . wp_date( 'Y-m-d' ) . '.zip';
 
 			nocache_headers();
 			header( 'Content-Type: application/zip' );

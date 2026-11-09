@@ -27,7 +27,7 @@
 | R2 | 21-09-2026 | v1.16.0 | **Shipped.** Item tables (thumbnails, SKU/Weight) + migration/email attachment safety fixes |
 | R3 | 12-10-2026 | v1.17.0 | **Shipped.** Dynamic filename tokens + order column + guest access & hook isolation |
 | R4 | 26-10-2026 | v1.18.0 | **Shipped.** Free Proforma Invoice + free/Pro proforma architecture split |
-| R5 | 09-11-2026 | v1.19.0 | **E-invoicing phase 1:** free UBL 2.1 export + Factur-X feasibility spike |
+| R5 | 09-11-2026 | v1.19.0 | **Shipped.** Free UBL 2.1 XML export + Factur-X feasibility spike completed |
 | R6 | 23-11-2026 | v1.20.0 | BFCM throughput & merge memory bounds + PDF retention/GDPR hygiene |
 | R7 | 07-12-2026 | v1.20.1 | **Patch window** - no scheduled feature scope, BFCM support cover (watch from 27-11) |
 | R8 | 21-12-2026 | v1.21.0 | "Pay Now" direct payment link + static file attachment (1) |
@@ -84,11 +84,24 @@ No release is scheduled for 28-12-2026 - holiday freeze week.
 
 ### November - December 2026
 
-#### R5 - 09-11-2026 - v1.19.0: E-invoicing Phase 1 (UBL 2.1)
-- Free UBL 2.1 XML export for invoices: download from the order metabox, bulk export from the orders list, and an optional attach-to-email toggle alongside the existing PDF attachment.
-- Map WooCommerce order, tax, and seller/buyer data to UBL 2.1 fields. Seller VAT/tax identifiers need new settings fields - reuse `class-wpwing-wcpdf-settings-api.php`.
-- **Timeboxed spike, same release, no shipped feature:** can Dompdf 2.0.4 embed a PDF/A-3 attachment (the Factur-X requirement) at all, or does it need a post-processor such as FPDI or a second library? Record the answer in this document. R9 is gated on it, and the answer decides whether R9 ships an embed or a plain XML sidecar.
-- Ship UBL first even if the spike comes back red - XML export alone closes most of the WebToffee/Challan free-tier gap.
+#### R5 - 09-11-2026 - v1.19.0: E-invoicing Phase 1 (UBL 2.1) - SHIPPED
+- Delivered in [`src/includes/class-wpwing-wcpdf-ubl.php`](../src/includes/class-wpwing-wcpdf-ubl.php) (`WPWing_WcPdf_UBL`), generating compliant UBL 2.1 (Universal Business Language, ISO/IEC 19845:2015) XML aligned with European standard EN 16931 and Peppol BIS Billing 3.0.
+- Download from the order metabox via new `wpwing-download-ubl-invoice` action with nonce and order permission guards.
+- Bulk export from the WooCommerce orders list via `wpwing_download_invoices_ubl_zip` bulk action, packaging generated XML documents into a single downloadable ZIP archive.
+- Optional email attachment toggle `invoice_ubl_attach_to_emails` in General Settings to attach the UBL 2.1 XML alongside the PDF invoice.
+- Seller tax and registration settings in Template Settings: `company_registration_number` (trade register / CRN / SIREN / HRB) and `company_tax_scheme` (defaulting to `VAT`), with automatic mapping of buyer VAT from order meta.
+- Automatic disk cleanup of associated `.xml` files when an invoice is reset or deleted.
+- **Hardening / Bug Fixes (satisfies Section 4 Changelog Rule):**
+  - **Bulk ZIP filename collision disambiguation (P1):** Fixed `WPWing_WcPdf_Orders_List::stream_zip()` and `stream_ubl_zip()` to detect duplicate basenames and disambiguate entries (`{name}-order-{id}.{ext}`) instead of silently overwriting earlier files in the archive.
+- **Timeboxed spike result (Dompdf 2.0.4 PDF/A-3 Factur-X viability):**
+  - **Outcome:** **Red** (Dompdf 2.0.4 cannot embed PDF/A-3 attachments natively).
+  - **Findings:**
+    1. Dompdf 2.0.4 only produces standard PDF (defaults to PDF 1.3/1.7 header); it has zero native support for PDF/A-3 (ISO 19005-3).
+    2. While internal `Cpdf` contains an `addEmbeddedFile()` method, it only writes a legacy `/Names <</EmbeddedFiles ...>>` entry without the mandatory `/AF` (Associated Files) catalog array or `/AFRelationship` file specification attributes required by PDF/A-3.
+    3. `Dompdf\Adapter\CPDF` does not expose embedded file attachments via the `Canvas` interface.
+    4. Dompdf has no mechanism to inject XMP extension schemas (`/Type /Metadata /Subtype /XML`) declaring Factur-X / ZUGFeRD conformance levels (`MINIMUM`, `BASIC WL`, `BASIC`, `EN 16931`, `EXTENDED`).
+    5. Dompdf lacks color profile output intent dictionary (`/OutputIntents`) support with embedded ICC profiles.
+  - **Decision for R9:** Gated on this spike, embedding a Factur-X hybrid PDF requires a post-processor (such as `setasign/fpdi` or a dedicated PDF/A-3 post-processing library) rather than relying on Dompdf alone. R9 will adopt the post-processor bridge or ship structured e-invoices as sidecar XML/Peppol BIS 3.0.
 
 #### R6 - 23-11-2026 - v1.20.0: BFCM Hardening + Storage Hygiene
 - Throughput hardening for simultaneous PDF generation and email-attachment load - profile bulk ZIP/merge on a several-hundred-order batch, cap peak memory, and confirm no fatal on a 128M `memory_limit`. This ships *before* the spike, not after it. With the R3 slip it lands on the Monday of Black Friday week - no room left to slip it further; if it is late, cut scope rather than the date.

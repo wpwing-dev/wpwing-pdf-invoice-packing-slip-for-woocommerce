@@ -177,6 +177,15 @@ if ( ! class_exists( 'WPWing_WcPdf_Invoice' ) ) {
 			$this->order->delete_meta_data( '_wpwing_wcpdf_invoice_path' );
 			$this->order->delete_meta_data( '_wpwing_wcpdf_pending_invoice_number' );
 
+			$xml_path = (string) $this->order->get_meta( '_wpwing_wcpdf_invoice_ubl_path' );
+			if ( '' !== $xml_path ) {
+				$full_xml = trailingslashit( WPWING_WCPDF_DOCUMENT_SAVE_DIR ) . $xml_path;
+				if ( file_exists( $full_xml ) ) {
+					wp_delete_file( $full_xml );
+				}
+				$this->order->delete_meta_data( '_wpwing_wcpdf_invoice_ubl_path' );
+			}
+
 			$this->order->apply_changes();
 			$this->order->save_meta_data();
 		}

@@ -6,7 +6,7 @@ Tags:               pdf invoice, packing slip, delivery note, shipping label, wo
 Requires at least:  4.8
 Tested up to:       7.1
 Requires PHP:       7.4
-Stable tag:         1.18.0
+Stable tag:         1.19.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -135,6 +135,16 @@ Yes! This plugin is actively maintained on [GitHub](https://github.com/wpwing-de
 8. WooCommerce orders list with bulk PDF actions dropdown
 
 == Changelog ==
+
+= 1.19.0 - 2026-11-09 =
+
+* New: Free UBL 2.1 e-invoicing export - generate structured UBL 2.1 XML invoices compliant with European standard EN 16931 and Peppol BIS Billing 3.0.
+* New: Download UBL 2.1 e-invoice XML directly from the order details metabox with one click.
+* New: Bulk download UBL 2.1 e-invoices from the WooCommerce orders list as a ZIP archive, generating missing invoices automatically.
+* New: Optional email attachment setting - attach UBL 2.1 XML to transactional emails alongside the invoice PDF.
+* New: Seller tax identifier settings - configure company trade registration number (CRN / SIREN / HRB) and tax scheme code in Template settings, with automatic buyer VAT mapping from order details.
+* Fix: Prevent file loss during bulk ZIP downloads by automatically disambiguating duplicate entry names when orders share identical filenames.
+* Hardening: Automatic deletion of associated UBL XML files when an invoice is reset or deleted to prevent orphaned files on disk.
 
 = 1.18.0 - 2026-10-26 =
 

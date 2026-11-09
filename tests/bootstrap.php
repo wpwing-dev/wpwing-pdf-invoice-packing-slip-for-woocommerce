@@ -135,6 +135,73 @@ if ( ! class_exists( 'WC_Order' ) ) {
 		public function get_date_created() { return null; }
 		public function get_formatted_billing_address() { return ''; }
 		public function get_formatted_shipping_address() { return ''; }
+		public function get_currency() { return 'EUR'; }
+		public function get_total_tax() { return 0.0; }
+		public function get_subtotal() { return 0.0; }
+		public function get_shipping_total() { return 0.0; }
+		public function get_shipping_tax() { return 0.0; }
+		public function get_discount_total() { return 0.0; }
+		public function get_payment_method() { return ''; }
+		public function get_payment_method_title() { return ''; }
+		public function get_billing_first_name() { return ''; }
+		public function get_billing_last_name() { return ''; }
+		public function get_billing_company() { return ''; }
+		public function get_billing_address_1() { return ''; }
+		public function get_billing_address_2() { return ''; }
+		public function get_billing_city() { return ''; }
+		public function get_billing_postcode() { return ''; }
+		public function get_billing_country() { return ''; }
+		public function get_billing_email() { return ''; }
+		public function get_billing_phone() { return ''; }
+		public function get_taxes() { return array(); }
+		public function is_paid() { return false; }
 	}
+}
+
+if ( ! class_exists( 'WC_Order_Item' ) ) {
+	class WC_Order_Item {
+		public function get_id() { return 0; }
+		public function get_name() { return ''; }
+		public function get_type() { return 'line_item'; }
+	}
+}
+
+if ( ! class_exists( 'WC_Order_Item_Product' ) ) {
+	class WC_Order_Item_Product extends WC_Order_Item {
+		public function get_product_id() { return 0; }
+		public function get_quantity() { return 1; }
+		public function get_subtotal() { return 0.0; }
+		public function get_total() { return 0.0; }
+		public function get_total_tax() { return 0.0; }
+		public function get_product() { return null; }
+	}
+}
+
+if ( ! class_exists( 'WC_Tax' ) ) {
+	class WC_Tax {
+		public static function get_rate_percent_value( $rate_id ) { return 0.0; }
+	}
+}
+
+if ( ! function_exists( 'get_bloginfo' ) ) {
+	function get_bloginfo( $show = '' ) {
+		return 'Test Store';
+	}
+}
+
+if ( ! function_exists( 'wp_delete_file' ) ) {
+	function wp_delete_file( $file ) {
+		return @unlink( $file );
+	}
+}
+
+if ( ! function_exists( 'wp_tempnam' ) ) {
+	function wp_tempnam( $filename = '', $dir = '' ) {
+		return tempnam( sys_get_temp_dir(), 'wpt' );
+	}
+}
+
+if ( ! function_exists( 'nocache_headers' ) ) {
+	function nocache_headers() {}
 }
 

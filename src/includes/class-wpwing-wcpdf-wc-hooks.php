@@ -186,6 +186,12 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 				if ( is_array( $proforma_email_ids ) && in_array( $email_id, $proforma_email_ids, true ) ) {
 					$attachments = $this->append_document_attachment( $attachments, $order_id, 'proforma' );
 				}
+
+				// UBL 2.1 XML attachment alongside PDF.
+				$ubl_email_ids = $this->settings->get_option( 'invoice_ubl_attach_to_emails' );
+				if ( is_array( $ubl_email_ids ) && in_array( $email_id, $ubl_email_ids, true ) && ! $skip_free ) {
+					$attachments = $this->append_ubl_attachment( $attachments, $order_id );
+				}
 			} finally {
 				$running = false;
 			}
@@ -217,6 +223,39 @@ if ( ! class_exists( 'WPWing_WcPdf_Wc_Hooks' ) ) {
 				$base = realpath( WPWING_WCPDF_DOCUMENT_SAVE_DIR );
 				if ( $real && $base && 0 === strpos( $real, $base . DIRECTORY_SEPARATOR ) && ! in_array( $real, $attachments, true ) ) {
 					$attachments[] = $real;
+				}
+			}
+
+			return $attachments;
+		}
+
+		/**
+		 * Helper to append a generated UBL 2.1 XML file to the email attachments list.
+		 *
+		 * @param array $attachments Current attachments.
+		 * @param int   $order_id    Order ID.
+		 * @return array
+		 * @since 1.19.0
+		 */
+		private function append_ubl_attachment( $attachments, $order_id ) {
+			$invoice = $this->plugin->get_document_by_type( $order_id, 'invoice' );
+			if ( null === $invoice ) {
+				return $attachments;
+			}
+
+			if ( ! $invoice->exists ) {
+				$this->plugin->save_document( $invoice );
+			}
+
+			if ( $invoice instanceof WPWing_WcPdf_Invoice && $invoice->exists ) {
+				$ubl  = new WPWing_WcPdf_UBL( $invoice );
+				$path = $ubl->get_xml_file_path();
+				if ( ! empty( $path ) ) {
+					$real = realpath( $path );
+					$base = realpath( WPWING_WCPDF_DOCUMENT_SAVE_DIR );
+					if ( $real && $base && 0 === strpos( $real, $base . DIRECTORY_SEPARATOR ) && ! in_array( $real, $attachments, true ) ) {
+						$attachments[] = $real;
+					}
 				}
 			}
 

@@ -282,6 +282,14 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'options' => $email_options,
 										'default' => array(),
 									),
+									array(
+										'id'      => 'invoice_ubl_attach_to_emails',
+										'type'    => 'checkboxgroup',
+										'title'   => esc_html__( 'Attach UBL 2.1 XML to emails:', 'wpwing-wcpdf' ),
+										'desc'    => esc_html__( 'Attach UBL 2.1 e-invoice XML to the selected WooCommerce emails alongside the invoice PDF.', 'wpwing-wcpdf' ),
+										'options' => $email_options,
+										'default' => array(),
+									),
 								)
 							),
 						),
@@ -471,6 +479,21 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'title'       => esc_html__( 'VAT / Tax ID:', 'wpwing-wcpdf' ),
 										'desc'        => '',
 										'placeholder' => 'VAT12345678',
+									),
+									array(
+										'id'          => 'company_registration_number',
+										'type'        => 'text',
+										'title'       => esc_html__( 'Company registration / Trade register number:', 'wpwing-wcpdf' ),
+										'desc'        => esc_html__( 'Commercial register / CRN / SIREN / HRB number included in UBL e-invoices.', 'wpwing-wcpdf' ),
+										'placeholder' => 'HRB 123456 / 12345678',
+									),
+									array(
+										'id'          => 'company_tax_scheme',
+										'type'        => 'text',
+										'title'       => esc_html__( 'Tax scheme code:', 'wpwing-wcpdf' ),
+										'desc'        => esc_html__( 'Tax scheme identifier for UBL e-invoices (defaults to VAT).', 'wpwing-wcpdf' ),
+										'placeholder' => 'VAT',
+										'default'     => 'VAT',
 									),
 									array(
 										'id'      => 'company_notes_checkbox',
