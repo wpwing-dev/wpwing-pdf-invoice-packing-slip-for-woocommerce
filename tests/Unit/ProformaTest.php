@@ -4,7 +4,7 @@ use Brain\Monkey;
 use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 
-class R4ProformaTest extends TestCase {
+class ProformaTest extends TestCase {
 
 	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();

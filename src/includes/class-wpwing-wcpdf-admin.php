@@ -112,6 +112,11 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 								target="_blank">
 								<?php esc_html_e( 'Preview', 'wpwing-wcpdf' ); ?>
 							</a>
+							<a class="button tips wpwing_wcpdf_download_ubl"
+								data-tip="<?php esc_attr_e( 'Download UBL 2.1 e-Invoice XML', 'wpwing-wcpdf' ); ?>"
+								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-download-ubl-invoice', $invoice->order->get_id() ), 'wpwing_download_ubl_invoice_' . $invoice->order->get_id() ) ); ?>">
+								<?php esc_html_e( 'UBL XML', 'wpwing-wcpdf' ); ?>
+							</a>
 							<a class="button tips wpwing_wcpdf_cancel_invoice wpwing-btn-cancel"
 								data-tip="<?php esc_attr_e( 'Delete Invoice', 'wpwing-wcpdf' ); ?>"
 								href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'wpwing-reset-invoice', $invoice->order->get_id() ), 'wpwing_reset_invoice_' . $invoice->order->get_id() ) ); ?>"

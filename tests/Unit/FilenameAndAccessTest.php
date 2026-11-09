@@ -4,7 +4,7 @@ use Brain\Monkey;
 use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 
-class R3FeaturesTest extends TestCase {
+class FilenameAndAccessTest extends TestCase {
 
 	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();
