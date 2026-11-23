@@ -2,11 +2,11 @@
 
 Contributors:       wpwing, voboghure
 Donate link:        https://wpwing.com/
-Tags:               pdf invoice, packing slip, delivery note, shipping label, woocommerce
+Tags:               pdf invoice, packing slip, e-invoicing, ubl, woocommerce
 Requires at least:  4.8
 Tested up to:       7.1
 Requires PHP:       7.4
-Stable tag:         1.19.0
+Stable tag:         1.20.0
 License:            GPL-3.0-or-later
 License URI:        https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -15,13 +15,13 @@ Automate PDF invoices, proforma invoices, packing slips, delivery notes & shippi
 
 == Description ==
 
-Streamline your eCommerce store's fulfillment, billing, and accounting with an all-in-one, ultra-fast WooCommerce PDF invoicing solution. Automatically generate professional **PDF invoices**, **proforma invoices**, **packing slips**, **delivery notes**, and **shipping labels**, attach them directly to customer order emails, and print or download batches in seconds.
+Streamline your eCommerce store's fulfillment, billing, and accounting with an all-in-one, ultra-fast WooCommerce PDF invoicing solution. Automatically generate professional **PDF invoices**, **proforma invoices**, **packing slips**, **delivery notes**, **shipping labels**, and **UBL 2.1 e-invoices**, attach them directly to customer order emails, and print or download batches in seconds.
 
-Whether you need legally compliant tax invoices for international buyers, price-free packing slips for your fulfillment warehouse, or shipping labels with scannable QR codes, this plugin automates your entire post-order workflow on autopilot.
+Whether you need legally compliant tax invoices for international buyers, structured EN 16931 / Peppol UBL 2.1 e-invoices, price-free packing slips for your fulfillment warehouse, or shipping labels with scannable QR codes, this plugin automates your entire post-order workflow on autopilot.
 
-Built strictly with performance, security, and modern WordPress standards, it runs lightning-fast on your server without database bloat, memory leaks, or checkout slowdowns.
+Built strictly with performance, security, and modern WordPress standards, it runs lightning-fast on your server without database bloat, memory leaks, or checkout slowdowns. Engineered with peak-volume memory bounds and automatic storage retention for high-traffic Black Friday / Cyber Monday sales.
 
-✅ Tested OK with WooCommerce 11.0.1+
+✅ Tested OK with WooCommerce 11.3.1
 🚀 High-Performance Order Storage (HPOS) Compatible
 ⚡ Zero Bloat - No external telemetry, no background tracking scripts
 
@@ -135,6 +135,15 @@ Yes! This plugin is actively maintained on [GitHub](https://github.com/wpwing-de
 8. WooCommerce orders list with bulk PDF actions dropdown
 
 == Changelog ==
+
+= 1.20.0 - 2026-11-23 =
+
+* New: Peak season high-throughput memory bounds - merged PDF bulk downloads are automatically capped to 30 orders per run (customizable via `wpwing_wcpdf_merged_pdf_max_orders` filter) with explicit garbage collection to prevent out-of-memory errors on 128M shared hosting environments during Black Friday / Cyber Monday spikes.
+* New: Automated PDF storage retention policy - configure automatic cleanup of generated PDF and XML invoices (30, 60, 90, 180, 365 days, or retain indefinitely) via daily WP-Cron background task.
+* New: Background maintenance routines - daily purge of stale bulk export temporary files older than 24 hours and downscaled product thumbnails older than 30 days.
+* New: Storage usage diagnostics - added storage space, file counts, and retention policy status to the System Status tab.
+* Improvement: Informative orders list bulk notice guiding merchants to use ZIP bulk export for sets larger than the merged PDF memory threshold.
+* Compatibility: Confirmed full compatibility with WooCommerce 11.3.1.
 
 = 1.19.0 - 2026-11-09 =
 

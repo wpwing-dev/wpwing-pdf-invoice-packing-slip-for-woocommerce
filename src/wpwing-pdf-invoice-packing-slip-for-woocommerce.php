@@ -3,14 +3,14 @@
  * Plugin Name:           PDF Invoice and Packing Slip for WooCommerce
  * Plugin URI:            https://wpwing.com/
  * Description:           Automatically generate, print, and attach professional PDF invoices and packing slips to WooCommerce emails. Clean, lightweight, and fast.
- * Version:               1.19.0
+ * Version:               1.20.0
  * Author:                WPWing
  * Author URI:            https://wpwing.com/
  * Requires PHP:          7.4
  * Requires at least:     4.8
  * Tested up to:          7.1
  * WC requires at least:  4.5
- * WC tested up to:       11.0.1
+ * WC tested up to:       11.3.1
  * WC HPOS Compatible:    Yes
  * License:               GPL-3.0-or-later
  * License URI:           https://www.gnu.org/licenses/gpl-3.0.html
@@ -26,7 +26,7 @@ $wp_upload_dir = wp_upload_dir();
 // Define constants.
 defined( 'WPWING_WCPDF_DOCUMENT_SAVE_DIR' ) || define( 'WPWING_WCPDF_DOCUMENT_SAVE_DIR', $wp_upload_dir['basedir'] . '/wpwing-pdf-invoices/' );
 
-defined( 'WPWING_WCPDF_VERSION' ) || define( 'WPWING_WCPDF_VERSION', '1.19.0' );
+defined( 'WPWING_WCPDF_VERSION' ) || define( 'WPWING_WCPDF_VERSION', '1.20.0' );
 
 defined( 'WPWING_WCPDF_FILE' ) || define( 'WPWING_WCPDF_FILE', __FILE__ );
 
@@ -131,6 +131,8 @@ function wpwing_wcpdf_init() {
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-shipping-label.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-proforma.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-ubl.php';
+	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-storage.php';
+	WPWing_WcPdf_Storage::init();
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-settings.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-admin.php';
 	require_once WPWING_WCPDF_INC_DIR . 'class-wpwing-wcpdf-wizard.php';
@@ -186,6 +188,19 @@ function wpwing_wcpdf_schedule_wizard_redirect( $network_wide ) {
 	set_transient( 'wpwing_wcpdf_wizard_redirect', 1, 30 );
 }
 register_activation_hook( __FILE__, 'wpwing_wcpdf_schedule_wizard_redirect' );
+
+/**
+ * Clean up scheduled cron jobs on plugin deactivation.
+ *
+ * @since 1.20.0
+ */
+function wpwing_wcpdf_deactivate() {
+	if ( ! class_exists( 'WPWing_WcPdf_Storage' ) ) {
+		require_once plugin_dir_path( __FILE__ ) . 'includes/class-wpwing-wcpdf-storage.php';
+	}
+	WPWing_WcPdf_Storage::clear_cron();
+}
+register_deactivation_hook( __FILE__, 'wpwing_wcpdf_deactivate' );
 
 if ( ! function_exists( 'log_it' ) ) {
 	/**

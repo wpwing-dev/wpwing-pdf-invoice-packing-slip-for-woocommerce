@@ -220,6 +220,21 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 										'default'     => '',
 									),
 									array(
+										'id'      => 'pdf_retention_days',
+										'type'    => 'select',
+										'title'   => esc_html__( 'PDF storage retention:', 'wpwing-wcpdf' ),
+										'desc'    => esc_html__( 'Automatically purge saved PDF and XML documents older than this threshold via daily background task. Set to Never to retain files indefinitely.', 'wpwing-wcpdf' ),
+										'options' => array(
+											'0'   => esc_html__( 'Never (retain indefinitely)', 'wpwing-wcpdf' ),
+											'30'  => esc_html__( '30 days', 'wpwing-wcpdf' ),
+											'60'  => esc_html__( '60 days', 'wpwing-wcpdf' ),
+											'90'  => esc_html__( '90 days', 'wpwing-wcpdf' ),
+											'180' => esc_html__( '180 days (6 months)', 'wpwing-wcpdf' ),
+											'365' => esc_html__( '365 days (1 year)', 'wpwing-wcpdf' ),
+										),
+										'default' => '0',
+									),
+									array(
 										'id'      => 'invoice_disable_free_orders',
 										'type'    => 'checkbox',
 										'title'   => esc_html__( 'Disable invoice for free orders:', 'wpwing-wcpdf' ),
@@ -698,6 +713,29 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 				$font_cache_status = esc_html__( 'Not generated yet - registers on first PDF', 'wpwing-wcpdf' );
 			}
 
+			$storage_stats = class_exists( 'WPWing_WcPdf_Storage' ) ? WPWing_WcPdf_Storage::get_storage_stats() : null;
+			$storage_html  = esc_html__( 'Unavailable', 'wpwing-wcpdf' );
+			if ( is_array( $storage_stats ) ) {
+				$retention_label = 0 === $storage_stats['retention_days']
+					? esc_html__( 'Keep indefinitely', 'wpwing-wcpdf' )
+					: sprintf(
+						/* translators: %d: retention threshold in days */
+						esc_html__( '%d days', 'wpwing-wcpdf' ),
+						$storage_stats['retention_days']
+					);
+
+				$storage_html = sprintf(
+					'<strong>%s</strong> (%d %s, %d %s) &mdash; <span class="description">%s: %s</span>',
+					esc_html( $storage_stats['formatted_total'] ),
+					(int) $storage_stats['document_count'],
+					esc_html( _n( 'document', 'documents', $storage_stats['document_count'], 'wpwing-wcpdf' ) ),
+					(int) $storage_stats['thumb_count'],
+					esc_html( _n( 'thumbnail', 'thumbnails', $storage_stats['thumb_count'], 'wpwing-wcpdf' ) ),
+					esc_html__( 'Retention', 'wpwing-wcpdf' ),
+					$retention_label
+				);
+			}
+
 			return array(
 				array(
 					'label'      => esc_html__( 'Plugin version', 'wpwing-wcpdf' ),
@@ -726,6 +764,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Settings' ) ) {
 				array(
 					'label'      => esc_html__( 'Font cache folder', 'wpwing-wcpdf' ),
 					'value_html' => $this->format_path_status( $font_cache_dir, $font_cache_writable ) . '<br />' . $font_cache_status,
+				),
+				array(
+					'label'      => esc_html__( 'Storage usage & retention', 'wpwing-wcpdf' ),
+					'value_html' => $storage_html,
 				),
 				array(
 					'label'      => esc_html__( 'Active document types', 'wpwing-wcpdf' ),

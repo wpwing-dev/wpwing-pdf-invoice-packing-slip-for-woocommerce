@@ -205,3 +205,33 @@ if ( ! function_exists( 'nocache_headers' ) ) {
 	function nocache_headers() {}
 }
 
+if ( ! function_exists( 'get_temp_dir' ) ) {
+	function get_temp_dir() {
+		return trailingslashit( sys_get_temp_dir() );
+	}
+}
+
+if ( ! function_exists( 'number_format_i18n' ) ) {
+	function number_format_i18n( $number, $decimals = 0 ) {
+		return number_format( (float) $number, $decimals, '.', ',' );
+	}
+}
+
+if ( ! function_exists( 'size_format' ) ) {
+	function size_format( $bytes, $decimals = 0 ) {
+		$quant = array(
+			'TB' => 1099511627776,
+			'GB' => 1073741824,
+			'MB' => 1048576,
+			'KB' => 1024,
+			'B'  => 1,
+		);
+		foreach ( $quant as $unit => $mag ) {
+			if ( (double) $bytes >= $mag ) {
+				return number_format_i18n( $bytes / $mag, $decimals ) . ' ' . $unit;
+			}
+		}
+		return '0 B';
+	}
+}
+
