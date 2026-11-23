@@ -332,8 +332,8 @@ if ( ! class_exists( 'WPWing_WcPdf_Admin' ) ) {
 				$message = sprintf( _n( '%1$d %2$s generated.', '%1$d %2$ss generated.', $count, 'wpwing-wcpdf' ), $count, $label );
 
 				if ( $skipped > 0 ) {
-					// translators: %d: number of orders not processed due to the 50-order batch limit.
-					$message .= ' ' . sprintf( _n( '%d order was not processed (50-order limit per action - run again to continue).', '%d orders were not processed (50-order limit per action - run again to continue).', $skipped, 'wpwing-wcpdf' ), $skipped );
+					// translators: %d: number of orders not processed due to batch limit.
+					$message .= ' ' . sprintf( _n( '%d order was not processed (batch limit reached - run again to continue, or use ZIP download for larger sets).', '%d orders were not processed (batch limit reached - run again to continue, or use ZIP download for larger sets).', $skipped, 'wpwing-wcpdf' ), $skipped );
 				}
 
 				printf(

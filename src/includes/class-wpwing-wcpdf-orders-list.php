@@ -138,7 +138,11 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 
 			$count     = 0;
 			$all_ids   = (array) $ids;
-			$batch_ids = array_slice( $all_ids, 0, 50 );
+			$max_batch = 'pdf' === $download_format ? (int) apply_filters( 'wpwing_wcpdf_merged_pdf_max_orders', 30, $document_type ) : 50;
+			if ( $max_batch <= 0 ) {
+				$max_batch = 30;
+			}
+			$batch_ids = array_slice( $all_ids, 0, $max_batch );
 			$skipped   = count( $all_ids ) - count( $batch_ids );
 			$documents = array();
 
@@ -335,6 +339,11 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 		 * @since 1.10.0
 		 */
 		private function stream_merged_pdf( $documents, $document_type ) {
+			$max_orders = (int) apply_filters( 'wpwing_wcpdf_merged_pdf_max_orders', 30, $document_type );
+			if ( $max_orders > 0 && count( $documents ) > $max_orders ) {
+				$documents = array_slice( $documents, 0, $max_orders );
+			}
+
 			$first_html = '';
 			$bodies     = array();
 
@@ -357,6 +366,10 @@ if ( ! class_exists( 'WPWing_WcPdf_Orders_List' ) ) {
 			$merged_html = $shell[1]
 				. implode( '<div style="page-break-before: always;"></div>', $bodies )
 				. $shell[2];
+
+			if ( function_exists( 'gc_collect_cycles' ) ) {
+				gc_collect_cycles();
+			}
 
 			try {
 				$pdf = WPWing_WcPdf_Document::render_pdf_from_html( $merged_html );

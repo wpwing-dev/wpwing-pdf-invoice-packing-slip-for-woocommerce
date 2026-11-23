@@ -28,13 +28,13 @@
 | R3 | 12-10-2026 | v1.17.0 | **Shipped.** Dynamic filename tokens + order column + guest access & hook isolation |
 | R4 | 26-10-2026 | v1.18.0 | **Shipped.** Free Proforma Invoice + free/Pro proforma architecture split |
 | R5 | 09-11-2026 | v1.19.0 | **Shipped.** Free UBL 2.1 XML export + Factur-X feasibility spike completed |
-| R6 | 23-11-2026 | v1.20.0 | BFCM throughput & merge memory bounds + PDF retention/GDPR hygiene |
-| R7 | 07-12-2026 | v1.20.1 | **Patch window** - no scheduled feature scope, BFCM support cover (watch from 27-11) |
+| R6 | 23-11-2026 | v1.20.0 | **Shipped.** BFCM throughput & merge memory bounds + PDF storage retention & hygiene |
+| R7 | 07-12-2026 | v1.20.1 | **Patch window** - BFCM support cover + WordPress Playground 1-click test blueprint |
 | R8 | 21-12-2026 | v1.21.0 | "Pay Now" direct payment link + static file attachment (1) |
-| R9 | 11-01-2027 | v1.22.0 | **E-invoicing phase 2:** Factur-X / ZUGFeRD embed (gated on the R5 spike) |
-| R10 | 08-02-2027 | v1.23.0 | PHP floor bump + PHP 8.4 / WP 7.2 readiness + `.pot` refresh |
-| R11 | 08-03-2027 | v1.24.0 | Eco ink-saving mode + Invoice Summary CSV export |
-| R12 | 29-03-2027 | v1.25.0 | Year-in-review polish + publish Q2 2027 roadmap (Pro launch timing decided here) |
+| R9 | 11-01-2027 | v1.22.0 | **E-invoicing phase 2:** Compliance-grade UBL / German XRechnung profile |
+| R10 | 08-02-2027 | v1.23.0 | PHP 8.1+ floor bump + Dompdf 3.x upgrade + PHP 8.4 / WC 11.4 readiness |
+| R11 | 08-03-2027 | v1.24.0 | Custom checkout fields display + Invoice Summary CSV export |
+| R12 | 29-03-2027 | v1.25.0 | Year-in-review polish + Pro launch gate (conditioned on active installs >= 300-500) |
 
 No release is scheduled for 28-12-2026 - holiday freeze week.
 
@@ -103,13 +103,19 @@ No release is scheduled for 28-12-2026 - holiday freeze week.
     5. Dompdf lacks color profile output intent dictionary (`/OutputIntents`) support with embedded ICC profiles.
   - **Decision for R9:** Gated on this spike, embedding a Factur-X hybrid PDF requires a post-processor (such as `setasign/fpdi` or a dedicated PDF/A-3 post-processing library) rather than relying on Dompdf alone. R9 will adopt the post-processor bridge or ship structured e-invoices as sidecar XML/Peppol BIS 3.0.
 
-#### R6 - 23-11-2026 - v1.20.0: BFCM Hardening + Storage Hygiene
-- Throughput hardening for simultaneous PDF generation and email-attachment load - profile bulk ZIP/merge on a several-hundred-order batch, cap peak memory, and confirm no fatal on a 128M `memory_limit`. This ships *before* the spike, not after it. With the R3 slip it lands on the Monday of Black Friday week - no room left to slip it further; if it is late, cut scope rather than the date.
-- **Bulk merged PDF memory bounds (P1):** Add order-count guardrails in `WPWing_WcPdf_Orders_List::stream_merged_pdf()` (cap at 30 orders per merged PDF with notice to use ZIP for larger sets) to prevent Dompdf memory exhaustion crashes on 128M hosts.
-- PDF storage retention scheduler (purge cached temp PDFs after 30/60/90 days) plus a disk/temp-dir size check in System Status.
+#### R6 - 23-11-2026 - v1.20.0: BFCM Hardening + Storage Hygiene - SHIPPED
+- Delivered in [`src/includes/class-wpwing-wcpdf-storage.php`](../src/includes/class-wpwing-wcpdf-storage.php) (`WPWing_WcPdf_Storage`), introducing automated WP-Cron daily storage hygiene routines.
+- Automated PDF storage retention policy (`pdf_retention_days` in General Settings): automatically purges saved PDF and XML documents older than 30, 60, 90, 180, or 365 days (defaulting to Never / indefinitely), protecting web server security shields (`.htaccess`, `index.html`) from deletion.
+- Background maintenance: daily purging of stale bulk export temporary archives (`wpwing-wcpdf-*`) older than 24 hours and product thumbnail caches (`thumbs/thumb_*.png`) older than 30 days.
+- Storage usage diagnostics in System Status tab: real-time calculation and display of storage footprint, document counts, thumbnail counts, and active retention policy.
+- Bulk merged PDF memory bounds: capped at 30 orders max per merged PDF generation (customizable via `wpwing_wcpdf_merged_pdf_max_orders` filter) with explicit garbage collection (`gc_collect_cycles()`) to safeguard against Dompdf OOM crashes on 128M shared hosting during Black Friday / Cyber Monday traffic surges.
+- Informative orders list bulk notice guiding merchants to use ZIP bulk export for sets exceeding the merged PDF threshold.
+- Updated compatibility declarations for WooCommerce 11.3.1.
+- Unit test suite expanded with `tests/Unit/StorageAndBulkHardeningTest.php` (8 tests, 27 assertions).
 
-#### R7 - 07-12-2026 - v1.20.1: BFCM Patch Window
-- No feature scope, and no release at all unless something breaks. Watch support channels through the Black Friday/Cyber Monday spike and patch only.
+#### R7 - 07-12-2026 - v1.20.1: BFCM Patch Window + Playground Blueprint
+- BFCM support monitoring and patch window for any high-volume edge cases.
+- WordPress Playground 1-click test blueprint (`blueprint.json`) in repository to provide frictionless zero-install live demos for prospective store owners.
 
 #### R8 - 21-12-2026 - v1.21.0: Pay Now + Static Attachment
 - "Pay Now" link on unpaid Invoices and Proformas, routed to native `order-pay`.
@@ -121,25 +127,25 @@ No release is scheduled for 28-12-2026 - holiday freeze week.
 
 ### January - March 2027 (monthly cadence)
 
-#### R9 - 11-01-2027 - v1.22.0: E-invoicing Phase 2 (Factur-X / ZUGFeRD)
-- Gated on the R5 spike. If PDF/A-3 embedding is viable, ship Factur-X 1.0 / ZUGFeRD 2.0 hybrid invoices: the existing PDF with the structured XML embedded.
-- If the spike came back red, this slot ships the XML sidecar workflow plus Peppol BIS 3.0 mapping instead, and the embed moves to the Q2 2027 roadmap.
+#### R9 - 11-01-2027 - v1.22.0: E-invoicing Phase 2 (Compliance-Grade UBL / German XRechnung Profile)
+- Strategic adjustment based on R5 spike & competitor moves: Rather than bundling a heavy/fragile PDF/A-3 Dompdf bridge, deliver compliance-grade German XRechnung & Peppol BIS 3.0 UBL profile enhancements matching WebToffee's 2026 additions.
+- Configurable electronic address scheme (Peppol Endpoint ID, EAS 0088 / 0192) and German Leitweg-ID support in template settings.
 
-#### R10 - 08-02-2027 - v1.23.0: PHP Floor & Compatibility Pass
-- Raise the `Requires PHP` floor. The plugin currently declares 7.4, which is long past EOL, and WP Overnight's v6 moves to 8.1+. Decide the new floor (8.0 or 8.1) and update both the plugin header and `readme.txt`.
-- Full compatibility pass for PHP 8.4 and WordPress 7.2 alpha/beta builds.
-- Deprecated hook cleanup, sequential-numbering index optimization on large databases.
+#### R10 - 08-02-2027 - v1.23.0: PHP 8.1+ Floor Bump & Modernization
+- Raise the `Requires PHP` floor to 8.1+ (matching WP Overnight v6.0.0 benchmark).
+- Upgrade bundled Dompdf to 3.1.x (gains PHP 8.4 compatibility, SVG/CSS flexbox enhancements, and memory optimizations).
+- WordPress 7.2 and WooCommerce 11.4 compatibility pass.
 - Refresh base `.pot` translation files (`make pot`).
 
-#### R11 - 08-03-2027 - v1.24.0: Eco Mode + CSV Export
-- Eco ink-saving mode: 1-click toggle stripping solid backgrounds/dark headers/heavy borders to thin line-art; "Print Eco PDF" action in the order metabox.
-- Invoice Summary CSV export (Invoice #, Date, Order #, Customer, Subtotal, Tax, Grand Total) - current page/standard batch.
-- Both were displaced from R5 by the e-invoicing work. If the schedule has slipped by this point, these are the items to cut, not the compatibility pass.
+#### R11 - 08-03-2027 - v1.24.0: Checkout Fields Display + Invoice Summary CSV
+- Display custom checkout fields (VAT ID, PO number, delivery instructions) on PDF documents via configurable UI mapping.
+- Configurable tax label overriding ("Tax" / "VAT" / "GST") per store preference.
+- Invoice Summary CSV export (Invoice #, Date, Order #, Customer, Subtotal, Tax, Grand Total).
 
-#### R12 - 29-03-2027 - v1.25.0: Year-in-Review & Q2 2027 Roadmap
-- Final polish pass across the cycle's features.
-- Publish a "Year in Review & Q2 2027 Roadmap" post.
-- **This is the checkpoint to decide Pro launch timing**, informed by: how much of the Section 5 background track is actually done, real release velocity from R1-R11, free-tier install/rating trends, and whether e-invoicing landed well enough to anchor a paid tier.
+#### R12 - 29-03-2027 - v1.25.0: Year-in-Review & Pro Tier Launch Evaluation
+- Final polish pass across the cycle's free features.
+- Evaluate commercial Pro tier launch gated on active install health (target threshold: ≥ 300–500 active installs).
+- Publish "Year in Review & Q2 2027 Roadmap" post.
 
 ---
 
